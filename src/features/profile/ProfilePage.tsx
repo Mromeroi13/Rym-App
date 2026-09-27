@@ -32,7 +32,7 @@ export function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="rounded-xl border border-border bg-surface p-8">
+      <div className="rounded-xl border border-border bg-surface p-5 md:p-8">
         <p className="text-sm text-textSecondary">Cargando perfil...</p>
       </div>
     )

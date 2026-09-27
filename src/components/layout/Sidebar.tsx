@@ -50,7 +50,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 z-20 flex h-full flex-col justify-between border-r border-border bg-surface py-6 transition-all duration-200 ${
+      className={`fixed left-0 top-0 z-20 hidden h-full flex-col justify-between border-r border-border bg-surface py-6 transition-all duration-200 md:flex ${
         collapsed ? 'w-20 px-2' : 'w-64 px-4'
       }`}
     >
