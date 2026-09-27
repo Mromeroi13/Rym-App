@@ -1,0 +1,734 @@
+<!DOCTYPE html><html lang="es" style="width: 1280px; height: 1124px; overflow: hidden; position: relative;"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejecución de Entrenamiento - RyM App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#0062FF',
+              hover: '#0052D6',
+              light: '#EBF2FF',
+              dark: '#0040A8',
+            },
+            surface: {
+              bg: '#F8F9FA',
+              card: '#FFFFFF',
+              border: '#E9ECEF',
+              subtle: '#F1F3F5',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+  </style>
+</head>
+<body class="bg-surface-bg text-slate-900 font-sans min-h-screen antialiased flex flex-col selection:bg-blue-100 selection:text-brand">
+
+  <!-- BARRA DE SIMULACIÓN DE ESTADOS (Solo visual para inspección rápida según especificaciones) -->
+  <div class="bg-white border-b border-surface-border px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2 shadow-sm sticky top-0 z-50">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1 font-bold text-brand uppercase tracking-wider text-[11px]">
+        <span class="material-symbols-outlined text-[16px]">tune</span> Estados de Entrenamiento:
+      </span>
+      <span class="text-slate-500 hidden sm:inline">Selecciona para explorar cada pantalla solicitada:</span>
+    </div>
+    <div class="flex items-center gap-1 overflow-x-auto py-1">
+      <button onclick="setStage('prep')" id="tab-prep" class="px-3 py-1.5 rounded-lg font-semibold bg-brand text-white transition-all text-xs">1. Preparación</button>
+      <button onclick="setStage('active-timer')" id="tab-active-timer" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs">2. Activo con Reloj</button>
+      <button onclick="setStage('active-notimer')" id="tab-active-notimer" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs">3. Sin Reloj</button>
+      <button onclick="setStage('set-completed')" id="tab-set-completed" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs">4. Serie Completada</button>
+      <button onclick="setStage('paused')" id="tab-paused" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs">5. Pausado</button>
+      <button onclick="setStage('abandon-modal')" id="tab-abandon-modal" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs">6. Salir / Diálogo</button>
+      <button onclick="setStage('completed')" id="tab-completed" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs">7. Completado</button>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR GENERAL RESPONSIVE (Optimizada para pantalla móvil mientras se adapta con clase a Desktop) -->
+  <main class="flex-1 flex justify-center p-3 sm:p-6 lg:p-8">
+    <div class="w-full max-w-4xl flex flex-col justify-start">
+
+      <!-- ========================================== -->
+      <!-- ESTADO 1: PANTALLA DE PREPARACIÓN          -->
+      <!-- ========================================== -->
+      <section id="stage-prep" class="w-full max-w-xl mx-auto flex flex-col gap-6">
+        <!-- Cabecera de Preparación -->
+        <div class="flex items-center justify-between">
+          <button class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            Volver a Rutinas
+          </button>
+          <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-brand border border-blue-100 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+            Plantilla Activa
+          </span>
+        </div>
+
+        <!-- Tarjeta Principal de Rutina a Iniciar -->
+        <div class="bg-surface-card border border-surface-border rounded-2xl p-6 sm:p-8 shadow-sm">
+          <div class="flex items-start justify-between gap-4 mb-3">
+            <div>
+              <span class="text-xs uppercase tracking-wider font-extrabold text-brand">Entrenamiento Físico</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mt-1">Torso Hipertrofia A</h1>
+              <p class="text-sm text-slate-600 mt-1">Enfoque biomecánico en pectoral mayor, dorsal ancho y estabilización escapular.</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-brand-light text-brand flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-2xl">fitness_center</span>
+            </div>
+          </div>
+
+          <!-- Métricas Resumen -->
+          <div class="grid grid-cols-3 gap-3 my-6">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 text-center">
+              <span class="block text-2xl font-extrabold text-slate-900">5</span>
+              <span class="text-xs text-slate-600 font-semibold">Ejercicios</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 text-center">
+              <span class="block text-2xl font-extrabold text-slate-900">18</span>
+              <span class="text-xs text-slate-600 font-semibold">Series totales</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 text-center">
+              <span class="block text-2xl font-extrabold text-slate-900">~55</span>
+              <span class="text-xs text-slate-600 font-semibold">Minutos est.</span>
+            </div>
+          </div>
+
+          <!-- Resumen de Ejercicios y Planificación de Cargas -->
+          <div class="space-y-3">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Ejercicios y Cargas Planificadas</h2>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-center">1</span>
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900">Press de Banca Plano con Barra</h3>
+                    <p class="text-xs text-slate-600">Pecho · Barra Olímpica</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-slate-800">4 series</span>
+                  <p class="text-xs text-slate-600 font-medium">60 a 70 kg × 8-12</p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-center">2</span>
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900">Remo con Barra Prono</h3>
+                    <p class="text-xs text-slate-600">Espalda Alta y Dorsal</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-slate-800">4 series</span>
+                  <p class="text-xs text-slate-600 font-medium">70 kg × 8-10</p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-center">3</span>
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900">Press Militar Mancuernas Sentado</h3>
+                    <p class="text-xs text-slate-600">Hombros · Deltoides</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-slate-800">3 series</span>
+                  <p class="text-xs text-slate-600 font-medium">24 kg c/u × 10-12</p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-center">4</span>
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900">Jalón al Pecho Agarre Neutro</h3>
+                    <p class="text-xs text-slate-600">Espalda · Polea</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-slate-800">3 series</span>
+                  <p class="text-xs text-slate-600 font-medium">65 kg × 10-12</p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/70 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-600 flex items-center justify-center">5</span>
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900">Fondos en Paralelas (Lastrados)</h3>
+                    <p class="text-xs text-slate-600">Tríceps y Pecho Inferior</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-slate-800">4 series</span>
+                  <p class="text-xs text-slate-600 font-medium">Peso corporal + 10 kg</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selección directa de Inicio: CON o SIN TEMPORIZADOR -->
+          <div class="mt-8 pt-6 border-t border-surface-border flex flex-col gap-3">
+            <span class="text-xs font-extrabold text-slate-600 uppercase tracking-wider text-center">Selecciona cómo deseas registrar la sesión:</span>
+            
+            <!-- Botón 1: Comenzar con Temporizador -->
+            <button onclick="setStage('active-timer')" class="w-full py-4 px-6 rounded-xl bg-brand text-white font-bold text-base shadow-sm hover:bg-brand-hover active:scale-[0.99] transition-all flex items-center justify-center gap-3">
+              <span class="material-symbols-outlined text-2xl">timer</span>
+              <span>Comenzar con temporizador</span>
+            </button>
+
+            <!-- Botón 2: Comenzar sin Temporizador -->
+            <button onclick="setStage('active-notimer')" class="w-full py-3.5 px-6 rounded-xl bg-white border border-surface-border text-slate-700 font-semibold text-sm hover:bg-slate-50 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-xl text-slate-500">timer_off</span>
+              <span>Comenzar sin temporizador</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- ESTADO 2 / 3 / 4 / 5: PANTALLA PRINCIPAL DE ENTRENAMIENTO ACTIVO -->
+      <!-- ============================================================== -->
+      <section id="stage-active-container" class="w-full hidden flex-col gap-5">
+        
+        <!-- BARRA SUPERIOR DE SESIÓN EN VIVO -->
+        <header class="bg-surface-card border border-surface-border rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <button onclick="setStage('abandon-modal')" title="Salir del entrenamiento" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Sesión en Curso</span>
+              </div>
+              <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">Torso Hipertrofia A</h1>
+            </div>
+          </div>
+
+          <!-- MÓDULO DEL TEMPORIZADOR GLOBAL (Visible sólo en modo con temporizador) -->
+          <div id="global-timer-widget" class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-xl">
+            <span class="material-symbols-outlined text-brand text-[20px]" id="timer-icon">timer</span>
+            <span id="timer-display" class="font-mono text-base sm:text-lg font-extrabold tracking-tight text-slate-900">00:24:18</span>
+            <button onclick="togglePauseTimer()" id="btn-pause-toggle" class="p-1 rounded-lg hover:bg-slate-200 text-slate-600 transition-colors" title="Pausar / Reanudar">
+              <span class="material-symbols-outlined text-[18px]" id="pause-icon">pause</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- BANNER DE TEMPORIZADOR PAUSADO (Visible solo en estado pausado) -->
+        <div id="banner-paused-alert" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-center justify-between text-amber-900 animate-fade-in">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-amber-600 text-2xl">pause_circle</span>
+            <div>
+              <p class="font-bold text-sm">Entrenamiento pausado</p>
+              <p class="text-xs text-amber-700">El tiempo global está detenido. Puedes reanudar cuando estés listo.</p>
+            </div>
+          </div>
+          <button onclick="resumeTimer()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+            Reanudar
+          </button>
+        </div>
+
+        <!-- LAYOUT DE 2 COLUMNAS EN DESKTOP / 1 COLUMNA COMPACTA EN MÓVIL -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          
+          <!-- COLUMNA PRINCIPAL DE ENTRENAMIENTO (MÓVIL FIRST) -->
+          <div class="lg:col-span-8 flex flex-col gap-5">
+            
+            <!-- TARJETA DEL EJERCICIO ACTUAL -->
+            <div class="bg-surface-card border border-surface-border rounded-2xl p-5 sm:p-7 shadow-sm">
+              
+              <!-- Progreso del Ejercicio (Ej: Ejercicio 1 de 5) -->
+              <div class="flex items-center justify-between pb-4 border-b border-surface-border">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-brand font-extrabold text-xs">
+                    Ejercicio 1 de 5
+                  </span>
+                  <span class="text-xs font-semibold text-slate-600">Pecho &amp; Tríceps</span>
+                </div>
+                <span class="text-xs font-bold text-slate-600">20% completado</span>
+              </div>
+
+              <!-- Barra de Progreso Global Sencilla -->
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3 mb-5">
+                <div id="global-progress-bar" class="bg-brand h-full rounded-full transition-all duration-500" style="width: 25%;"></div>
+              </div>
+
+              <!-- Título del Ejercicio en curso -->
+              <div class="mb-5">
+                <span class="text-xs font-extrabold text-slate-600 uppercase tracking-wider">Ejercicio Actual</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-0.5">Press de Banca Plano</h2>
+                <p class="text-xs text-slate-600 mt-1">Barra Olímpica estándar de 20 kg incluida en el peso total.</p>
+              </div>
+
+              <!-- LISTADO DE SERIES DEL EJERCICIO ACTUAL -->
+              <div class="space-y-2.5 mb-6">
+                <span class="text-xs font-extrabold text-slate-600 uppercase tracking-wider block">Series del Ejercicio</span>
+
+                <!-- Serie 1: Completada -->
+                <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-[18px] font-bold">check</span>
+                    </span>
+                    <div>
+                      <span class="text-xs font-bold text-slate-600">Serie 1</span>
+                      <p class="text-sm font-extrabold text-slate-900">60 kg × 12 reps</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                      Completada
+                    </span>
+                    <span class="block text-[11px] text-slate-600">Plan: 60 kg × 12</span>
+                  </div>
+                </div>
+
+                <!-- Serie 2: ACTUAL (DESTACADA) -->
+                <div id="card-current-set" class="flex items-center justify-between p-4 rounded-xl bg-blue-50/70 border-2 border-brand shadow-sm transition-all">
+                  <div class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      2
+                    </span>
+                    <div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-black text-brand tracking-wider uppercase">Serie 2 de 3</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-brand animate-ping"></span>
+                      </div>
+                      <p class="text-base font-extrabold text-slate-900">En Ejecución</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="inline-flex items-center gap-1 text-xs font-bold text-brand bg-white px-2.5 py-1 rounded-md border border-blue-200 shadow-2xs">
+                      ● Actual
+                    </span>
+                    <span class="block text-[11px] text-slate-600 mt-0.5">Planificado: 65 kg × 10</span>
+                  </div>
+                </div>
+
+                <!-- Serie 3: Pendiente -->
+                <div class="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 text-slate-400">
+                  <div class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs shrink-0">
+                      3
+                    </span>
+                    <div>
+                      <span class="text-xs font-semibold text-slate-600">Serie 3</span>
+                      <p class="text-sm font-bold text-slate-600">65 kg × 8 reps</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                      Pendiente
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CAJA DE REGISTRO ACTIVO PARA SERIE ACTUAL (TOUCH FIRST) -->
+              <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-brand">edit_note</span>
+                    <h3 class="font-extrabold text-sm text-slate-900">Registro de Serie Actual</h3>
+                  </div>
+                  <div class="text-xs font-bold text-slate-600">
+                    Planificado: <span class="text-slate-900 font-extrabold">65 kg × 10 reps</span>
+                  </div>
+                </div>
+
+                <!-- CONTROLES GRANDES DE PESO Y REPETICIONES -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  
+                  <!-- Control de Peso Real -->
+                  <div class="bg-white border border-surface-border rounded-xl p-3.5 shadow-2xs flex flex-col gap-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+                      <span>PESO REAL</span>
+                      <span class="text-brand font-semibold">+2.5 kg vs plan</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <button onclick="adjustValue('weight', -2.5)" class="w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-bold text-xl flex items-center justify-center transition-all select-none">
+                        -
+                      </button>
+                      <div class="flex-1 flex items-baseline justify-center gap-1">
+                        <input id="input-weight" type="number" step="0.5" value="67.5" class="w-24 text-center font-extrabold text-3xl sm:text-4xl text-slate-900 bg-transparent focus:outline-none focus:ring-0">
+                        <span class="text-sm font-bold text-slate-600">kg</span>
+                      </div>
+                      <button onclick="adjustValue('weight', 2.5)" class="w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-bold text-xl flex items-center justify-center transition-all select-none">
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Control de Repeticiones Reales -->
+                  <div class="bg-white border border-surface-border rounded-xl p-3.5 shadow-2xs flex flex-col gap-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+                      <span>REPETICIONES REALES</span>
+                      <span class="text-slate-600 font-semibold">Objetivo: 10</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <button onclick="adjustValue('reps', -1)" class="w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-bold text-xl flex items-center justify-center transition-all select-none">
+                        -
+                      </button>
+                      <div class="flex-1 flex items-baseline justify-center gap-1">
+                        <input id="input-reps" type="number" step="1" value="10" class="w-20 text-center font-extrabold text-3xl sm:text-4xl text-slate-900 bg-transparent focus:outline-none focus:ring-0">
+                        <span class="text-sm font-bold text-slate-600">reps</span>
+                      </div>
+                      <button onclick="adjustValue('reps', 1)" class="w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-bold text-xl flex items-center justify-center transition-all select-none">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BOTÓN PRINCIPAL PARA COMPLETAR SERIE -->
+                <button onclick="completeCurrentSet()" id="btn-complete-set" class="w-full mt-4 py-4 px-6 rounded-xl bg-brand text-white font-extrabold text-base shadow-sm hover:bg-brand-hover active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-2xl font-bold">check_circle</span>
+                  <span>Completar Serie 2</span>
+                </button>
+
+                <!-- FEEDBACK VISUAL DE SERIE COMPLETADA (Animación de éxito sutil) -->
+                <div id="set-completed-feedback" class="hidden mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 flex items-center justify-between text-xs font-bold animate-pulse">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-emerald-600">done_all</span>
+                    <span>¡Serie 2 guardada con éxito! (67.5 kg × 10 reps)</span>
+                  </div>
+                  <span class="text-emerald-700 font-semibold">Descanso sugerido: 90s</span>
+                </div>
+              </div>
+
+              <!-- ACCIÓN PARA CAMBIAR AL SIGUIENTE EJERCICIO -->
+              <div class="flex items-center justify-between pt-3 border-t border-surface-border">
+                <button class="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-800">
+                  <span class="material-symbols-outlined text-[18px]">skip_previous</span>
+                  Anterior ejercicio
+                </button>
+
+                <button onclick="nextExercise()" class="py-3 px-5 rounded-xl bg-white border-2 border-brand text-brand hover:bg-blue-50 font-bold text-sm flex items-center gap-2 active:scale-95 transition-all">
+                  <span>Siguiente ejercicio: Remo Barra</span>
+                  <span class="material-symbols-outlined text-[18px]">skip_next</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- COLUMNA LATERAL EN DESKTOP / PANEL COMPLEMENTARIO -->
+          <aside class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- Resumen de Lista de Ejercicios en Sesión -->
+            <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow-sm">
+              <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-3 flex items-center justify-between">
+                <span>Ruta del Entrenamiento</span>
+                <span class="text-brand font-bold">1 / 5</span>
+              </h3>
+              
+              <div class="space-y-2">
+                <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center">1</span>
+                    <span class="text-xs font-extrabold text-slate-900">Press de Banca Plano</span>
+                  </div>
+                  <span class="text-[11px] font-bold text-brand">En curso</span>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center">2</span>
+                    <span class="text-xs font-medium text-slate-700">Remo con Barra</span>
+                  </div>
+                  <span class="text-[11px] text-slate-600">4 series</span>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center">3</span>
+                    <span class="text-xs font-medium text-slate-700">Press Militar</span>
+                  </div>
+                  <span class="text-[11px] text-slate-600">3 series</span>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center">4</span>
+                    <span class="text-xs font-medium text-slate-700">Jalón al Pecho</span>
+                  </div>
+                  <span class="text-[11px] text-slate-600">3 series</span>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center">5</span>
+                    <span class="text-xs font-medium text-slate-700">Fondos Paralelas</span>
+                  </div>
+                  <span class="text-[11px] text-slate-600">4 series</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Accesos Rápidos de Finalización y Ayuda -->
+            <div class="bg-surface-card border border-surface-border rounded-2xl p-5 shadow-sm space-y-3">
+              <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Acción Global</h3>
+              <button onclick="setStage('completed')" class="w-full py-3 px-4 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">flag</span>
+                <span>Finalizar Entrenamiento Ahora</span>
+              </button>
+              <button onclick="setStage('abandon-modal')" class="w-full py-2.5 px-4 rounded-xl bg-white border border-red-200 text-red-600 hover:bg-red-50 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">logout</span>
+                <span>Abandonar sesión</span>
+              </button>
+            </div>
+
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- ESTADO 6: MODAL DE CONFIRMACIÓN AL ABANDONAR                   -->
+      <!-- ============================================================== -->
+      <div id="modal-abandon-container" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-surface-card border border-surface-border rounded-2xl max-w-md w-full p-6 shadow-2xl animate-scale-up">
+          <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-2xl font-bold">warning</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">¿Salir del entrenamiento?</h2>
+          <p class="text-sm text-slate-600 mt-2">Tu progreso actual y las series no guardadas se perderán si abandonas la sesión ahora.</p>
+
+          <div class="mt-6 flex flex-col-reverse sm:flex-row gap-3">
+            <button onclick="closeModalAndResume()" class="flex-1 py-3 px-4 rounded-xl bg-white border border-surface-border text-slate-700 font-bold text-sm hover:bg-slate-50 transition-colors">
+              Continuar entrenando
+            </button>
+            <button onclick="confirmExit()" class="flex-1 py-3 px-4 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 transition-colors shadow-sm">
+              Salir del entrenamiento
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- ESTADO 7: PANTALLA DE ENTRENAMIENTO COMPLETADO                 -->
+      <!-- ============================================================== -->
+      <section id="stage-completed-container" class="w-full max-w-xl mx-auto hidden flex-col gap-6">
+        
+        <div class="bg-surface-card border border-surface-border rounded-2xl p-6 sm:p-8 shadow-sm text-center">
+          
+          <!-- Insignia de Victoria Minimalista -->
+          <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-4xl font-bold">military_tech</span>
+          </div>
+
+          <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            ¡Objetivo Cumplido!
+          </span>
+
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-3">Entrenamiento Completado</h1>
+          <p class="text-sm text-slate-600 mt-1">Has finalizado con éxito la rutina <strong class="text-slate-900 font-bold">Torso Hipertrofia A</strong>.</p>
+
+          <!-- Resumen de Datos Clave -->
+          <div class="grid grid-cols-3 gap-3 my-6 text-left">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5">
+              <span class="text-[11px] font-semibold text-slate-600 block">DURACIÓN</span>
+              <span class="text-xl font-extrabold text-slate-900">00:54:12</span>
+              <span class="text-[11px] text-emerald-600 font-bold">Con temporizador</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5">
+              <span class="text-[11px] font-semibold text-slate-600 block">EJERCICIOS</span>
+              <span class="text-xl font-extrabold text-slate-900">5 de 5</span>
+              <span class="text-[11px] text-slate-600 font-medium">100% completado</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3.5">
+              <span class="text-[11px] font-semibold text-slate-600 block">VOLUMEN TOTAL</span>
+              <span class="text-xl font-extrabold text-slate-900">18 series</span>
+              <span class="text-[11px] text-brand font-bold">+2.5 kg récord</span>
+            </div>
+          </div>
+
+          <!-- Desglose de Cargas Reales Registradas -->
+          <div class="border-t border-surface-border pt-5 text-left mb-6">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-3">Registro de series completadas</h2>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                <span class="font-bold text-slate-900">1. Press de Banca Plano</span>
+                <span class="text-slate-700 font-mono font-semibold">4 series (60, 67.5, 67.5, 70 kg)</span>
+              </div>
+              <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                <span class="font-bold text-slate-900">2. Remo con Barra Prono</span>
+                <span class="text-slate-700 font-mono font-semibold">4 series (70, 70, 72.5, 72.5 kg)</span>
+              </div>
+              <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                <span class="font-bold text-slate-900">3. Press Militar Sentado</span>
+                <span class="text-slate-700 font-mono font-semibold">3 series (24 kg c/u × 10)</span>
+              </div>
+              <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                <span class="font-bold text-slate-900">4. Jalón al Pecho Neutro</span>
+                <span class="text-slate-700 font-mono font-semibold">3 series (65 kg × 12)</span>
+              </div>
+              <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                <span class="font-bold text-slate-900">5. Fondos en Paralelas</span>
+                <span class="text-slate-700 font-mono font-semibold">4 series (PC + 10 kg)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de Cierre y Regreso al Inicio -->
+          <button onclick="setStage('prep')" class="w-full py-4 px-6 rounded-xl bg-brand text-white font-extrabold text-base shadow-sm hover:bg-brand-hover active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-xl">check</span>
+            <span>Finalizar y Guardar en Historial</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- CONTROLADOR JAVASCRIPT DE ESTADOS E INTERACCIONES -->
+  <script>
+    let isPaused = false;
+    let timerInterval = null;
+    let secondsElapsed = 1458; // 00:24:18
+
+    function setStage(stage) {
+      // Ocultar todos los contenedores principales
+      document.getElementById('stage-prep').classList.add('hidden');
+      document.getElementById('stage-active-container').classList.add('hidden');
+      document.getElementById('stage-active-container').classList.remove('flex');
+      document.getElementById('modal-abandon-container').classList.add('hidden');
+      document.getElementById('stage-completed-container').classList.add('hidden');
+      document.getElementById('stage-completed-container').classList.remove('flex');
+
+      // Restablecer estilos de pestañas de simulador
+      const tabs = ['tab-prep', 'tab-active-timer', 'tab-active-notimer', 'tab-set-completed', 'tab-paused', 'tab-abandon-modal', 'tab-completed'];
+      tabs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.className = 'px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-xs';
+        }
+      });
+
+      const currentTab = document.getElementById('tab-' + stage);
+      if (currentTab) {
+        currentTab.className = 'px-3 py-1.5 rounded-lg font-semibold bg-brand text-white transition-all text-xs';
+      }
+
+      const activeContainer = document.getElementById('stage-active-container');
+      const timerWidget = document.getElementById('global-timer-widget');
+      const bannerPaused = document.getElementById('banner-paused-alert');
+      const feedbackCompleted = document.getElementById('set-completed-feedback');
+
+      if (stage === 'prep') {
+        document.getElementById('stage-prep').classList.remove('hidden');
+      } else if (stage === 'active-timer') {
+        activeContainer.classList.remove('hidden');
+        activeContainer.classList.add('flex');
+        timerWidget.classList.remove('hidden');
+        timerWidget.classList.add('flex');
+        bannerPaused.classList.add('hidden');
+        feedbackCompleted.classList.add('hidden');
+        isPaused = false;
+      } else if (stage === 'active-notimer') {
+        activeContainer.classList.remove('hidden');
+        activeContainer.classList.add('flex');
+        timerWidget.classList.add('hidden');
+        bannerPaused.classList.add('hidden');
+        feedbackCompleted.classList.add('hidden');
+      } else if (stage === 'set-completed') {
+        activeContainer.classList.remove('hidden');
+        activeContainer.classList.add('flex');
+        timerWidget.classList.remove('hidden');
+        timerWidget.classList.add('flex');
+        bannerPaused.classList.add('hidden');
+        feedbackCompleted.classList.remove('hidden');
+      } else if (stage === 'paused') {
+        activeContainer.classList.remove('hidden');
+        activeContainer.classList.add('flex');
+        timerWidget.classList.remove('hidden');
+        timerWidget.classList.add('flex');
+        bannerPaused.classList.remove('hidden');
+        feedbackCompleted.classList.add('hidden');
+        isPaused = true;
+      } else if (stage === 'abandon-modal') {
+        activeContainer.classList.remove('hidden');
+        activeContainer.classList.add('flex');
+        document.getElementById('modal-abandon-container').classList.remove('hidden');
+      } else if (stage === 'completed') {
+        const completedEl = document.getElementById('stage-completed-container');
+        completedEl.classList.remove('hidden');
+        completedEl.classList.add('flex');
+      }
+    }
+
+    function adjustValue(type, amount) {
+      if (type === 'weight') {
+        const el = document.getElementById('input-weight');
+        let current = parseFloat(el.value) || 0;
+        let nextVal = Math.max(0, current + amount);
+        el.value = nextVal % 1 === 0 ? nextVal : nextVal.toFixed(1);
+      } else if (type === 'reps') {
+        const el = document.getElementById('input-reps');
+        let current = parseInt(el.value) || 0;
+        el.value = Math.max(0, current + amount);
+      }
+    }
+
+    function completeCurrentSet() {
+      const fb = document.getElementById('set-completed-feedback');
+      fb.classList.remove('hidden');
+      document.getElementById('tab-set-completed').click();
+    }
+
+    function nextExercise() {
+      alert("Avanzando al Ejercicio 2: Remo con Barra. El temporizador global y el progreso se conservan intactos.");
+    }
+
+    function togglePauseTimer() {
+      if (isPaused) {
+        resumeTimer();
+      } else {
+        setStage('paused');
+      }
+    }
+
+    function resumeTimer() {
+      setStage('active-timer');
+    }
+
+    function closeModalAndResume() {
+      document.getElementById('modal-abandon-container').classList.add('hidden');
+      setStage('active-timer');
+    }
+
+    function confirmExit() {
+      document.getElementById('modal-abandon-container').classList.add('hidden');
+      setStage('prep');
+    }
+  </script>
+
+
+</body></html>

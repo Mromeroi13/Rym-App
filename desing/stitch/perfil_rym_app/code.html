@@ -1,0 +1,435 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-surface-variant": "#424656", "surface-bright": "#f9f9ff", "outline-variant": "#c2c6d9", "on-error": "#ffffff", "tertiary-container": "#c84000", "on-primary-fixed-variant": "#003ea8", "on-surface": "#151c27", "surface-container-high": "#e2e8f8", "on-background": "#151c27", "on-tertiary-fixed": "#390c00", "on-tertiary-fixed-variant": "#832700", "surface-dim": "#d3daea", "on-tertiary-container": "#fff1ed", "primary": "#004cca", "secondary-container": "#d9dff5", "on-error-container": "#93000a", "background": "#f9f9ff", "surface-container": "#e7eefe", "surface-variant": "#dce2f3", "inverse-on-surface": "#ebf1ff", "surface-container-highest": "#dce2f3", "secondary-fixed-dim": "#c0c6db", "primary-fixed": "#dbe1ff", "on-secondary-container": "#5c6274", "surface-container-lowest": "#ffffff", "tertiary-fixed": "#ffdbcf", "on-secondary-fixed": "#141b2b", "on-primary": "#ffffff", "primary-fixed-dim": "#b4c5ff", "tertiary-fixed-dim": "#ffb59c", "error": "#ba1a1a", "surface-tint": "#0053da", "outline": "#737687", "surface-container-low": "#f0f3ff", "tertiary": "#9e3100", "secondary-fixed": "#dce2f7", "on-primary-container": "#f3f3ff", "secondary": "#575e70", "error-container": "#ffdad6", "on-primary-fixed": "#00174b", "on-secondary": "#ffffff", "on-secondary-fixed-variant": "#404758", "on-tertiary": "#ffffff", "inverse-primary": "#b4c5ff", "inverse-surface": "#2a313d", "surface": "#f9f9ff", "primary-container": "#0062ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "gutter-desktop": "1.5rem", "space-md": "1rem", "space-sm": "0.5rem", "margin-tablet": "1.5rem", "space-2xl": "3rem", "margin": "1rem", "gutter": "1rem", "space-xl": "2rem", "space-xs": "0.25rem", "margin-desktop": "2.5rem" }, "fontFamily": { "headline-sm": ["Manrope"], "display-lg-mobile": ["Manrope"], "label-md": ["Hanken Grotesk"], "headline-xl-mobile": ["Manrope"], "body-lg": ["Hanken Grotesk"], "label-sm": ["Hanken Grotesk"], "body-sm": ["Hanken Grotesk"], "body-md": ["Hanken Grotesk"], "stat-numeric": ["Manrope"], "headline-lg": ["Manrope"], "headline-xl": ["Manrope"], "display-lg": ["Manrope"] }, "fontSize": { "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg-mobile": ["2.5rem", { "lineHeight": "3rem", "letterSpacing": "-0.025em", "fontWeight": "800" }], "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-xl-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.005em", "fontWeight": "400" }], "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.03em", "fontWeight": "600" }], "body-sm": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0em", "fontWeight": "400" }], "body-md": ["1rem", { "lineHeight": "1.5rem", "letterSpacing": "0em", "fontWeight": "400" }], "stat-numeric": ["2rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.025em", "fontWeight": "700" }], "display-lg": ["3.5rem", { "lineHeight": "4rem", "letterSpacing": "-0.03em", "fontWeight": "800" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col flex-1 min-h-0"><div class="h-16 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Brand logo. - Primary color: #0062ff
+- Font: manrope
+- Mode: light
+- Roundness: rounded-md
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VsDRmpaFz5ak77KAnytFmPA75qbtORoS2GMEh3feyxQqAleHIDGkSnwRXIjVycPklEOmvwF1f9ZIuImn2WA8Wgkp4NFkKiMajQNtASC8vnBMt4F8QyMUsGsI07YBvdLHMWMxQkeYtUt8iaM2BOnnsScVxYgEktuGJd0ad3RgZLlhzMeIG-8o8TVV6DuA-M2cCloQqfF5Lctme3p4xeTyiat6vYLu5g2VnavBWY3cKeWucIh5_vwM5blbc"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">RyM App</span></div><button class="flex items-center justify-center w-8 h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">menu_open</span></button></div><div class="flex-1 overflow-y-auto px-space-md py-space-sm space-y-space-lg"><nav class="space-y-1" data-active-classes="bg-primary-container text-on-primary font-label-md text-label-md shadow-sm rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="">Inicio</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="calendario" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="">Calendario</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="rutinas" href="#"><span class="material-symbols-outlined text-[20px]">fitness_center</span><span class="">Rutinas</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="comidas" href="#"><span class="material-symbols-outlined text-[20px]">restaurant</span><span class="">Comidas</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-2.5 transition-all bg-primary-container text-on-primary font-label-md text-label-md shadow-sm rounded-xl" data-path="perfil" href="#"><span class="material-symbols-outlined text-[20px]">person</span><span class="">Perfil</span></a></nav><div class="pt-space-xs"><div class="flex items-center justify-between px-space-md mb-2"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-semibold">Administración</span><span class="px-2 py-0.5 rounded-full bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Admin</span></div><nav class="space-y-1" data-active-classes="bg-primary-container text-on-primary font-label-md text-label-md shadow-sm rounded-xl"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="usuarios" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="">Usuarios</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="ejercicios" href="#"><span class="material-symbols-outlined text-[20px]">exercise</span><span class="">Ejercicios</span></a><a class="flex items-center justify-between px-space-md py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="solicitudes" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">mail</span><span class="">Solicitudes</span></div><span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary font-label-sm text-[11px] font-bold">3</span></a></nav></div></div></div><div class="p-space-md bg-surface-container-low/60 m-space-md rounded-xl flex items-center gap-space-sm"><div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[20px]">person</span></div><div class="min-w-0 flex-1"><p class="font-label-md text-label-md text-on-surface truncate font-semibold leading-tight">Marcos Silva</p><p class="font-label-sm text-label-sm text-on-surface-variant truncate">Plan Pro • Atleta</p></div><span class="material-symbols-outlined text-outline text-[18px]">verified</span></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-2 px-space-md py-1.5 rounded-xl bg-surface-container-low w-80"><span class="material-symbols-outlined text-outline text-[20px]">search</span><input class="bg-transparent border-0 outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-outline" placeholder="Buscar ejercicios, métricas..." type="text"></div></div><div class="flex items-center gap-space-lg"><div class="hidden md:flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-outline">event</span><span class="">Jueves, 24 de Octubre</span></div><div class="flex items-center gap-space-sm"><button class="relative flex items-center justify-center w-10 h-10 rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative pt-16 bg-background min-h-screen px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<div class="max-w-3xl mx-auto w-full space-y-space-lg pb-space-2xl">
+<!-- Interactive State Simulation Bar (Athletic Precision Pills) -->
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<div class="flex items-center gap-2 pl-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">science</span>
+<span class="">Simulador de Estados:</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto" id="simulator-controls">
+<button class="px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all bg-primary-container text-on-primary font-semibold shadow-sm" data-state-btn="normal" onclick="setAppState('normal')" type="button">1. Normal</button>
+<button class="px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all text-on-surface-variant hover:bg-surface-container-low font-medium" data-state-btn="edit" onclick="setAppState('edit')" type="button">2. Edición</button>
+<button class="px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all text-on-surface-variant hover:bg-surface-container-low font-medium" data-state-btn="saving" onclick="setAppState('saving')" type="button">3. Guardando</button>
+<button class="px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all text-on-surface-variant hover:bg-surface-container-low font-medium" data-state-btn="success" onclick="setAppState('success')" type="button">4. Guardado Exitoso</button>
+<button class="px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all text-on-surface-variant hover:bg-surface-container-low font-medium" data-state-btn="validation_error" onclick="setAppState('validation_error')" type="button">5. Error Validación</button>
+<button class="px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all text-on-surface-variant hover:bg-surface-container-low font-medium" data-state-btn="save_error" onclick="setAppState('save_error')" type="button">6. Error Guardar</button>
+</div>
+</div>
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-space-sm pt-space-xs">
+<div>
+<div class="flex items-center gap-space-sm mb-1.5">
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-extrabold">Perfil</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container font-label-sm text-label-sm text-on-surface-variant font-medium">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Cuenta Activa • Plan Atleta
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Gestiona tus datos personales y preferencias biométricas de entrenamiento.
+        </p>
+</div>
+<div class="hidden sm:flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm bg-surface-container-low px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-outline">history</span>
+<span class="">Sincronizado: Hoy, 09:42</span>
+</div>
+</div>
+<!-- Alert / Feedback Notification Banners -->
+<div class="hidden transition-all duration-300" id="banner-success">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Cambios guardados con éxito</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tus biométricas y datos de cuenta han sido actualizados en la nube.</p>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-lg hover:bg-surface-container-low transition-colors" onclick="dismissFeedback()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<div class="hidden transition-all duration-300" id="banner-save-error">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">cloud_off</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Error al sincronizar</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ha ocurrido un problema al guardar tus datos de telemetría. Por favor, reintenta.</p>
+</div>
+</div>
+<button class="px-3 py-1 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm font-semibold transition-colors" onclick="setAppState('saving')">
+          Reintentar
+        </button>
+</div>
+</div>
+<!-- Main Card: Personal & Biometric Information -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<!-- Card Header: Profile Identity and Direct Controls -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-lg gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="relative group">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-primary font-headline-lg text-headline-lg font-extrabold shadow-inner">
+              MS
+            </div>
+<button class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" title="Cambiar foto de perfil" type="button">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+</button>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight" id="display-header-name">Marcos Silva</h2>
+<span class="material-symbols-outlined text-primary text-[18px]" title="Perfil Verificado">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant" id="display-header-username">@marcossilva</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 font-label-sm text-[11px] font-semibold uppercase tracking-wider text-outline">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                RyM ID: 8940-PRO
+              </span>
+</div>
+</div>
+</div>
+<!-- Mode Buttons / Actions -->
+<div class="flex items-center gap-2 self-start sm:self-center">
+<!-- Read Mode Button -->
+<button class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-all" id="btn-edit-trigger" onclick="setAppState('edit')" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+<span class="">Editar perfil</span>
+</button>
+<!-- Edit Mode Action Group -->
+<div class="hidden flex items-center gap-2" id="edit-actions-group">
+<button class="px-4 py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-md text-label-md font-medium transition-all" id="btn-cancel" onclick="setAppState('normal')" type="button">
+              Cancelar
+            </button>
+<button class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md font-semibold shadow-sm transition-all active:scale-95" id="btn-save" onclick="handleSaveAction()" type="button">
+<span class="hidden animate-spin h-4 w-4 rounded-full border-2 border-on-primary border-t-transparent" id="save-spinner"></span>
+<span id="save-btn-text" class="">Guardar cambios</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Biometric Telemetry Snippet -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm p-space-md rounded-xl bg-surface-container-low/70 mb-space-lg">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Índice IMC</span>
+<p class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">23.7 <span class="font-label-sm text-label-sm font-normal text-on-surface-variant">Normal</span></p>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Gasto Basal</span>
+<p class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">1,820 <span class="font-label-sm text-label-sm font-normal text-on-surface-variant">kcal</span></p>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Registro Peso</span>
+<p class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">-1.2 <span class="font-label-sm text-label-sm font-normal text-on-surface-variant">kg este mes</span></p>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Último Pesaje</span>
+<p class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">Hace 3 días</p>
+</div>
+</div>
+<!-- Form Grid (Read vs Edit States) -->
+<form class="space-y-space-md" id="profile-form" onsubmit="event.preventDefault(); handleSaveAction();">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Field 1: Full Name -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface-variant font-semibold">Nombre completo</label>
+<!-- Read State -->
+<div class="h-11 px-3.5 py-2.5 rounded-xl bg-surface-container-low flex items-center font-body-md text-body-md text-on-surface font-medium" id="view-name">
+              Marcos Silva
+            </div>
+<!-- Edit State -->
+<div class="hidden" id="input-container-name">
+<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container transition-all" id="input-name" placeholder="Tu nombre" type="text" value="Marcos Silva">
+<p class="hidden font-label-sm text-label-sm text-error mt-1 flex items-center gap-1" id="error-msg-name">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span class="">El nombre no puede estar vacío.</span>
+</p>
+</div>
+</div>
+<!-- Field 2: Username -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface-variant font-semibold">Nombre de usuario</label>
+<!-- Read State -->
+<div class="h-11 px-3.5 py-2.5 rounded-xl bg-surface-container-low flex items-center font-body-md text-body-md text-on-surface font-medium" id="view-username">
+              @marcossilva
+            </div>
+<!-- Edit State -->
+<div class="hidden" id="input-container-username">
+<div class="relative flex items-center">
+<span class="absolute left-3.5 font-body-md text-body-md text-outline select-none">@</span>
+<input class="w-full h-11 pl-8 pr-3.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container transition-all" id="input-username" placeholder="usuario" type="text" value="marcossilva">
+</div>
+<p class="hidden font-label-sm text-label-sm text-error mt-1 flex items-center gap-1" id="error-msg-username">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span class="">Nombre de usuario no disponible o inválido.</span>
+</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- Field 3: Email (Non-editable Account Identity) -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="block font-label-md text-label-md text-on-surface-variant font-semibold">Correo electrónico (Cuenta)</label>
+<span class="inline-flex items-center gap-1 font-label-sm text-[11px] text-outline font-medium">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+                Verificado • No editable
+              </span>
+</div>
+<div class="h-11 px-3.5 py-2.5 rounded-xl bg-surface-container-low/50 flex items-center justify-between text-on-surface-variant font-body-md text-body-md cursor-not-allowed select-none">
+<span class="">marcos@email.com</span>
+<span class="material-symbols-outlined text-outline text-[18px]">verified_user</span>
+</div>
+<p class="font-label-sm text-label-sm text-outline">Para actualizar tu correo de acceso, contacta al soporte técnico.</p>
+</div>
+<!-- Field 4: Weight Metric -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface-variant font-semibold">Peso corporal</label>
+<!-- Read State -->
+<div class="h-11 px-3.5 py-2.5 rounded-xl bg-surface-container-low flex items-center justify-between font-body-md text-body-md text-on-surface font-medium" id="view-weight">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">78.4</span>
+<span class="font-label-md text-label-md text-outline font-semibold">kg</span>
+</div>
+<!-- Edit State -->
+<div class="hidden" id="input-container-weight">
+<div class="relative flex items-center">
+<input class="w-full h-11 pl-3.5 pr-12 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container transition-all" id="input-weight" placeholder="78.4" step="0.1" type="number" value="78.4">
+<span class="absolute right-3.5 font-label-md text-label-md text-outline font-semibold select-none">kg</span>
+</div>
+<p class="hidden font-label-sm text-label-sm text-error mt-1 flex items-center gap-1" id="error-msg-weight">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span class="">Introduce un peso válido (ej. 78.5 kg).</span>
+</p>
+</div>
+<p class="font-label-sm text-label-sm text-outline">Utilizado para calcular las cargas y gasto calórico de tus rutinas.</p>
+</div>
+</div>
+<!-- Field 5: Height Metric -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface-variant font-semibold">Altura</label>
+<!-- Read State -->
+<div class="h-11 px-3.5 py-2.5 rounded-xl bg-surface-container-low flex items-center justify-between font-body-md text-body-md text-on-surface font-medium" id="view-height">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">182</span>
+<span class="font-label-md text-label-md text-outline font-semibold">cm</span>
+</div>
+<!-- Edit State -->
+<div class="hidden" id="input-container-height">
+<div class="relative flex items-center">
+<input class="w-full h-11 pl-3.5 pr-12 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:bg-surface-container transition-all" id="input-height" placeholder="182" step="1" type="number" value="182">
+<span class="absolute right-3.5 font-label-md text-label-md text-outline font-semibold select-none">cm</span>
+</div>
+<p class="hidden font-label-sm text-label-sm text-error mt-1 flex items-center gap-1" id="error-msg-height">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span class="">Introduce una altura válida en centímetros.</span>
+</p>
+</div>
+</div>
+<div class="space-y-1.5 flex flex-col justify-end">
+<div class="p-3 rounded-xl bg-surface-container-low flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">fitness_center</span>
+
+</div>
+</div>
+</div>
+</form>
+</div>
+<!-- Secondary Card: Security & Session Management -->
+
+</div>
+</div>
+<script>
+  let currentState = 'normal';
+
+  function setAppState(state) {
+    currentState = state;
+
+    // 1. Update Simulator Pills styling
+    document.querySelectorAll('[data-state-btn]').forEach(btn => {
+      const btnState = btn.getAttribute('data-state-btn');
+      if (btnState === state) {
+        btn.className = "px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all bg-primary-container text-on-primary font-semibold shadow-sm";
+      } else {
+        btn.className = "px-3 py-1.5 rounded-lg font-label-sm text-label-sm transition-all text-on-surface-variant hover:bg-surface-container-low font-medium";
+      }
+    });
+
+    // 2. Hide all notification banners by default
+    const bannerSuccess = document.getElementById('banner-success');
+    const bannerSaveError = document.getElementById('banner-save-error');
+    bannerSuccess.classList.add('hidden');
+    bannerSaveError.classList.add('hidden');
+
+    // Element references
+    const btnEditTrigger = document.getElementById('btn-edit-trigger');
+    const editActionsGroup = document.getElementById('edit-actions-group');
+    const saveSpinner = document.getElementById('save-spinner');
+    const saveBtnText = document.getElementById('save-btn-text');
+    const btnSave = document.getElementById('btn-save');
+    const btnCancel = document.getElementById('btn-cancel');
+
+    // View Containers
+    const viewName = document.getElementById('view-name');
+    const viewUsername = document.getElementById('view-username');
+    const viewWeight = document.getElementById('view-weight');
+    const viewHeight = document.getElementById('view-height');
+
+    // Input Containers
+    const inputContainerName = document.getElementById('input-container-name');
+    const inputContainerUsername = document.getElementById('input-container-username');
+    const inputContainerWeight = document.getElementById('input-container-weight');
+    const inputContainerHeight = document.getElementById('input-container-height');
+
+    // Inputs
+    const inputName = document.getElementById('input-name');
+    const inputUsername = document.getElementById('input-username');
+    const inputWeight = document.getElementById('input-weight');
+    const inputHeight = document.getElementById('input-height');
+
+    // Error messages
+    const errorMsgName = document.getElementById('error-msg-name');
+    const errorMsgWeight = document.getElementById('error-msg-weight');
+    const errorMsgHeight = document.getElementById('error-msg-height');
+
+    // Helper to toggle edit controls
+    const showEditMode = (isEdit) => {
+      if (isEdit) {
+        btnEditTrigger.classList.add('hidden');
+        editActionsGroup.classList.remove('hidden');
+        viewName.classList.add('hidden');
+        viewUsername.classList.add('hidden');
+        viewWeight.classList.add('hidden');
+        viewHeight.classList.add('hidden');
+        inputContainerName.classList.remove('hidden');
+        inputContainerUsername.classList.remove('hidden');
+        inputContainerWeight.classList.remove('hidden');
+        inputContainerHeight.classList.remove('hidden');
+      } else {
+        btnEditTrigger.classList.remove('hidden');
+        editActionsGroup.classList.add('hidden');
+        viewName.classList.remove('hidden');
+        viewUsername.classList.remove('hidden');
+        viewWeight.classList.remove('hidden');
+        viewHeight.classList.remove('hidden');
+        inputContainerName.classList.add('hidden');
+        inputContainerUsername.classList.add('hidden');
+        inputContainerWeight.classList.add('hidden');
+        inputContainerHeight.classList.add('hidden');
+      }
+    };
+
+    // Reset error styling
+    const clearErrors = () => {
+      [inputName, inputWeight, inputHeight].forEach(inp => {
+        inp.classList.remove('bg-error-container', 'text-on-error-container');
+        inp.classList.add('bg-surface-container-low', 'text-on-surface');
+      });
+      errorMsgName.classList.add('hidden');
+      errorMsgWeight.classList.add('hidden');
+      errorMsgHeight.classList.add('hidden');
+    };
+
+    // Reset save button loading states
+    saveSpinner.classList.add('hidden');
+    saveBtnText.textContent = "Guardar cambios";
+    btnSave.disabled = false;
+    btnCancel.disabled = false;
+    btnSave.classList.remove('opacity-70', 'cursor-not-allowed');
+
+    // State specific rendering
+    if (state === 'normal') {
+      showEditMode(false);
+      clearErrors();
+    } 
+    else if (state === 'edit') {
+      showEditMode(true);
+      clearErrors();
+      inputName.value = "Marcos Silva";
+      inputWeight.value = "78.4";
+      inputHeight.value = "182";
+    } 
+    else if (state === 'saving') {
+      showEditMode(true);
+      clearErrors();
+      saveSpinner.classList.remove('hidden');
+      saveBtnText.textContent = "Guardando...";
+      btnSave.disabled = true;
+      btnCancel.disabled = true;
+      btnSave.classList.add('opacity-70', 'cursor-not-allowed');
+    } 
+    else if (state === 'success') {
+      showEditMode(false);
+      clearErrors();
+      bannerSuccess.classList.remove('hidden');
+      
+      // Update values in view
+      const newName = inputName.value.trim() || "Marcos Silva";
+      const newUsername = inputUsername.value.trim() || "marcossilva";
+      const newWeight = inputWeight.value || "78.4";
+      const newHeight = inputHeight.value || "182";
+
+      document.getElementById('display-header-name').textContent = newName;
+      document.getElementById('display-header-username').textContent = "@" + newUsername.replace('@', '');
+      viewName.textContent = newName;
+      viewUsername.textContent = "@" + newUsername.replace('@', '');
+      viewWeight.innerHTML = `<span class="font-headline-sm text-headline-sm font-bold text-on-surface">${newWeight}</span><span class="font-label-md text-label-md text-outline font-semibold">kg</span>`;
+      viewHeight.innerHTML = `<span class="font-headline-sm text-headline-sm font-bold text-on-surface">${newHeight}</span><span class="font-label-md text-label-md text-outline font-semibold">cm</span>`;
+    } 
+    else if (state === 'validation_error') {
+      showEditMode(true);
+      // Simulate erroneous entries
+      inputName.value = "";
+      inputWeight.value = "-5";
+      inputHeight.value = "0";
+
+      // Mark Name invalid
+      inputName.classList.remove('bg-surface-container-low', 'text-on-surface');
+      inputName.classList.add('bg-error-container', 'text-on-error-container');
+      errorMsgName.classList.remove('hidden');
+
+      // Mark Weight invalid
+      inputWeight.classList.remove('bg-surface-container-low', 'text-on-surface');
+      inputWeight.classList.add('bg-error-container', 'text-on-error-container');
+      errorMsgWeight.classList.remove('hidden');
+
+      // Mark Height invalid
+      inputHeight.classList.remove('bg-surface-container-low', 'text-on-surface');
+      inputHeight.classList.add('bg-error-container', 'text-on-error-container');
+      errorMsgHeight.classList.remove('hidden');
+    } 
+    else if (state === 'save_error') {
+      showEditMode(true);
+      clearErrors();
+      bannerSaveError.classList.remove('hidden');
+    }
+  }
+
+  function handleSaveAction() {
+    setAppState('saving');
+    setTimeout(() => {
+      setAppState('success');
+    }, 900);
+  }
+
+  function dismissFeedback() {
+    document.getElementById('banner-success').classList.add('hidden');
+    document.getElementById('banner-save-error').classList.add('hidden');
+  }
+
+  // Initial render: Normal State
+  setAppState('normal');
+</script></main></div>
+
+
+
+</body></html>

@@ -1,0 +1,841 @@
+<!DOCTYPE html><html lang="es" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-secondary-container":"#5c6274","tertiary":"#9e3100","primary-fixed-dim":"#b4c5ff","on-tertiary-fixed":"#390c00","surface-container":"#e7eefe","surface-container-highest":"#dce2f3","error-container":"#ffdad6","on-primary":"#ffffff","on-tertiary-fixed-variant":"#832700","surface-bright":"#f9f9ff","surface-variant":"#dce2f3","secondary-container":"#d9dff5","surface-container-low":"#f0f3ff","on-surface":"#151c27","tertiary-fixed":"#ffdbcf","on-tertiary-container":"#fff1ed","primary-container":"#0062ff","on-secondary-fixed":"#141b2b","surface-container-high":"#e2e8f8","secondary-fixed-dim":"#c0c6db","error":"#ba1a1a","tertiary-fixed-dim":"#ffb59c","on-error-container":"#93000a","primary-fixed":"#dbe1ff","inverse-on-surface":"#ebf1ff","on-primary-container":"#f3f3ff","surface-container-lowest":"#ffffff","on-background":"#151c27","surface-tint":"#0053da","primary":"#004cca","surface-dim":"#d3daea","outline-variant":"#c2c6d9","on-tertiary":"#ffffff","tertiary-container":"#c84000","on-surface-variant":"#424656","on-primary-fixed":"#00174b","surface":"#f9f9ff","on-error":"#ffffff","on-secondary":"#ffffff","secondary-fixed":"#dce2f7","background":"#f9f9ff","secondary":"#575e70","on-secondary-fixed-variant":"#404758","inverse-primary":"#b4c5ff","inverse-surface":"#2a313d","on-primary-fixed-variant":"#003ea8","outline":"#737687"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin":"1rem","space-lg":"1.5rem","margin-tablet":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem","gutter":"1rem","space-md":"1rem","gutter-desktop":"1.5rem","margin-desktop":"2.5rem","space-2xl":"3rem","space-xl":"2rem"},"fontFamily":{"body-sm":["Hanken Grotesk"],"label-md":["Hanken Grotesk"],"headline-xl":["Manrope"],"label-sm":["Hanken Grotesk"],"headline-sm":["Manrope"],"stat-numeric":["Manrope"],"body-md":["Hanken Grotesk"],"headline-lg":["Manrope"],"display-lg-mobile":["Manrope"],"headline-xl-mobile":["Manrope"],"body-lg":["Hanken Grotesk"],"display-lg":["Manrope"]},"fontSize":{"body-sm":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0em","fontWeight":"400"}],"label-md":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"700"}],"label-sm":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.03em","fontWeight":"600"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"600"}],"stat-numeric":["2rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["1rem",{"lineHeight":"1.5rem","letterSpacing":"0em","fontWeight":"400"}],"headline-lg":["1.5rem",{"lineHeight":"2rem","letterSpacing":"-0.015em","fontWeight":"600"}],"display-lg-mobile":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.025em","fontWeight":"800"}],"headline-xl-mobile":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["1.125rem",{"lineHeight":"1.75rem","letterSpacing":"-0.005em","fontWeight":"400"}],"display-lg":["3.5rem",{"lineHeight":"4rem","letterSpacing":"-0.03em","fontWeight":"800"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside id="mainSidebar" class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between py-6 px-4 transition-all duration-300">
+  <div class="flex flex-col gap-5 min-w-0">
+    <div class="flex items-center justify-between px-2 min-w-0">
+      <div class="flex items-center gap-3 min-w-0 overflow-hidden">
+        <img alt="RyM App Logo" class="h-8 w-auto shrink-0 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WOUlnhZLHzVKoHTdrs8DHN-Qgi5anGvGdu8sQy-qaEOYB5sz-SnuqHilL1C3WsrZb7oah8R6UB5y3g563VNIBv1cAPvd-VZeDc03YTjp1N-ydKiGZlgrcGFZmh7um0VMZRp4hpRTCBxFmwgXQWTkberRjTHJt0tUPzUHsb5X9gi8-2fuk7MrG7qau-Xy3bKdZu1UIg9GuGrIfdABR5sDhrXj2yv_yQDBobDknL1BvS_m3qXwXyW5GCcII_">
+        <div class="sidebar-label flex flex-col min-w-0 transition-opacity duration-300">
+          <span class="font-headline-sm text-headline-sm tracking-tight text-on-surface leading-none truncate">RyM App</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-0.5 truncate">Performance</span>
+        </div>
+      </div>
+      <button id="sidebarToggleBtn" type="button" onclick="toggleSidebarCollapse()" title="Colapsar / Expandir barra lateral" class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors shrink-0">
+        <span id="sidebarToggleIcon" class="material-symbols-outlined text-[20px]">menu_open</span>
+      </button>
+    </div>
+
+    <nav class="flex flex-col gap-1 mt-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-xl shadow-[0_2px_8px_rgba(0,98,255,0.25)]">
+      <a class="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="inicio" href="#" title="Inicio">
+        <span class="material-symbols-outlined text-[22px] shrink-0">dashboard</span>
+        <span class="sidebar-label whitespace-nowrap">Inicio</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Inicio</span>
+      </a>
+      <a class="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="calendario" href="#" title="Calendario">
+        <span class="material-symbols-outlined text-[22px] shrink-0">calendar_today</span>
+        <span class="sidebar-label whitespace-nowrap">Calendario</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Calendario</span>
+      </a>
+      <a aria-current="page" class="group relative flex items-center gap-3 px-3.5 py-2.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-xl shadow-[0_2px_8px_rgba(0,98,255,0.25)]" data-path="rutinas" href="#" title="Rutinas">
+        <span class="material-symbols-outlined text-[22px] shrink-0">fitness_center</span>
+        <span class="sidebar-label whitespace-nowrap">Rutinas</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Rutinas</span>
+      </a>
+      <a class="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="comidas" href="#" title="Comidas">
+        <span class="material-symbols-outlined text-[22px] shrink-0">restaurant</span>
+        <span class="sidebar-label whitespace-nowrap">Comidas</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Comidas</span>
+      </a>
+      <a class="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="perfil" href="#" title="Perfil">
+        <span class="material-symbols-outlined text-[22px] shrink-0">person</span>
+        <span class="sidebar-label whitespace-nowrap">Perfil</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Perfil</span>
+      </a>
+    </nav>
+
+    <div class="flex flex-col gap-1 pt-3 border-t border-surface-container-high/60">
+      <div class="sidebar-label px-3.5 mb-1.5 flex items-center justify-between">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Administración</span>
+        <span class="font-label-sm text-label-sm bg-secondary-container text-on-secondary-fixed px-2 py-0.5 rounded-full">Admin</span>
+      </div>
+      <a class="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="admin-usuarios" href="#" title="Usuarios">
+        <span class="material-symbols-outlined text-[22px] shrink-0">group</span>
+        <span class="sidebar-label whitespace-nowrap">Usuarios</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Usuarios</span>
+      </a>
+      <a class="group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="admin-ejercicios" href="#" title="Ejercicios">
+        <span class="material-symbols-outlined text-[22px] shrink-0">exercise</span>
+        <span class="sidebar-label whitespace-nowrap">Ejercicios</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Ejercicios</span>
+      </a>
+      <a class="group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="admin-solicitudes" href="#" title="Solicitudes">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="material-symbols-outlined text-[22px] shrink-0">pending_actions</span>
+          <span class="sidebar-label whitespace-nowrap">Solicitudes</span>
+        </div>
+        <span class="sidebar-label inline-flex items-center justify-center font-label-sm text-label-sm bg-primary text-on-primary rounded-full px-1.5 py-0.5 leading-none shrink-0">3</span>
+        <span class="sidebar-tooltip hidden absolute left-full ml-3 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">Solicitudes (3)</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2 pt-2 border-t border-surface-container-high/40">
+    <div class="flex items-center justify-between px-1">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        </div>
+        <div class="sidebar-label flex flex-col min-w-0">
+          <span class="font-label-md text-label-md text-on-surface truncate">Marcos Silva</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant truncate">Plan Pro • Atleta</span>
+        </div>
+      </div>
+      <button class="sidebar-label text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container-low transition-colors" type="button">
+        <span class="material-symbols-outlined text-[20px]">unfold_more</span>
+      </button>
+    </div>
+  </div>
+</aside><div class="pl-64 transition-all" id="mainContentWrapper"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-8 transition-all" id="mainHeader"><div class="flex items-center gap-4"><div class="flex items-center gap-2"><img alt="RyM App Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WOUlnhZLHzVKoHTdrs8DHN-Qgi5anGvGdu8sQy-qaEOYB5sz-SnuqHilL1C3WsrZb7oah8R6UB5y3g563VNIBv1cAPvd-VZeDc03YTjp1N-ydKiGZlgrcGFZmh7um0VMZRp4hpRTCBxFmwgXQWTkberRjTHJt0tUPzUHsb5X9gi8-2fuk7MrG7qau-Xy3bKdZu1UIg9GuGrIfdABR5sDhrXj2yv_yQDBobDknL1BvS_m3qXwXyW5GCcII_"><span class="font-label-md text-label-md text-on-surface-variant">Jueves, 24 de Octubre</span></div><span class="w-1 h-1 rounded-full bg-outline-variant"></span><div class="flex items-center gap-2 bg-surface-container-low px-3 py-1 rounded-full"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-sm text-label-sm text-on-surface">Día 4: Hipertrofia Tren Superior</span></div></div><div class="flex items-center gap-3"><div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded-xl gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">search</span><input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant w-48" placeholder="Buscar ejercicios, métricas..." type="text"></div><button class="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-surface min-h-screen"><div class="max-w-7xl mx-auto px-8 py-8"><div class="flex flex-col w-full gap-8">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Mis Rutinas</h1>
+<span class="font-label-sm text-label-sm bg-surface-container-high text-on-surface-variant px-3 py-1 rounded-full font-medium">4 plantillas activas</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Gestiona, inicia o planifica tus programas de entrenamiento sistemático.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-surface-container-lowest text-on-surface px-4 py-2.5 rounded-xl font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-all" onclick="document.getElementById('catalogPanel').scrollIntoView({behavior: 'smooth'})" type="button">
+<span class="material-symbols-outlined text-[19px] text-on-surface-variant">add_task</span>
+<span class="">Solicitar Ejercicio</span>
+</button>
+<button class="flex items-center gap-2 bg-primary-container text-on-primary-container px-5 py-2.5 rounded-xl font-label-md text-label-md shadow-[0_4px_14px_rgba(0,98,255,0.3)] hover:brightness-105 active:scale-[0.98] transition-all" onclick="openRoutineModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span class="">Nueva Rutina</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+<div class="inline-flex p-1 bg-surface-container-high rounded-xl self-start gap-1">
+<button class="filter-tab px-4 py-1.5 rounded-lg font-label-md text-label-md bg-surface-container-lowest text-on-surface shadow-sm transition-all" data-filter="all" type="button">Todas</button>
+<button class="filter-tab px-4 py-1.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" data-filter="torso-pierna" type="button">Torso / Pierna</button>
+<button class="filter-tab px-4 py-1.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" data-filter="ppl" type="button">Push / Pull / Legs</button>
+<button class="filter-tab px-4 py-1.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" data-filter="full-body" type="button">Full Body</button>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">swap_vert</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ordenar por:</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Más recientes</span>
+</div>
+<button class="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface shadow-sm transition-colors" title="Vista compacta">
+<span class="material-symbols-outlined text-[18px]">view_agenda</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<div class="group flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1 bg-primary-container"></div>
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm bg-primary/10 text-primary px-2.5 py-1 rounded-full font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              En uso activo
+            </span>
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-full">Torso</span>
+</div>
+<div class="relative">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors" onclick="toggleCardMenu(event, 'menu-1')" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<div class="hidden absolute right-0 top-8 w-40 bg-surface-container-lowest rounded-xl shadow-xl py-1 z-30 flex flex-col" id="menu-1">
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">edit</span>Editar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>Duplicar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-error hover:bg-error-container/40 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">delete</span>Archivar
+              </button>
+</div>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-2">Torso Hipertrofia A</h3>
+<div class="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm mb-5 pb-4 bg-surface-container-low/50 px-3 py-2 rounded-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">fitness_center</span>
+<span class="">5 ejercicios</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="">~55 min</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">repeat</span>
+<span class="">18 series</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 mb-6">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Secuencia del plan</span>
+<ul class="flex flex-col gap-2 font-body-sm text-body-sm text-on-surface">
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">1</span>
+<span class="truncate">Press de banca plano con barra</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 8-10</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">2</span>
+<span class="truncate">Remo con barra pronado</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 8-10</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">3</span>
+<span class="truncate">Press militar sentado c/ mancuernas</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 10-12</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">4</span>
+<span class="truncate">Jalón al pecho con agarre neutro</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 10-12</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">5</span>
+<span class="truncate">Fondos en paralelas lastrados</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × RIR 1</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container h-11 rounded-xl font-label-md text-label-md font-semibold shadow-[0_2px_8px_rgba(0,98,255,0.25)] hover:brightness-105 active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span class="">Iniciar rutina</span>
+</button>
+<button class="h-11 w-11 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all" title="Asignar al calendario" type="button">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</button>
+</div>
+</div>
+<div class="group flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-label-sm text-label-sm bg-secondary-container text-on-secondary-fixed px-2.5 py-1 rounded-full font-semibold">Piernas / Abdomen</span>
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-full">Fuerza Base</span>
+</div>
+<div class="relative">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors" onclick="toggleCardMenu(event, 'menu-2')" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<div class="hidden absolute right-0 top-8 w-40 bg-surface-container-lowest rounded-xl shadow-xl py-1 z-30 flex flex-col" id="menu-2">
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">edit</span>Editar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>Duplicar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-error hover:bg-error-container/40 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">delete</span>Archivar
+              </button>
+</div>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-2">Pierna &amp; Core B</h3>
+<div class="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm mb-5 pb-4 bg-surface-container-low/50 px-3 py-2 rounded-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">fitness_center</span>
+<span class="">6 ejercicios</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="">~65 min</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">repeat</span>
+<span class="">20 series</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 mb-6">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Secuencia del plan</span>
+<ul class="flex flex-col gap-2 font-body-sm text-body-sm text-on-surface">
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">1</span>
+<span class="truncate">Sentadilla con barra trasera (Back Squat)</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 6-8</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">2</span>
+<span class="truncate">Prensa inclinada a 45 grados</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 10-12</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">3</span>
+<span class="truncate">Peso muerto rumano con mancuernas</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 10</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">4</span>
+<span class="truncate">Curl femoral tumbado</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 12</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">5</span>
+<span class="truncate">Elevación de gemelos de pie</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 15</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container h-11 rounded-xl font-label-md text-label-md font-semibold shadow-[0_2px_8px_rgba(0,98,255,0.25)] hover:brightness-105 active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span class="">Iniciar rutina</span>
+</button>
+<button class="h-11 w-11 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all" title="Asignar al calendario" type="button">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</button>
+<button class="h-11 px-3 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-sm text-label-sm" type="button">
+          Editar
+        </button>
+</div>
+</div>
+<div class="group flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-full font-semibold">Torso</span>
+<span class="font-label-sm text-label-sm bg-surface-container-high text-on-surface px-2.5 py-1 rounded-full">Espalda / Hombros</span>
+</div>
+<div class="relative">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors" onclick="toggleCardMenu(event, 'menu-3')" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<div class="hidden absolute right-0 top-8 w-40 bg-surface-container-lowest rounded-xl shadow-xl py-1 z-30 flex flex-col" id="menu-3">
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">edit</span>Editar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>Duplicar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-error hover:bg-error-container/40 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">delete</span>Archivar
+              </button>
+</div>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-2">Torso Fuerza B</h3>
+<div class="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm mb-5 pb-4 bg-surface-container-low/50 px-3 py-2 rounded-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">fitness_center</span>
+<span class="">5 ejercicios</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="">~50 min</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">repeat</span>
+<span class="">16 series</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 mb-6">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Secuencia del plan</span>
+<ul class="flex flex-col gap-2 font-body-sm text-body-sm text-on-surface">
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">1</span>
+<span class="truncate">Dominadas lastradas supinas</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 5-6</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">2</span>
+<span class="truncate">Press inclinado c/ mancuernas (30°)</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 8</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">3</span>
+<span class="truncate">Remo sentado en polea (Gironda)</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 10</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">4</span>
+<span class="truncate">Elevaciones laterales con polea baja</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 12-15</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">5</span>
+<span class="truncate">Face Pulls con cuerda en polea</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 15</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container h-11 rounded-xl font-label-md text-label-md font-semibold shadow-[0_2px_8px_rgba(0,98,255,0.25)] hover:brightness-105 active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span class="">Iniciar rutina</span>
+</button>
+<button class="h-11 w-11 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all" title="Asignar al calendario" type="button">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</button>
+<button class="h-11 px-3 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-sm text-label-sm" type="button">
+          Editar
+        </button>
+</div>
+</div>
+<div class="group flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden">
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-label-sm text-label-sm bg-secondary-container text-on-secondary-fixed px-2.5 py-1 rounded-full font-semibold">Piernas / Glúteos</span>
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface-variant px-2.5 py-1 rounded-full">Cadena Posterior</span>
+</div>
+<div class="relative">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors" onclick="toggleCardMenu(event, 'menu-4')" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<div class="hidden absolute right-0 top-8 w-40 bg-surface-container-lowest rounded-xl shadow-xl py-1 z-30 flex flex-col" id="menu-4">
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">edit</span>Editar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>Duplicar
+              </button>
+<button class="px-4 py-2 text-left font-label-sm text-label-sm text-error hover:bg-error-container/40 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">delete</span>Archivar
+              </button>
+</div>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors mb-2">Pierna &amp; Glúteo Enfoque Cadena</h3>
+<div class="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm mb-5 pb-4 bg-surface-container-low/50 px-3 py-2 rounded-xl">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">fitness_center</span>
+<span class="">5 ejercicios</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="">~60 min</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">repeat</span>
+<span class="">18 series</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 mb-6">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Secuencia del plan</span>
+<ul class="flex flex-col gap-2 font-body-sm text-body-sm text-on-surface">
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">1</span>
+<span class="truncate">Hip Thrust con barra y pausa 1s</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 8-10</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">2</span>
+<span class="truncate">Prensa unilateral enfocada</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 10</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">3</span>
+<span class="truncate">Zancadas búlgaras con mancuernas</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 10/lado</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">4</span>
+<span class="truncate">Curl femoral sentado</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">4 × 12</span>
+</li>
+<li class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<span class="flex items-center gap-2.5 truncate">
+<span class="font-label-sm text-label-sm w-4 text-on-surface-variant font-semibold">5</span>
+<span class="truncate">Máquina de abductores inclinada</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">3 × 15-20</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container h-11 rounded-xl font-label-md text-label-md font-semibold shadow-[0_2px_8px_rgba(0,98,255,0.25)] hover:brightness-105 active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span class="">Iniciar rutina</span>
+</button>
+<button class="h-11 w-11 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all" title="Asignar al calendario" type="button">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</button>
+<button class="h-11 px-3 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-sm text-label-sm" type="button">
+          Editar
+        </button>
+</div>
+</div>
+<div class="cursor-pointer group flex flex-col items-center justify-center min-h-[380px] rounded-2xl bg-surface-container-lowest/60 hover:bg-surface-container-lowest p-8 shadow-sm hover:shadow-md transition-all text-center" onclick="openRoutineModal()">
+<div class="w-14 h-14 rounded-full bg-surface-container-low group-hover:bg-primary/10 text-on-surface-variant group-hover:text-primary flex items-center justify-center mb-4 transition-all">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Crear Nueva Plantilla</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs mb-4">Diseña una estructura personalizada a partir de los +120 ejercicios oficiales validados biomecánicamente.</p>
+<span class="font-label-md text-label-md text-primary font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+        Abrir asistente interactivo
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</span>
+</div>
+</div>
+<section class="bg-surface-container-lowest rounded-2xl p-8 shadow-sm flex flex-col gap-6" id="catalogPanel">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">library_add</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Explorador de Ejercicios por Grupo Muscular</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Selecciona un área anatómica para descubrir técnicas, ejecuciones y añadirlas rápidamente a tu sesión en borrador.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Borrador actual:</span>
+<span class="font-label-sm text-label-sm bg-primary/10 text-primary px-3 py-1 rounded-full font-semibold" id="draftCount">2 ejercicios listos</span>
+</div>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-primary-container text-on-primary-container shadow-sm shrink-0 transition-all" data-muscle="Pecho" type="button">Pecho</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Espalda" type="button">Espalda</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Hombros" type="button">Hombros</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Bíceps" type="button">Bíceps</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Tríceps" type="button">Tríceps</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Piernas" type="button">Piernas</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Glúteos" type="button">Glúteos</button>
+<button class="muscle-chip px-4 py-2 rounded-xl font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container shrink-0 transition-all" data-muscle="Abdomen" type="button">Abdomen</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="exerciseGrid">
+<div class="exercise-item flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Athletic man performing clean barbell bench press on flat bench with pristine white gym background, studio lighting, minimal aesthetic, cinematic sharpness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbmiB9lsVKHNjDrvgFXtGWkOWN8ryjg53pJfAhphzTC93R2c9byc1mc5C0O6dMwWDbS1YePjoO0_lxOg-5YBuHpX9bVEuTZkInzNlM0XndZFZJtnSGgLCfj1-KcQbcn6RUTH_ds_unSgz8HT28oh7iCpM4eGKS1fpO1kDD90nIuaOz9AT_WlS_YqSiWMib4i6FQLnfpX4RDs4DLZM3koNPDG52PKwE_rf9EFWGmzsBPnCaOCiOwEOfBA">
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">Press de Banca Plano</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Barra Olímpica · Pectoral Mayor</span>
+</div>
+</div>
+<button class="h-9 px-3 rounded-lg bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm transition-all shrink-0" onclick="addExerciseToDraft(this, 'Press de Banca Plano')" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Añadir</span>
+</button>
+</div>
+<div class="exercise-item flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Female fitness model executing dumbbell incline chest press on sleek leather bench, high contrast daylight, clean minimal athletic studio environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu6E9EbjCOpBYQFjSS3iXPc00vOpWRA_blsU8EdB-Ft0BMInL4lbzNIjEPSOfu5F5sCa4vvbpUyS8Ui3ePvZ0qGzOm_AsAJVu-iRfna1TPa8QTS2mpz0xvg_dVXFxTDc9Kp_3Mf5eWiHr-pQwui1YVtPxXzHx8Tybgv4DW2hJJvyiCERj1BN2AOF35QoBMWVff1UEY_y-lbkSqYTpGTZibfEKosCJ6n8I0F8p5Xcjm_X6BzaStYiRkSg">
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">Press Inclinado con Mancuernas</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Mancuernas · Haz Clavicular</span>
+</div>
+</div>
+<button class="h-9 px-3 rounded-lg bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm transition-all shrink-0" onclick="addExerciseToDraft(this, 'Press Inclinado con Mancuernas')" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Añadir</span>
+</button>
+</div>
+<div class="exercise-item flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Athlete performing precise cable chest fly crossover on dual pulley machine in an ultra clean light studio gym with pure white ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBaspPaji-sZzwk1NFjgMeaEfZXhCWG777a9pummVOkzrcPmkNERhtyPO4yy0Csh-PrhSOUb2vG07-z7d414ftMxPuF3diZb6F3zNPQyHpmmhQAwWreTvTwTwYu_GKCkAATFhOnActyI_Q5H-POxBbHUD5X-USGFjvrZRnLxweKH8X8CohjtwwNNcLmaxF8KQ8UnHVufo_gREy_0m6w_nvP_BXSnVeuVUq2Wg1_Re2grPbCMXl24Rx8w">
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">Aperturas en Polea Media</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Poleas · Aislamiento Estricto</span>
+</div>
+</div>
+<button class="h-9 px-3 rounded-lg bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm transition-all shrink-0" onclick="addExerciseToDraft(this, 'Aperturas en Polea Media')" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Añadir</span>
+</button>
+</div>
+</div>
+</section>
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-4" id="routineModal">
+<div class="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+<div class="px-6 py-5 flex items-center justify-between border-b-0 bg-surface-container-low/40">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">fitness_center</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Configurar Nueva Plantilla</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Paso 1 de 2: Parámetros del bloque</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" onclick="closeRoutineModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6 overflow-y-auto flex flex-col gap-5">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Nombre descriptivo de la rutina</label>
+<input class="h-11 px-3.5 rounded-xl bg-surface-container-low text-body-md text-on-surface placeholder:text-outline outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all" placeholder="Ej. Torso A: Énfasis Pectoral &amp; Tríceps" type="text">
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">División / Patrón</label>
+<select class="h-11 px-3.5 rounded-xl bg-surface-container-low text-body-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/20">
+<option>Torso / Pierna (Upper / Lower)</option>
+<option>Push / Pull / Legs (PPL)</option>
+<option>Full Body Anatómico</option>
+<option>Especialización Muscular</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface">Tiempo Estimado</label>
+<div class="relative">
+<input class="h-11 w-full pl-3.5 pr-12 rounded-xl bg-surface-container-low text-body-md text-on-surface outline-none focus:ring-2 focus:ring-primary/20" type="number" value="60">
+<span class="absolute right-3.5 top-3 font-label-sm text-label-sm text-on-surface-variant">minutos</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Ejercicios precargados en borrador</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">+ Explorar catálogo</span>
+</div>
+<div class="flex flex-col gap-2 p-3 bg-surface-container-low rounded-xl">
+<div class="flex items-center justify-between bg-surface-container-lowest p-2.5 rounded-lg shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">drag_indicator</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Press de Banca Plano</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 series × 8-10 reps</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest p-2.5 rounded-lg shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">drag_indicator</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Press Inclinado con Mancuernas</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">3 series × 10-12 reps</span>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-surface-container-low/30 flex items-center justify-end gap-3">
+<button class="px-4 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" onclick="closeRoutineModal()" type="button">Cancelar</button>
+<button class="px-5 py-2.5 rounded-xl font-label-md text-label-md bg-primary-container text-on-primary-container shadow-sm hover:brightness-105 active:scale-[0.98] transition-all" onclick="closeRoutineModal()" type="button">Guardar Plantilla</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function toggleCardMenu(event, menuId) {
+    event.stopPropagation();
+    const menu = document.getElementById(menuId);
+    document.querySelectorAll('[id^="menu-"]').forEach(m => {
+      if (m.id !== menuId) m.classList.add('hidden');
+    });
+    if (menu) menu.classList.toggle('hidden');
+  }
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+  });
+
+  const muscleData = {
+    'Pecho': [
+      { name: 'Press de Banca Plano', meta: 'Barra Olímpica · Pectoral Mayor' },
+      { name: 'Press Inclinado con Mancuernas', meta: 'Mancuernas · Haz Clavicular' },
+      { name: 'Aperturas en Polea Media', meta: 'Poleas · Aislamiento Estricto' }
+    ],
+    'Espalda': [
+      { name: 'Dominadas Pronadas Lastradas', meta: 'Peso Corporal · Dorsal Ancho' },
+      { name: 'Remo con Barra Pendlay', meta: 'Barra Olímpica · Espalda Media' },
+      { name: 'Jalón al Pecho Agarre Neutro', meta: 'Polea Alta · Dorsal Inferior' }
+    ],
+    'Hombros': [
+      { name: 'Press Militar de Pie con Barra', meta: 'Barra Olímpica · Deltoides Anterior' },
+      { name: 'Elevaciones Laterales con Cable', meta: 'Polea Baja · Deltoides Lateral' },
+      { name: 'Pájaros en Banco Inclinado', meta: 'Mancuernas · Deltoides Posterior' }
+    ],
+    'Bíceps': [
+      { name: 'Curl con Barra Z de Pie', meta: 'Barra Z · Cabeza Larga / Corta' },
+      { name: 'Curl Martillo en Banco Scott', meta: 'Mancuernas · Braquial Anterior' },
+      { name: 'Curl Inclinado con Mancuernas', meta: 'Mancuernas · Énfasis Estiramiento' }
+    ],
+    'Tríceps': [
+      { name: 'Press Francés con Barra Z', meta: 'Barra Z · Cabeza Larga' },
+      { name: 'Extensiones de Tríceps en Polea Alta', meta: 'Cuerda / Polea · Cabeza Lateral' },
+      { name: 'Fondos en Paralelas Cerrados', meta: 'Peso Corporal · Potencia y Tríceps' }
+    ],
+    'Piernas': [
+      { name: 'Sentadilla Trasera con Barra (Squat)', meta: 'Barra Olímpica · Cuádriceps y Cadena' },
+      { name: 'Prensa 45 Grados', meta: 'Máquina · Sobrecarga Progresiva' },
+      { name: 'Extensiones de Cuádriceps', meta: 'Máquina · Aislamiento Recto Femoral' }
+    ],
+    'Glúteos': [
+      { name: 'Hip Thrust con Barra y Pausa', meta: 'Barra Olímpica · Glúteo Mayor' },
+      { name: 'Zancadas Búlgaras con Deficit', meta: 'Mancuernas · Glúteo Medio y Mayor' },
+      { name: 'Abducciones en Máquina Sentado', meta: 'Máquina · Glúteo Medio / Menor' }
+    ],
+    'Abdomen': [
+      { name: 'Elevaciones de Piernas Colgado', meta: 'Barra de Dominadas · Core Inferior' },
+      { name: 'Crunch en Polea Alta (Arrodillado)', meta: 'Polea / Cuerda · Recto Abdominal' },
+      { name: 'Plancha Isométrica con Lastre', meta: 'Peso Libre · Anti-Extensión' }
+    ]
+  };
+
+  document.querySelectorAll('.muscle-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.muscle-chip').forEach(c => {
+        c.classList.remove('bg-primary-container', 'text-on-primary-container');
+        c.classList.add('bg-surface-container-low', 'text-on-surface');
+      });
+      chip.classList.add('bg-primary-container', 'text-on-primary-container');
+      chip.classList.remove('bg-surface-container-low', 'text-on-surface');
+
+      const muscle = chip.getAttribute('data-muscle');
+      renderExerciseList(muscle);
+    });
+  });
+
+  function renderExerciseList(muscle) {
+    const grid = document.getElementById('exerciseGrid');
+    const items = muscleData[muscle] || [];
+    grid.innerHTML = items.map(ex => `
+      <div class="exercise-item flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shrink-0 shadow-sm text-primary font-semibold">
+            <span class="material-symbols-outlined text-[24px]">fitness_center</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-label-md text-label-md text-on-surface truncate">${ex.name}</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant truncate">${ex.meta}</span>
+          </div>
+        </div>
+        <button type="button" onclick="addExerciseToDraft(this, '${ex.name}')" class="h-9 px-3 rounded-lg bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm transition-all shrink-0">
+          <span class="material-symbols-outlined text-[16px]">add</span>
+          <span>Añadir</span>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  let draftCounter = 2;
+  function addExerciseToDraft(btn, exerciseName) {
+    draftCounter++;
+    document.getElementById('draftCount').textContent = `${draftCounter} ejercicios listos`;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> Añadido';
+    btn.classList.add('bg-primary', 'text-on-primary');
+    btn.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">add</span> Añadir';
+      btn.classList.remove('bg-primary', 'text-on-primary');
+      btn.classList.add('bg-surface-container-lowest', 'text-on-surface');
+    }, 1800);
+  }
+
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => {
+        t.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+        t.classList.add('text-on-surface-variant');
+      });
+      tab.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+      tab.classList.remove('text-on-surface-variant');
+    });
+  });
+
+  function openRoutineModal() {
+    document.getElementById('routineModal').classList.remove('hidden');
+  }
+
+  function closeRoutineModal() {
+    document.getElementById('routineModal').classList.add('hidden');
+  }
+</script></div></main></div><script>
+  function toggleSidebarCollapse() {
+    const sidebar = document.getElementById('mainSidebar');
+    const header = document.getElementById('mainHeader');
+    const contentWrapper = document.getElementById('mainContentWrapper');
+    const toggleIcon = document.getElementById('sidebarToggleIcon');
+    const labels = document.querySelectorAll('.sidebar-label');
+    const tooltips = document.querySelectorAll('.sidebar-tooltip');
+
+    const isCollapsed = sidebar.classList.contains('w-20');
+
+    if (isCollapsed) {
+      sidebar.classList.remove('w-20', 'px-2');
+      sidebar.classList.add('w-64', 'px-4');
+      if (header) {
+        header.classList.remove('left-20');
+        header.classList.add('left-64');
+      }
+      if (contentWrapper) {
+        contentWrapper.classList.remove('pl-20');
+        contentWrapper.classList.add('pl-64');
+      }
+      if (toggleIcon) toggleIcon.textContent = 'menu_open';
+      labels.forEach(el => el.classList.remove('hidden'));
+      tooltips.forEach(tt => tt.classList.add('hidden'));
+      sidebar.removeAttribute('data-collapsed');
+    } else {
+      sidebar.classList.remove('w-64', 'px-4');
+      sidebar.classList.add('w-20', 'px-2');
+      if (header) {
+        header.classList.remove('left-64');
+        header.classList.add('left-20');
+      }
+      if (contentWrapper) {
+        contentWrapper.classList.remove('pl-64');
+        contentWrapper.classList.add('pl-20');
+      }
+      if (toggleIcon) toggleIcon.textContent = 'menu';
+      labels.forEach(el => el.classList.add('hidden'));
+      sidebar.setAttribute('data-collapsed', 'true');
+    }
+  }
+
+  document.querySelectorAll('#mainSidebar nav a, #mainSidebar div a').forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      const sidebar = document.getElementById('mainSidebar');
+      if (sidebar && sidebar.hasAttribute('data-collapsed')) {
+        const tooltip = link.querySelector('.sidebar-tooltip');
+        if (tooltip) tooltip.classList.remove('hidden');
+      }
+    });
+    link.addEventListener('mouseleave', () => {
+      const tooltip = link.querySelector('.sidebar-tooltip');
+      if (tooltip) tooltip.classList.add('hidden');
+    });
+  });
+</script></body></html>

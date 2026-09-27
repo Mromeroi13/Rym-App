@@ -1,0 +1,585 @@
+<!DOCTYPE html><html lang="es" style="width: 1280px; height: 1377px; overflow: hidden; position: relative;"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-secondary-container":"#5c6274","tertiary":"#9e3100","primary-fixed-dim":"#b4c5ff","on-tertiary-fixed":"#390c00","surface-container":"#e7eefe","surface-container-highest":"#dce2f3","error-container":"#ffdad6","on-primary":"#ffffff","on-tertiary-fixed-variant":"#832700","surface-bright":"#f9f9ff","surface-variant":"#dce2f3","secondary-container":"#d9dff5","surface-container-low":"#f0f3ff","on-surface":"#151c27","tertiary-fixed":"#ffdbcf","on-tertiary-container":"#fff1ed","primary-container":"#0062ff","on-secondary-fixed":"#141b2b","surface-container-high":"#e2e8f8","secondary-fixed-dim":"#c0c6db","error":"#ba1a1a","tertiary-fixed-dim":"#ffb59c","on-error-container":"#93000a","primary-fixed":"#dbe1ff","inverse-on-surface":"#ebf1ff","on-primary-container":"#f3f3ff","surface-container-lowest":"#ffffff","on-background":"#151c27","surface-tint":"#0053da","primary":"#004cca","surface-dim":"#d3daea","outline-variant":"#c2c6d9","on-tertiary":"#ffffff","tertiary-container":"#c84000","on-surface-variant":"#424656","on-primary-fixed":"#00174b","surface":"#f9f9ff","on-error":"#ffffff","on-secondary":"#ffffff","secondary-fixed":"#dce2f7","background":"#f9f9ff","secondary":"#575e70","on-secondary-fixed-variant":"#404758","inverse-primary":"#b4c5ff","inverse-surface":"#2a313d","on-primary-fixed-variant":"#003ea8","outline":"#737687"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin":"1rem","space-lg":"1.5rem","margin-tablet":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem","gutter":"1rem","space-md":"1rem","gutter-desktop":"1.5rem","margin-desktop":"2.5rem","space-2xl":"3rem","space-xl":"2rem"},"fontFamily":{"body-sm":["Hanken Grotesk"],"label-md":["Hanken Grotesk"],"headline-xl":["Manrope"],"label-sm":["Hanken Grotesk"],"headline-sm":["Manrope"],"stat-numeric":["Manrope"],"body-md":["Hanken Grotesk"],"headline-lg":["Manrope"],"display-lg-mobile":["Manrope"],"headline-xl-mobile":["Manrope"],"body-lg":["Hanken Grotesk"],"display-lg":["Manrope"]},"fontSize":{"body-sm":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0em","fontWeight":"400"}],"label-md":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"700"}],"label-sm":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.03em","fontWeight":"600"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"600"}],"stat-numeric":["2rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["1rem",{"lineHeight":"1.5rem","letterSpacing":"0em","fontWeight":"400"}],"headline-lg":["1.5rem",{"lineHeight":"2rem","letterSpacing":"-0.015em","fontWeight":"600"}],"display-lg-mobile":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.025em","fontWeight":"800"}],"headline-xl-mobile":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["1.125rem",{"lineHeight":"1.75rem","letterSpacing":"-0.005em","fontWeight":"400"}],"display-lg":["3.5rem",{"lineHeight":"4rem","letterSpacing":"-0.03em","fontWeight":"800"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside id="appSidebar" class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between py-5 px-3 transition-all duration-300 select-none group/sidebar"><div class="flex flex-col gap-5 overflow-y-auto"><div class="flex items-center justify-between px-2"><div class="flex items-center gap-3 overflow-hidden"><img alt="RyM App Logo" class="h-8 w-auto shrink-0 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WOUlnhZLHzVKoHTdrs8DHN-Qgi5anGvGdu8sQy-qaEOYB5sz-SnuqHilL1C3WsrZb7oah8R6UB5y3g563VNIBv1cAPvd-VZeDc03YTjp1N-ydKiGZlgrcGFZmh7um0VMZRp4hpRTCBxFmwgXQWTkberRjTHJt0tUPzUHsb5X9gi8-2fuk7MrG7qau-Xy3bKdZu1UIg9GuGrIfdABR5sDhrXj2yv_yQDBobDknL1BvS_m3qXwXyW5GCcII_"><div class="flex flex-col sidebar-text"><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface leading-none">RyM App</span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-0.5">Performance</span></div></div><button id="btnToggleSidebar" class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Contraer / Expandir" type="button"><span id="toggleIcon" class="material-symbols-outlined text-[20px] transition-transform duration-300">menu_open</span></button></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-xl shadow-[0_2px_8px_rgba(0,98,255,0.25)]"><div class="px-2 py-1 sidebar-text"><span class="font-label-sm text-[11px] font-bold text-on-surface-variant/80 uppercase tracking-wider">Principal</span></div><div class="relative group/item"><a class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">dashboard</span><span class="sidebar-text truncate">Inicio</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Inicio</div></div><div class="relative group/item"><a aria-current="page" class="flex items-center gap-3 px-3 py-2.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-xl shadow-[0_2px_8px_rgba(0,98,255,0.25)]" data-path="calendario" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">calendar_today</span><span class="sidebar-text truncate">Calendario</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Calendario</div></div><div class="relative group/item"><a class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="rutinas" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">fitness_center</span><span class="sidebar-text truncate">Rutinas</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Rutinas</div></div><div class="relative group/item"><a class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="comidas" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">restaurant</span><span class="sidebar-text truncate">Comidas</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Comidas</div></div><div class="relative group/item"><a class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">person</span><span class="sidebar-text truncate">Perfil</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Perfil</div></div></nav><div class="flex flex-col gap-1 pt-2 border-t border-outline-variant/30"><div class="px-2 py-1 sidebar-text flex items-center justify-between"><span class="font-label-sm text-[11px] font-bold text-primary uppercase tracking-wider">Administración</span><span class="font-label-sm text-[10px] bg-secondary-container text-on-secondary-fixed px-1.5 py-0.2 rounded-full font-semibold">Admin</span></div><div class="relative group/item"><a class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all" data-path="admin-usuarios" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">group</span><span class="sidebar-text truncate">Usuarios</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Usuarios</div></div><div class="relative group/item"><a class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all" data-path="admin-ejercicios" href="#"><span class="material-symbols-outlined text-[22px] shrink-0">exercise</span><span class="sidebar-text truncate">Ejercicios</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none">Ejercicios</div></div><div class="relative group/item"><a class="flex items-center justify-between px-3 py-2.5 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all" data-path="admin-solicitudes" href="#"><div class="flex items-center gap-3 min-w-0"><span class="material-symbols-outlined text-[22px] shrink-0">mark_email_unread</span><span class="sidebar-text truncate">Solicitudes</span></div><span class="sidebar-badge bg-tertiary-container text-on-tertiary font-label-sm text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">3</span></a><div class="sidebar-tooltip hidden group-hover/item:flex items-center gap-1.5 absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-inverse-surface text-inverse-on-surface text-label-sm font-label-sm rounded-lg shadow-md whitespace-nowrap z-50 pointer-events-none"><span class="">Solicitudes</span><span class="bg-tertiary-container text-on-tertiary text-[10px] font-bold px-1.5 py-0.2 rounded-full">3</span></div></div></div></div><div class="flex flex-col gap-2 pt-3 border-t border-outline-variant/30"><div class="flex items-center justify-between px-1"><div class="flex items-center gap-3 min-w-0"><div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col min-w-0 sidebar-text"><span class="font-label-md text-label-md text-on-surface truncate">Marcos Silva</span><span class="font-label-sm text-label-sm text-on-surface-variant truncate">Plan Pro • Atleta</span></div></div><button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container-low transition-colors sidebar-text" type="button"><span class="material-symbols-outlined text-[20px]">unfold_more</span></button></div></div></aside><div class="pl-64 transition-all duration-300" id="appContentWrapper"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-8 transition-all duration-300" id="appHeader"><div class="flex items-center gap-4"><div class="flex items-center gap-2"><img alt="RyM App Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WOUlnhZLHzVKoHTdrs8DHN-Qgi5anGvGdu8sQy-qaEOYB5sz-SnuqHilL1C3WsrZb7oah8R6UB5y3g563VNIBv1cAPvd-VZeDc03YTjp1N-ydKiGZlgrcGFZmh7um0VMZRp4hpRTCBxFmwgXQWTkberRjTHJt0tUPzUHsb5X9gi8-2fuk7MrG7qau-Xy3bKdZu1UIg9GuGrIfdABR5sDhrXj2yv_yQDBobDknL1BvS_m3qXwXyW5GCcII_"><span class="font-label-md text-label-md text-on-surface-variant">Jueves, 24 de Octubre</span></div><span class="w-1 h-1 rounded-full bg-outline-variant"></span><div class="flex items-center gap-2 bg-surface-container-low px-3 py-1 rounded-full"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-sm text-label-sm text-on-surface">Día 4: Hipertrofia Tren Superior</span></div></div><div class="flex items-center gap-3"><div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded-xl gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">search</span><input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant w-48" placeholder="Buscar ejercicios, métricas..." type="text"></div><button class="w-9 h-9 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-surface min-h-screen"><div class="max-w-7xl mx-auto px-8 py-8"><div class="flex flex-col w-full">
+<!-- Header & Primary Controls -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Planificación &amp; Frecuencia</span>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-0.5">Calendario de Entrenamientos</h1>
+</div>
+<!-- Navigation & Action Controls -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Date Stepper & Today -->
+<div class="flex items-center bg-surface-container-lowest rounded-xl shadow-sm px-2 py-1 gap-1">
+<button aria-label="Mes anterior" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface" id="prevMonth" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="font-label-md text-label-md text-on-surface px-2 select-none min-w-[120px] text-center">Octubre 2024</span>
+<button aria-label="Mes siguiente" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface" id="nextMonth" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<button class="px-3.5 py-2 rounded-xl bg-surface-container-lowest hover:bg-surface-container shadow-sm font-label-md text-label-md text-on-surface transition-colors" id="btnToday" type="button">
+        Hoy
+      </button>
+<!-- Segmented Control (iOS Minimalist Style) -->
+<div class="flex items-center bg-surface-container-high p-1 rounded-xl">
+<button class="px-4 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-sm transition-all" id="viewMonth" type="button">
+          Mes
+        </button>
+<button class="px-4 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" id="viewWeek" type="button">
+          Semana
+        </button>
+</div>
+<!-- Action Modal Trigger -->
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow-sm transition-all active:scale-[0.98]" id="btnOpenAssign" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="">Asignar Rutina a Fecha</span>
+</button>
+</div>
+</div>
+<!-- Main Layout Workspace: 12-Column Responsive Split -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+<!-- Left Workspace: Monthly Calendar Board (8 cols) -->
+<div class="xl:col-span-8 flex flex-col gap-4">
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm p-4 md:p-6 flex flex-col">
+<!-- Day of Week Header Grid -->
+<div class="grid grid-cols-7 mb-2 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Lun</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Mar</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Mié</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Jue</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Vie</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Sáb</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">Dom</div>
+</div>
+<!-- 35-Cell Month Matrix Grid -->
+<div class="grid grid-cols-7 gap-2">
+<!-- Week 1: Sep 30 - Oct 6 -->
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low/40 opacity-40 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">30</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">1</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5 flex flex-col">
+<span class="font-label-sm text-[11px] leading-tight truncate font-semibold">Torso Foco A</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Completado</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">2</span>
+<div class="bg-surface-container text-on-surface-variant rounded-lg p-1 flex items-center justify-center">
+<span class="font-label-sm text-[10px]">Descanso</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">3</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5 flex flex-col">
+<span class="font-label-sm text-[11px] leading-tight truncate font-semibold">Piernas &amp; Core</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Completado</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">4</span>
+<div class="bg-surface-container text-on-surface-variant rounded-lg p-1 flex items-center justify-center">
+<span class="font-label-sm text-[10px]">Descanso</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">5</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5 flex flex-col">
+<span class="font-label-sm text-[11px] leading-tight truncate font-semibold">Full Body C</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Completado</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">6</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<!-- Week 2: Oct 7 - Oct 13 -->
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">7</span>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-semibold">Torso Foco A</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Completado</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">8</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">9</span>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-semibold">Piernas &amp; Core</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Completado</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">10</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">11</span>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-semibold">Full Body</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Completado</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">12</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">13</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<!-- Week 3: Oct 14 - Oct 20 -->
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">14</span>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-semibold">Torso Foco A</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">100%</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">15</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">16</span>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-semibold">Piernas &amp; Core</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">100%</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">17</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">18</span>
+<div class="bg-surface-container-highest text-on-surface-variant rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-semibold">Espalda &amp; Bíceps</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">100%</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">19</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Caminata</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">20</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<!-- Week 4: Oct 21 - Oct 27 (Current Focus Week) -->
+<!-- Lunes 21: Completado 100% -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-between cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">21</span>
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="bg-primary/10 text-primary rounded-lg p-2 flex flex-col gap-0.5">
+<span class="font-label-sm text-[11px] font-bold leading-tight truncate">Torso Hipertrofia A</span>
+<span class="font-label-sm text-[10px] text-primary flex items-center gap-1 font-semibold">
+<span class="">Completado ✓</span>
+<span class="opacity-75">(100%)</span>
+</span>
+</div>
+</div>
+<!-- Martes 22: Descanso Activo -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-between cursor-pointer">
+<span class="font-label-md text-label-md text-on-surface-variant">22</span>
+<div class="bg-surface-container-high text-on-surface-variant rounded-lg p-2 flex flex-col gap-0.5">
+<span class="font-label-sm text-[11px] font-semibold leading-tight truncate">Descanso Activo</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant/80">Caminata 45 min</span>
+</div>
+</div>
+<!-- Miércoles 23: Completado 100% -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-between cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">23</span>
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="bg-primary/10 text-primary rounded-lg p-2 flex flex-col gap-0.5">
+<span class="font-label-sm text-[11px] font-bold leading-tight truncate">Pierna &amp; Core B</span>
+<span class="font-label-sm text-[10px] text-primary flex items-center gap-1 font-semibold">
+<span class="">Completado ✓</span>
+<span class="opacity-75">(100%)</span>
+</span>
+</div>
+</div>
+<!-- Jueves 24: HOY (Selected / Destacado con acento primario) -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-lowest shadow-md flex flex-col justify-between relative cursor-pointer ring-2 ring-primary ring-offset-2 ring-offset-surface">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">24</span>
+</div>
+<span class="bg-primary-container text-on-primary-container font-label-sm text-[9px] uppercase px-1.5 py-0.5 rounded-full font-bold tracking-wider">Hoy</span>
+</div>
+<div class="bg-primary-container text-on-primary-container rounded-lg p-2 flex flex-col gap-0.5 shadow-sm">
+<span class="font-label-sm text-[11px] font-bold leading-tight truncate">Torso Hipertrofia A</span>
+<span class="font-label-sm text-[10px] text-on-primary-container/90 font-medium">Programado para hoy</span>
+</div>
+</div>
+<!-- Viernes 25: Pendiente -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-between cursor-pointer">
+<span class="font-label-md text-label-md text-on-surface">25</span>
+<div class="bg-surface-container-highest text-on-surface rounded-lg p-2 flex flex-col gap-0.5">
+<span class="font-label-sm text-[11px] font-semibold leading-tight truncate">Pierna Cadena Post.</span>
+<span class="font-label-sm text-[10px] text-secondary font-medium">Pendiente</span>
+</div>
+</div>
+<!-- Sábado 26: Planificado -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-between cursor-pointer">
+<span class="font-label-md text-label-md text-on-surface">26</span>
+<div class="bg-surface-container-highest text-on-surface rounded-lg p-2 flex flex-col gap-0.5">
+<span class="font-label-sm text-[11px] font-semibold leading-tight truncate">Full Body Funcional</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant font-medium">Planificado</span>
+</div>
+</div>
+<!-- Domingo 27: Descanso -->
+<div class="min-h-[110px] p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-between cursor-pointer">
+<span class="font-label-md text-label-md text-on-surface-variant">27</span>
+<div class="bg-surface-container text-on-surface-variant rounded-lg p-2 flex items-center justify-center">
+<span class="font-label-sm text-[11px]">Descanso</span>
+</div>
+</div>
+<!-- Week 5: Oct 28 - Nov 3 -->
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface">28</span>
+<div class="bg-surface-container-highest text-on-surface rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-medium">Torso B</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface">29</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface">30</span>
+<div class="bg-surface-container-highest text-on-surface rounded-lg p-1.5">
+<span class="font-label-sm text-[11px] leading-tight block truncate font-medium">Pierna A</span>
+</div>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low flex flex-col justify-between group hover:shadow-sm transition-shadow cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface">31</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant/60 text-center">Descanso</span>
+</div>
+<!-- Nov 1 - 3 (Next Month Overflow) -->
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low/40 opacity-40 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">1</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low/40 opacity-40 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">2</span>
+</div>
+<div class="min-h-[96px] p-2 rounded-xl bg-surface-container-low/40 opacity-40 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">3</span>
+</div>
+</div>
+</div>
+<!-- Clean Aesthetic Legend (Apple Minimalist) -->
+<div class="flex flex-wrap items-center justify-between bg-surface-container-lowest rounded-xl shadow-sm px-5 py-3 text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-on-surface">Completado ✓</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_8px_rgba(0,98,255,0.6)]"></span>
+<span class="text-on-surface font-semibold">Hoy / En curso</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="">Programado</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-surface-variant"></span>
+<span class="">Descanso</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">touch_app</span>
+<span class="">Arrastra o selecciona un bloque para reordenar</span>
+</div>
+</div>
+</div>
+<!-- Right Sidebar Detail: Jueves 24 Context Panel (4 cols) -->
+<div class="xl:col-span-4 flex flex-col gap-4">
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm p-6 flex flex-col">
+<!-- Context Header -->
+<div class="flex items-start justify-between pb-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">Sesión Actual</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mt-1">Jueves, 24 de Octubre</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Hoy • Semana 4 de Hipertrofia</span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-[11px] font-bold">
+            Foco Alta Carga
+          </span>
+</div>
+<!-- Routine Card Preview -->
+<div class="bg-surface-container-low rounded-xl p-4 flex flex-col gap-3 my-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[22px]">fitness_center</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Torso Hipertrofia A</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pectoral, Espalda Alta y Tríceps</span>
+</div>
+</div>
+</div>
+<!-- Telemetry & Volume Specs -->
+<div class="grid grid-cols-2 gap-2 pt-2">
+<div class="bg-surface-container-lowest rounded-lg p-2.5 flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ejercicios</span>
+<span class="font-stat-numeric text-stat-numeric text-on-surface leading-none mt-1">5</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant mt-0.5">Press Banca, Remos +3</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-2.5 flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Series Totales</span>
+<span class="font-stat-numeric text-stat-numeric text-on-surface leading-none mt-1">18</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant mt-0.5">~65 min duración</span>
+</div>
+</div>
+</div>
+<!-- Workout Step List Mini-preview -->
+<div class="flex flex-col gap-2 py-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Secuencia Prevista</span>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-5 h-5 rounded-full bg-surface-container text-on-surface font-label-sm text-[11px] flex items-center justify-center">1</span>
+<span class="font-label-md text-label-md text-on-surface">Press Banca Plano con Barra</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 series • RPE 8</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-5 h-5 rounded-full bg-surface-container text-on-surface font-label-sm text-[11px] flex items-center justify-center">2</span>
+<span class="font-label-md text-label-md text-on-surface">Remo con Mancuernas en Banco</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 series • RPE 8</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-5 h-5 rounded-full bg-surface-container text-on-surface font-label-sm text-[11px] flex items-center justify-center">3</span>
+<span class="font-label-md text-label-md text-on-surface">Press Inclinado con Mancuernas</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">3 series • RPE 7.5</span>
+</div>
+</div>
+<!-- Meal Nutrition Tracker Module for Today -->
+<div class="bg-surface-container-low rounded-xl p-4 my-2 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-tertiary">restaurant</span>
+<span class="font-label-md text-label-md text-on-surface">Plan Nutricional del Día</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">3 de 5 comidas</span>
+</div>
+<!-- Progress bar -->
+<div class="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden mt-1">
+<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 60%"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-[11px] pt-1">
+<span class="">2,140 / 2,900 kcal</span>
+<span class="text-primary font-semibold">145g Proteína lograda</span>
+</div>
+</div>
+<!-- Immediate Action Triggers -->
+<div class="flex flex-col gap-2.5 pt-4">
+<!-- Primary Execution CTA -->
+<button class="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(0,98,255,0.25)] transition-all active:scale-[0.98]" id="btnStartWorkout" type="button">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+<span class="">Iniciar Este Entrenamiento</span>
+</button>
+<!-- Secondary Modification Trigger -->
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 px-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1.5" id="btnMoveRoutine" type="button">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span class="">Cambiar Día</span>
+</button>
+<button class="py-2.5 px-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1.5" id="btnReassignRoutine" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+<span class="">Reasignar</span>
+</button>
+</div>
+<!-- Discrete Destructive Button -->
+<button class="py-2 text-center text-on-surface-variant hover:text-error font-label-sm text-label-sm transition-colors mt-1 flex items-center justify-center gap-1" id="btnDeleteCalendar" type="button">
+<span class="material-symbols-outlined text-[16px]">event_busy</span>
+<span class="">Eliminar este entrenamiento del calendario</span>
+</button>
+</div>
+</div>
+<!-- Quick Tips & Adherence Card -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm p-4 flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-fixed shrink-0">
+<span class="material-symbols-outlined text-[18px]">insights</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface">Cumplimiento Semanal: 100%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Has completado 3 de 4 sesiones clave programadas.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Slide-over / Modal for Routine Assignment (Vanilla JS Driven) -->
+<div class="fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4" id="assignModal">
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl max-w-lg w-full p-6 flex flex-col gap-5 animate-in fade-in zoom-in duration-200">
+<div class="flex items-center justify-between pb-2">
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Asignar Rutina a Fecha</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Selecciona el bloque de entrenamiento y la fecha destino</span>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" id="btnCloseModal" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Target Date -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Fecha Seleccionada</label>
+<div class="flex items-center gap-2 bg-surface-container-low px-3.5 py-2.5 rounded-xl text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">event</span>
+<input class="bg-transparent text-on-surface font-body-sm text-body-sm outline-none w-full cursor-pointer" type="date" value="2024-10-25">
+</div>
+</div>
+<!-- Routine Picker -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Elige una Rutina de tu Plan</label>
+<div class="flex flex-col gap-2">
+<label class="flex items-center justify-between p-3 rounded-xl bg-surface hover:bg-surface-container-low transition-colors cursor-pointer border-none has-[:checked]:bg-primary-fixed/30">
+<div class="flex items-center gap-3">
+<input checked="" class="w-4 h-4 text-primary focus:ring-primary accent-primary" name="routine_select" type="radio" value="r1">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Torso Hipertrofia A</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Pectoral, Espalda, Tríceps • 5 Ejercicios</span>
+</div>
+</div>
+<span class="font-label-sm text-[11px] bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">65m</span>
+</label>
+<label class="flex items-center justify-between p-3 rounded-xl bg-surface hover:bg-surface-container-low transition-colors cursor-pointer border-none has-[:checked]:bg-primary-fixed/30">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 text-primary focus:ring-primary accent-primary" name="routine_select" type="radio" value="r2">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Pierna Cadena Posterior</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Isquios, Glúteos, Gemelos • 6 Ejercicios</span>
+</div>
+</div>
+<span class="font-label-sm text-[11px] bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">70m</span>
+</label>
+<label class="flex items-center justify-between p-3 rounded-xl bg-surface hover:bg-surface-container-low transition-colors cursor-pointer border-none has-[:checked]:bg-primary-fixed/30">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 text-primary focus:ring-primary accent-primary" name="routine_select" type="radio" value="r3">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Full Body Funcional &amp; Core</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Acondicionamiento Físico • 7 Ejercicios</span>
+</div>
+</div>
+<span class="font-label-sm text-[11px] bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">50m</span>
+</label>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end gap-3 pt-3">
+<button class="px-4 py-2 rounded-xl text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors" id="btnCancelModal" type="button">
+          Cancelar
+        </button>
+<button class="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow-sm transition-all" id="btnConfirmAssign" type="button">
+          Guardar Asignación
+        </button>
+</div>
+</div>
+</div>
+<!-- Inline Script for UI Micro-interactions -->
+<script>
+    (function initCalendarInteractions() {
+      const modal = document.getElementById('assignModal');
+      const openBtn = document.getElementById('btnOpenAssign');
+      const reassignBtn = document.getElementById('btnReassignRoutine');
+      const moveBtn = document.getElementById('btnMoveRoutine');
+      const closeBtn = document.getElementById('btnCloseModal');
+      const cancelBtn = document.getElementById('btnCancelModal');
+      const confirmBtn = document.getElementById('btnConfirmAssign');
+      const viewMonth = document.getElementById('viewMonth');
+      const viewWeek = document.getElementById('viewWeek');
+      const btnStart = document.getElementById('btnStartWorkout');
+      const btnDelete = document.getElementById('btnDeleteCalendar');
+
+      function openModalHandler() {
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function closeModalHandler() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      if (openBtn) openBtn.addEventListener('click', openModalHandler);
+      if (reassignBtn) reassignBtn.addEventListener('click', openModalHandler);
+      if (moveBtn) moveBtn.addEventListener('click', openModalHandler);
+      if (closeBtn) closeBtn.addEventListener('click', closeModalHandler);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModalHandler);
+      
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+          closeModalHandler();
+        });
+      }
+
+      // Segmented control toggling
+      if (viewMonth && viewWeek) {
+        viewMonth.addEventListener('click', function() {
+          viewMonth.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+          viewMonth.classList.remove('text-on-surface-variant');
+          viewWeek.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+          viewWeek.classList.add('text-on-surface-variant');
+        });
+
+        viewWeek.addEventListener('click', function() {
+          viewWeek.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+          viewWeek.classList.remove('text-on-surface-variant');
+          viewMonth.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-sm');
+          viewMonth.classList.add('text-on-surface-variant');
+        });
+      }
+
+      // Discrete Start Action feedback
+      if (btnStart) {
+        btnStart.addEventListener('click', function() {
+          btnStart.innerText = 'Iniciando entrenamiento...';
+          btnStart.classList.add('opacity-80');
+          setTimeout(() => {
+            btnStart.innerHTML = '<span class="material-symbols-outlined text-[20px]">check</span> En curso';
+          }, 450);
+        });
+      }
+
+      // Delete feedback
+      if (btnDelete) {
+        btnDelete.addEventListener('click', function() {
+          if (confirm('¿Deseas desvincular el entrenamiento del jueves 24?')) {
+            btnDelete.innerHTML = '<span class="material-symbols-outlined text-[16px]">done</span> Desvinculado';
+          }
+        });
+      }
+    })();
+  </script>
+</div></div></main></div><script id="sidebarToggleScript">(function(){const btn=document.getElementById('btnToggleSidebar');const sidebar=document.getElementById('appSidebar');const contentWrapper=document.getElementById('appContentWrapper');const header=document.getElementById('appHeader');const icon=document.getElementById('toggleIcon');let isCollapsed=false;if(!btn||!sidebar)return;btn.addEventListener('click',function(){isCollapsed=!isCollapsed;if(isCollapsed){sidebar.classList.remove('w-64');sidebar.classList.add('w-20');if(contentWrapper){contentWrapper.classList.remove('pl-64');contentWrapper.classList.add('pl-20');}if(header){header.classList.remove('left-64');header.classList.add('left-20');}document.querySelectorAll('.sidebar-text').forEach(el=>el.classList.add('hidden'));document.querySelectorAll('.sidebar-badge').forEach(el=>el.classList.add('hidden'));document.querySelectorAll('.sidebar-tooltip').forEach(el=>{el.classList.remove('hidden');el.classList.add('md:group-hover/item:flex');});if(icon){icon.textContent='menu';}}else{sidebar.classList.remove('w-20');sidebar.classList.add('w-64');if(contentWrapper){contentWrapper.classList.remove('pl-20');contentWrapper.classList.add('pl-64');}if(header){header.classList.remove('left-20');header.classList.add('left-64');}document.querySelectorAll('.sidebar-text').forEach(el=>el.classList.remove('hidden'));document.querySelectorAll('.sidebar-badge').forEach(el=>el.classList.remove('hidden'));document.querySelectorAll('.sidebar-tooltip').forEach(el=>{el.classList.add('hidden');el.classList.remove('md:group-hover/item:flex');});if(icon){icon.textContent='menu_open';}}});})();</script></body></html>
