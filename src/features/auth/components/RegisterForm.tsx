@@ -97,7 +97,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           label="Nombre de usuario"
           value={username}
           onChange={setUsername}
-          placeholder="nombre_usuario"
+          placeholder="marcos_silva"
           autoComplete="username"
           icon={<User size={18} />}
           error={fieldErrors.username}
