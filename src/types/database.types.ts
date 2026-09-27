@@ -49,11 +49,13 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       muscle_groups: {
         Row: { id: string; name: string }
         Insert: { id?: string; name: string }
         Update: { id?: string; name?: string }
+        Relationships: []
       }
       exercises: {
         Row: {
@@ -83,6 +85,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       exercise_proposals: {
         Row: {
@@ -118,6 +121,7 @@ export interface Database {
           rejection_reason?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       routines: {
         Row: {
@@ -144,6 +148,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       routine_exercises: {
         Row: {
@@ -167,6 +172,7 @@ export interface Database {
           position?: number
           created_at?: string
         }
+        Relationships: []
       }
       routine_sets: {
         Row: {
@@ -190,6 +196,7 @@ export interface Database {
           planned_weight_kg?: number | null
           planned_reps?: number | null
         }
+        Relationships: []
       }
       routine_assignments: {
         Row: {
@@ -213,6 +220,7 @@ export interface Database {
           scheduled_date?: string
           created_at?: string
         }
+        Relationships: []
       }
       workout_sessions: {
         Row: {
@@ -245,6 +253,7 @@ export interface Database {
           started_at?: string
           completed_at?: string | null
         }
+        Relationships: []
       }
       workout_exercises: {
         Row: {
@@ -268,6 +277,7 @@ export interface Database {
           exercise_name_snapshot?: string
           position?: number
         }
+        Relationships: []
       }
       workout_sets: {
         Row: {
@@ -300,6 +310,7 @@ export interface Database {
           actual_reps?: number | null
           completed_at?: string | null
         }
+        Relationships: []
       }
       meals: {
         Row: {
@@ -329,7 +340,20 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
