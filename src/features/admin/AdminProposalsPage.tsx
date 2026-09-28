@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/features/auth/AuthProvider'
 import { ProposalStatusBadge } from '@/features/exercises/components/ProposalStatusBadge'
 import type { ProposalStatus } from '@/types/database.types'
 import { useProposalsAdmin, type ProposalForReview } from './hooks/useProposalsAdmin'
@@ -24,7 +23,6 @@ function formatDate(iso: string) {
 }
 
 export function AdminProposalsPage() {
-  const { profile } = useAuth()
   const { proposals, loading, error, refresh } = useProposalsAdmin()
   const [statusFilter, setStatusFilter] = useState<ProposalStatus>('pending')
   const [rejecting, setRejecting] = useState<ProposalForReview | null>(null)
@@ -37,35 +35,24 @@ export function AdminProposalsPage() {
   )
   const pendingCount = useMemo(() => proposals.filter((p) => p.status === 'pending').length, [proposals])
 
+  // Publica el ejercicio y marca la solicitud como aceptada en una sola transacción (RPC).
   async function acceptProposal(proposal: ProposalForReview) {
     setActionError(null)
     setAcceptingId(proposal.id)
 
-    const { error: insertError } = await supabase.from('exercises').insert({
-      name: proposal.name,
-      muscle_group_id: proposal.muscle_group_id,
-      source_proposal_id: proposal.id,
+    const { error: rpcError } = await supabase.rpc('accept_exercise_proposal', {
+      p_proposal_id: proposal.id,
     })
-
-    if (insertError) {
-      setAcceptingId(null)
-      setActionError('No se pudo publicar el ejercicio en la biblioteca oficial.')
-      return
-    }
-
-    const { error: updateError } = await supabase
-      .from('exercise_proposals')
-      .update({
-        status: 'accepted',
-        reviewed_by: profile?.id,
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq('id', proposal.id)
-
     setAcceptingId(null)
 
-    if (updateError) {
-      setActionError('El ejercicio se publicó, pero no se pudo actualizar el estado de la solicitud.')
+    if (rpcError) {
+      const alreadyReviewed = rpcError.message.includes('ya fue revisada')
+      setActionError(
+        alreadyReviewed
+          ? 'Esta solicitud ya fue revisada por otro administrador.'
+          : 'No se pudo aceptar la solicitud. Inténtalo de nuevo.',
+      )
+      if (alreadyReviewed) refresh()
       return
     }
 

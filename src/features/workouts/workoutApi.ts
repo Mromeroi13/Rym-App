@@ -1,0 +1,131 @@
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database.types'
+import type { RoutineWithDetails } from '@/features/routines/types'
+import type { OpenWorkout, WorkoutListItem, WorkoutWithDetails } from './workoutTypes'
+
+const WORKOUT_SELECT =
+  '*, routines(name), workout_exercises(id, exercise_id, exercise_name_snapshot, position, exercises(muscle_groups(name)), workout_sets(*))'
+
+type SessionUpdate = Database['public']['Tables']['workout_sessions']['Update']
+
+function normalize(workout: WorkoutWithDetails): WorkoutWithDetails {
+  return {
+    ...workout,
+    workout_exercises: [...workout.workout_exercises]
+      .sort((a, b) => a.position - b.position)
+      .map((we) => ({
+        ...we,
+        workout_sets: [...we.workout_sets].sort((a, b) => a.set_number - b.set_number),
+      })),
+  }
+}
+
+export async function fetchWorkout(id: string): Promise<WorkoutWithDetails | null> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select(WORKOUT_SELECT)
+    .eq('id', id)
+    .maybeSingle()
+  if (error) throw error
+  return data ? normalize(data as unknown as WorkoutWithDetails) : null
+}
+
+export async function fetchOpenWorkout(userId: string): Promise<OpenWorkout | null> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('id, status, routines(name)')
+    .eq('user_id', userId)
+    .in('status', ['active', 'paused'])
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw error
+  if (!data) return null
+  const row = data as unknown as { id: string; status: 'active' | 'paused'; routines: { name: string } | null }
+  return { id: row.id, status: row.status, routineName: row.routines?.name ?? null }
+}
+
+export async function fetchHistory(): Promise<WorkoutListItem[]> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('*, routines(name), workout_exercises(id, workout_sets(id, completed_at))')
+    .in('status', ['completed', 'abandoned'])
+    .order('started_at', { ascending: false })
+    .limit(100)
+  if (error) throw error
+  return (data ?? []) as unknown as WorkoutListItem[]
+}
+
+/**
+ * Crea la sesión de entrenamiento como una FOTO de la rutina: copia ejercicios, nombres
+ * y valores planificados. Editar o borrar la rutina después no altera este entrenamiento.
+ */
+export async function startWorkout(
+  userId: string,
+  routine: RoutineWithDetails,
+  timerEnabled: boolean,
+): Promise<string> {
+  const { data: session, error } = await supabase
+    .from('workout_sessions')
+    .insert({ user_id: userId, source_routine_id: routine.id, timer_enabled: timerEnabled, status: 'active' })
+    .select('id')
+    .single()
+  if (error) throw error
+
+  try {
+    const { data: inserted, error: exercisesError } = await supabase
+      .from('workout_exercises')
+      .insert(
+        routine.routine_exercises.map((re, index) => ({
+          workout_session_id: session.id,
+          exercise_id: re.exercise_id,
+          exercise_name_snapshot: re.exercises?.name ?? 'Ejercicio',
+          position: index,
+        })),
+      )
+      .select('id, position')
+    if (exercisesError) throw exercisesError
+
+    const idByPosition = new Map((inserted ?? []).map((row) => [row.position, row.id]))
+    const setRows = routine.routine_exercises.flatMap((re, index) => {
+      const workoutExerciseId = idByPosition.get(index)
+      if (!workoutExerciseId) throw new Error('No se pudo copiar un ejercicio de la rutina')
+      return re.routine_sets.map((set) => ({
+        workout_exercise_id: workoutExerciseId,
+        set_number: set.set_number,
+        planned_weight_kg: set.planned_weight_kg,
+        planned_reps: set.planned_reps,
+      }))
+    })
+    if (setRows.length > 0) {
+      const { error: setsError } = await supabase.from('workout_sets').insert(setRows)
+      if (setsError) throw setsError
+    }
+  } catch (err) {
+    await supabase.from('workout_sessions').delete().eq('id', session.id)
+    throw err
+  }
+
+  return session.id
+}
+
+// Registra los valores REALES de una serie (independientes de los planificados).
+export async function saveSetResult(setId: string, weight: number | null, reps: number): Promise<string> {
+  const completedAt = new Date().toISOString()
+  const { error } = await supabase
+    .from('workout_sets')
+    .update({ actual_weight_kg: weight, actual_reps: reps, completed_at: completedAt })
+    .eq('id', setId)
+  if (error) throw error
+  return completedAt
+}
+
+export async function clearSetCompletion(setId: string): Promise<void> {
+  const { error } = await supabase.from('workout_sets').update({ completed_at: null }).eq('id', setId)
+  if (error) throw error
+}
+
+export async function updateWorkoutSession(id: string, patch: SessionUpdate): Promise<void> {
+  const { error } = await supabase.from('workout_sessions').update(patch).eq('id', id)
+  if (error) throw error
+}

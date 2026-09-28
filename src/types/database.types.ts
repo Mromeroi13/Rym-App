@@ -85,22 +85,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'exercises_muscle_group_id_fkey'
-            columns: ['muscle_group_id']
-            isOneToOne: false
-            referencedRelation: 'muscle_groups'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'exercises_source_proposal_fk'
-            columns: ['source_proposal_id']
-            isOneToOne: false
-            referencedRelation: 'exercise_proposals'
-            referencedColumns: ['id']
-          }
-        ]
+        Relationships: []
       }
       exercise_proposals: {
         Row: {
@@ -136,29 +121,7 @@ export interface Database {
           rejection_reason?: string | null
           created_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'exercise_proposals_muscle_group_id_fkey'
-            columns: ['muscle_group_id']
-            isOneToOne: false
-            referencedRelation: 'muscle_groups'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'exercise_proposals_submitted_by_fkey'
-            columns: ['submitted_by']
-            isOneToOne: true
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'exercise_proposals_reviewed_by_fkey'
-            columns: ['reviewed_by']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          }
-        ]
+        Relationships: []
       }
       routines: {
         Row: {
@@ -384,7 +347,22 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      // Migración 002 (rym_app_migration_002_hardening.sql)
+      accept_exercise_proposal: {
+        Args: { p_proposal_id: string }
+        Returns: string
+      }
+      admin_list_users: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          username: string | null
+          email: string
+          role: AppRole
+          is_active: boolean
+          created_at: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
