@@ -85,7 +85,22 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'exercises_muscle_group_id_fkey'
+            columns: ['muscle_group_id']
+            isOneToOne: false
+            referencedRelation: 'muscle_groups'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'exercises_source_proposal_fk'
+            columns: ['source_proposal_id']
+            isOneToOne: false
+            referencedRelation: 'exercise_proposals'
+            referencedColumns: ['id']
+          }
+        ]
       }
       exercise_proposals: {
         Row: {
@@ -121,7 +136,15 @@ export interface Database {
           rejection_reason?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'exercise_proposals_muscle_group_id_fkey'
+            columns: ['muscle_group_id']
+            isOneToOne: false
+            referencedRelation: 'muscle_groups'
+            referencedColumns: ['id']
+          }
+        ]
       }
       routines: {
         Row: {
