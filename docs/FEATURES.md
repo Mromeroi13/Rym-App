@@ -1,4 +1,4 @@
-# RyM App — Features v1.0
+# RyM App — Features v1.1
 
 ## Authentication
 
@@ -67,6 +67,15 @@ Every set independently stores planned weight and planned repetitions.
 ### RT-06 Calendar assignment
 A routine can be assigned to a calendar date.
 
+### RT-07 Favorite exercises
+A user can mark and unmark an official exercise as favorite. The star control is available in the exercise picker of the routine editor and in the exercise explorer.
+
+### RT-08 Favorites in the exercise picker
+When adding exercises to a routine, the picker offers a "Favoritos" filter next to the muscle-group filters. In the "Todos" view, favorites are listed first. Search and muscle-group filters combine with the favorites filter. Favorites that were deactivated in the catalog are hidden.
+
+### RT-09 Favorites states
+The picker supports an empty favorites state ("Aún no tienes favoritos") and a recoverable error if a favorite cannot be saved.
+
 ## Workouts
 
 ### WK-01 Start
@@ -93,6 +102,9 @@ A completed workout stores its actual execution.
 ### WK-08 Exit protection
 Exiting an active workout protects against accidental data loss.
 
+### WK-09 Scheduled date
+A workout started from a calendar assignment (from the calendar or from Home) stores the date it fulfills in `scheduled_date`. A workout started without an assignment stores no date.
+
 ## Calendar
 
 ### CAL-01 View
@@ -101,8 +113,86 @@ View routines assigned to dates.
 ### CAL-02 Assign
 Assign a routine to a date.
 
-### CAL-03 Date detail
-A selected date exposes its assigned routine(s) according to the final v1 calendar rule.
+### CAL-03 One routine per date
+A date holds at most one routine. Assigning a routine to a date that already has one replaces it after confirmation.
+
+### CAL-04 Day status
+Every date shows one of three states, computed as defined in METRICS.md section 7:
+- Programado (scheduled)
+- Completado (completed)
+- Sin entrenar (not trained)
+
+### CAL-05 Status markers and legend
+Each date with a state shows a colored dot: blue for scheduled, green for completed, amber for not trained. The calendar displays a legend with the three states. State is also available as text (tooltip and accessible label), never as color alone.
+
+### CAL-06 Date detail
+Selecting a date shows: routine name, total exercises, total sets, workout status, and total volume, as defined in METRICS.md section 8. For scheduled and not-trained dates the volume is the planned volume and is labelled as such.
+
+### CAL-07 Actions by state
+- Scheduled: start workout, change routine, remove from date.
+- Not trained: start workout (it completes that date), change routine, remove from date.
+- Completed: open the workout summary. Changing or removing the routine is not offered.
+- No routine: assign routine.
+
+### CAL-08 Calendar loading
+The month view loads the assignments and completed workouts for the visible range and supports loading and error states with retry.
+
+## Home
+
+### HOME-01 Today's routine
+Home shows the routine assigned for today with a start action. Starting it stores today's date as the fulfilled date.
+
+### HOME-02 Meals today
+Home shows how many of the five meal slots are registered today.
+
+### HOME-03 Recent workouts
+Home lists the most recent completed and abandoned workouts with a link to the history.
+
+### HOME-04 Monthly progress
+Home shows a progress section for the current month with four metrics, as defined in METRICS.md:
+- Entrenamientos este mes
+- Series realizadas
+- Volumen acumulado
+- Ejercicios con más peso
+
+### HOME-05 Increased-weight detail
+The "Ejercicios con más peso" metric lists the exercises that count, each with its gain in kg.
+
+### HOME-06 Progress states
+The progress section supports loading, error with retry, and an empty state when there are no completed workouts this month. It links to the Progreso page.
+
+## Progress
+
+### PROG-01 Exercise progression chart
+A line chart shows the top weight per completed workout for one exercise over time, as defined in METRICS.md section 4.
+
+### PROG-02 Chart range and summary
+The chart offers range options (1 mes, 3 meses, 6 meses, Todo; default 3 meses) and a summary with first weight, current weight, best weight, and total change in kg.
+
+### PROG-03 Chart tooltip
+Selecting a point shows the workout date and the sets performed in that workout.
+
+### PROG-04 Chart entry points
+The chart is available from:
+- the exercise rows of the routine editor;
+- the current exercise of the workout runner, in a dialog or sheet that never affects the timer;
+- the exercise explorer;
+- the Progreso page, through an exercise selector.
+
+### PROG-05 Chart states
+The chart supports loading, error with retry, no history ("Aún no has entrenado este ejercicio con peso"), and a single-point state that asks for at least two workouts to show a trend.
+
+### PROG-06 Sets per muscle group per week
+The Progreso page shows, for the selected week, the number of performed sets for every muscle group, with a bar per group, the week total, and the change versus the previous week (METRICS.md section 6).
+
+### PROG-07 Week navigation
+The user can move to the previous and next week and return to the current week. Future weeks are not selectable. The default is the current week.
+
+### PROG-08 Group breakdown
+Each muscle group can be expanded to show the exercises that contributed and their set counts.
+
+### PROG-09 Progress page states
+The page supports loading, error with retry, and an empty week state.
 
 ## Meals
 
@@ -131,7 +221,9 @@ Admins retain all normal-user functionality.
 
 ## Cross-cutting requirements
 
-- Responsive desktop/mobile UI.
+- Responsive desktop/mobile UI. The bottom navigation holds six items without horizontal scrolling.
+- Derived values (volume, sets, progression, calendar status) use only the definitions in METRICS.md; no screen redefines them.
+- Charts and status markers never rely on color alone.
 - Mobile workout execution has large touch targets.
 - Consistent validation and error states.
 - User-owned records must be isolated through authorization rules.

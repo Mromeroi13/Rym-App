@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, Plus, Trash2, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import type { ExerciseWithGroup } from '@/features/exercises/hooks/useExercises'
 import { fetchRoutine, saveRoutine } from './routineApi'
 import { ExercisePickerDialog } from './components/ExercisePickerDialog'
+import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 import { validateDraft, hasErrors, type DraftErrors } from './validation'
 import { draftFromRoutine, emptyDraft, emptySet, newKey } from './utils'
 import type { RoutineDraft, RoutineExerciseDraft, RoutineSetDraft } from './types'
@@ -26,6 +27,7 @@ export function RoutineEditorPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
+  const [progressionExercise, setProgressionExercise] = useState<{ id: string; name: string } | null>(null)
 
   useEffect(() => {
     if (!routineId) return
@@ -228,6 +230,14 @@ export function RoutineEditorPage() {
               <div className="flex shrink-0 items-center gap-1">
                 <button
                   type="button"
+                  onClick={() => setProgressionExercise({ id: exercise.exerciseId, name: exercise.exerciseName })}
+                  title="Ver progresión de peso"
+                  className="rounded-lg p-2 text-textSecondary hover:bg-background"
+                >
+                  <TrendingUp size={16} />
+                </button>
+                <button
+                  type="button"
                   onClick={() => moveExercise(index, -1)}
                   disabled={index === 0}
                   title="Subir"
@@ -347,6 +357,14 @@ export function RoutineEditorPage() {
       </div>
 
       {showPicker && <ExercisePickerDialog onPick={addExercise} onClose={() => setShowPicker(false)} />}
+
+      {progressionExercise && (
+        <ExerciseProgressionDialog
+          exerciseId={progressionExercise.id}
+          exerciseName={progressionExercise.name}
+          onClose={() => setProgressionExercise(null)}
+        />
+      )}
     </div>
   )
 }

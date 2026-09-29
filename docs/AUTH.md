@@ -1,4 +1,4 @@
-# RyM App — Authentication & Authorization v1.0
+# RyM App — Authentication & Authorization v1.1
 
 ## 1. Authentication
 
@@ -30,7 +30,9 @@ A normal user can:
 - start and manage their own workouts;
 - create/read/update/delete their own meals;
 - browse official exercises;
-- submit exercise proposals.
+- submit exercise proposals;
+- create/read/delete their own favorite exercises;
+- read progress metrics computed from their own workouts.
 
 ### Admin
 An admin can do everything a user can, plus:
@@ -45,6 +47,10 @@ An admin can do everything a user can, plus:
 - Admin operations must have server/database enforcement.
 - Users must not read or modify another user's private records.
 - A client must not be able to self-elevate from user to admin.
+- Favorites are isolated by RLS: a user can only read and change rows where `user_id` is their own, and only while the account is active.
+- Progress metrics are computed only from records the user already owns through RLS. Any view or function added for metrics must respect the RLS of the caller (security invoker), never bypass it.
+- Admins do not get access to the workouts or progress of other users in v1.1.
+- `scheduled_date` only affects the calendar of its owner, so ownership RLS on `workout_sessions` is sufficient.
 
 ## 5. Role assignment
 

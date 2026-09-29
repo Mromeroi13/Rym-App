@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ChevronLeft, ChevronRight, Flag, Pause, Play, Timer, Undo2, X } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
 import type { WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
 import { useStopwatch } from '../hooks/useStopwatch'
 import { formatDuration } from '../timer'
@@ -13,6 +13,7 @@ import {
 import { clearSetCompletion, saveSetResult, updateWorkoutSession } from '../workoutApi'
 import { NumberStepper } from './NumberStepper'
 import { ExitWorkoutDialog, FinishWorkoutDialog } from './WorkoutDialogs'
+import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 
 interface WorkoutRunnerProps {
   workout: WorkoutWithDetails
@@ -49,6 +50,8 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const [dialog, setDialog] = useState<Dialog>(null)
   const [dialogBusy, setDialogBusy] = useState(false)
   const [dialogError, setDialogError] = useState<string | null>(null)
+  // Diálogo de progresión: independiente de exit/finish y del cronómetro (WK-06, PROG-04).
+  const [showProgression, setShowProgression] = useState(false)
 
   const currentExercise = exercises[exIndex]
   const currentSets = currentExercise?.workout_sets.map((s) => sets[s.id]) ?? []
@@ -340,9 +343,19 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
               <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} />
             </div>
 
-            <h2 className="mt-4 font-heading text-xl font-bold text-textPrimary">
-              {currentExercise.exercise_name_snapshot}
-            </h2>
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <h2 className="font-heading text-xl font-bold text-textPrimary">
+                {currentExercise.exercise_name_snapshot}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowProgression(true)}
+                title="Ver progresión de peso"
+                className="shrink-0 rounded-lg p-2 text-textSecondary hover:bg-background"
+              >
+                <TrendingUp size={18} />
+              </button>
+            </div>
 
             <div className="mt-4 flex flex-col gap-2">
               {currentSets.map((set) => {
@@ -533,6 +546,14 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
           error={dialogError}
           onCancel={() => setDialog(null)}
           onConfirm={handleFinish}
+        />
+      )}
+
+      {showProgression && currentExercise && (
+        <ExerciseProgressionDialog
+          exerciseId={currentExercise.exercise_id}
+          exerciseName={currentExercise.exercise_name_snapshot}
+          onClose={() => setShowProgression(false)}
         />
       )}
     </div>

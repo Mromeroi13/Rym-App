@@ -1,4 +1,4 @@
-# RyM App — Development Rules v1.0
+# RyM App — Development Rules v1.1
 
 ## 1. Definition of done
 
@@ -56,7 +56,10 @@ Test at minimum:
 - actual-vs-planned workout values;
 - timer pause/resume/continuity;
 - five meal slots;
-- exercise proposal workflow.
+- exercise proposal workflow;
+- metrics: volume, sets performed, exercise top weight, increased-weight rule, weekly sets per muscle group, and calendar status, including the examples in METRICS.md;
+- favorites ownership isolation and uniqueness;
+- calendar status edge cases: today, past date without workout, workout done on a later day, free workout, abandoned workout.
 
 ## 5. AI-assisted development
 
@@ -113,3 +116,13 @@ Phase 7:
 - responsive QA
 - tests
 - documentation
+
+Phase 8 (v1.1 — progress and smarter calendar):
+- database: `workout_sessions.scheduled_date`, `favorite_exercises` with RLS, indexes, updated types and base schema
+- shared metrics module with unit tests (add Vitest)
+- favorite exercises in the exercise picker and explorer
+- scheduled date on workout start, smart calendar states and date detail
+- monthly progress section on Home
+- Progreso page: sets per muscle group per week
+- exercise progression chart and its entry points
+- navigation update, responsive QA, documentation

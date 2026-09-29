@@ -1,6 +1,7 @@
 -- =========================================================
--- RyM App — Esquema inicial v1.0
--- Pegar y ejecutar completo en el SQL Editor de Supabase
+-- RyM App — Esquema base (v1.0 + cambios de la migración 003, v1.1)
+-- Para una base NUEVA: pegar y ejecutar completo en el SQL Editor de Supabase.
+-- Para una base existente en v1.0: ejecutar solo rym_app_migration_003_v1_1_progress.sql
 -- =========================================================
 
 create extension if not exists pgcrypto;
@@ -129,7 +130,8 @@ create table workout_sessions (
   timer_enabled      boolean not null default false,
   elapsed_seconds    integer not null default 0,
   started_at         timestamptz not null default now(),
-  completed_at       timestamptz
+  completed_at       timestamptz,
+  scheduled_date     date  -- fecha de calendario que cumple; null en inicios libres (sin FK a propósito)
 );
 
 create table workout_exercises (
@@ -153,7 +155,10 @@ create table workout_sets (
 );
 
 create index workout_sessions_user_idx on workout_sessions (user_id);
+create index workout_sessions_user_status_started_idx on workout_sessions (user_id, status, started_at);
+create index workout_sessions_user_scheduled_date_idx on workout_sessions (user_id, scheduled_date);
 create index workout_exercises_session_idx on workout_exercises (workout_session_id);
+create index workout_exercises_exercise_idx on workout_exercises (exercise_id);
 create index workout_sets_workout_exercise_idx on workout_sets (workout_exercise_id);
 
 -- =========================================================
@@ -171,6 +176,18 @@ create table meals (
 );
 
 create index meals_user_date_idx on meals (user_id, meal_date);
+
+-- =========================================================
+-- FAVORITOS (v1.1)
+-- =========================================================
+create table favorite_exercises (
+  user_id     uuid not null references profiles(id) on delete cascade,
+  exercise_id uuid not null references exercises(id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  primary key (user_id, exercise_id)
+);
+
+create index favorite_exercises_exercise_idx on favorite_exercises (exercise_id);
 
 -- =========================================================
 -- FUNCIONES DE APOYO PARA RLS
@@ -254,6 +271,7 @@ alter table workout_sessions enable row level security;
 alter table workout_exercises enable row level security;
 alter table workout_sets enable row level security;
 alter table meals enable row level security;
+alter table favorite_exercises enable row level security;
 
 -- profiles: el propio usuario, o admin (para gestionar rol/estado)
 create policy profiles_select on profiles
@@ -367,6 +385,12 @@ create policy workout_sets_all on workout_sets
 
 -- meals: propietario únicamente
 create policy meals_all on meals
+  for all
+  using (user_id = auth.uid() and is_current_user_active())
+  with check (user_id = auth.uid() and is_current_user_active());
+
+-- favorite_exercises: propietario únicamente (los admins no acceden a favoritos ajenos)
+create policy favorite_exercises_all on favorite_exercises
   for all
   using (user_id = auth.uid() and is_current_user_active())
   with check (user_id = auth.uid() and is_current_user_active());

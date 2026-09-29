@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react'
-import { Dumbbell, Search, Send } from 'lucide-react'
+import { Dumbbell, Search, Send, Star, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useMuscleGroups } from './hooks/useMuscleGroups'
 import { useExercises } from './hooks/useExercises'
 import { useMyProposals } from './hooks/useMyProposals'
+import { useFavorites } from './hooks/useFavorites'
 import { ProposeExerciseDialog } from './components/ProposeExerciseDialog'
 import { ProposalStatusBadge } from './components/ProposalStatusBadge'
+import { FavoriteStar } from './components/FavoriteStar'
+import { filterPickerExercises } from '@/features/routines/pickerFilter'
+import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 
 function tabClasses(isActive: boolean) {
   return `shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
@@ -23,17 +27,24 @@ export function ExerciseExplorer() {
     refresh: refreshProposals,
   } = useMyProposals(profile?.id)
 
+  const favorites = useFavorites()
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [showProposeDialog, setShowProposeDialog] = useState(false)
+  const [progressionExercise, setProgressionExercise] = useState<{ id: string; name: string } | null>(null)
 
-  const filteredExercises = useMemo(() => {
-    return exercises.filter((exercise) => {
-      const matchesGroup = !selectedGroupId || exercise.muscle_group_id === selectedGroupId
-      const matchesSearch = exercise.name.toLowerCase().includes(search.trim().toLowerCase())
-      return matchesGroup && matchesSearch
-    })
-  }, [exercises, selectedGroupId, search])
+  const filteredExercises = useMemo(
+    () =>
+      filterPickerExercises(exercises, favorites.favoriteIds, {
+        groupId: selectedGroupId,
+        search,
+        favoritesOnly,
+      }),
+    [exercises, favorites.favoriteIds, selectedGroupId, search, favoritesOnly],
+  )
+
+  const hasVisibleFavorites = exercises.some((e) => favorites.favoriteIds.has(e.id))
 
   const loading = groupsLoading || exercisesLoading
 
@@ -71,6 +82,14 @@ export function ExerciseExplorer() {
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly((v) => !v)}
+            aria-pressed={favoritesOnly}
+            className={`${tabClasses(favoritesOnly)} inline-flex items-center gap-1`}
+          >
+            <Star size={12} className={favoritesOnly ? 'fill-white' : ''} /> Favoritos
+          </button>
           <button type="button" onClick={() => setSelectedGroupId(null)} className={tabClasses(selectedGroupId === null)}>
             Todos
           </button>
@@ -90,7 +109,24 @@ export function ExerciseExplorer() {
       <div className="mt-5">
         {loading && <p className="text-sm text-textSecondary">Cargando ejercicios...</p>}
         {exercisesError && <p className="text-sm text-critical">{exercisesError}</p>}
-        {!loading && !exercisesError && filteredExercises.length === 0 && (
+        {favorites.error && (
+          <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-critical/30 bg-critical/10 p-3 text-sm text-critical">
+            <span>{favorites.error}</span>
+            <button
+              type="button"
+              onClick={favorites.dismissError}
+              className="shrink-0 rounded-lg bg-surface px-3 py-1 text-xs font-semibold text-critical hover:bg-critical/10"
+            >
+              Cerrar
+            </button>
+          </div>
+        )}
+        {!loading && !exercisesError && filteredExercises.length === 0 && favoritesOnly && !hasVisibleFavorites && (
+          <p className="rounded-xl bg-background p-4 text-sm text-textSecondary">
+            Aún no tienes favoritos. Marca una estrella en cualquier ejercicio para tenerlo aquí.
+          </p>
+        )}
+        {!loading && !exercisesError && filteredExercises.length === 0 && !(favoritesOnly && !hasVisibleFavorites) && (
           <p className="rounded-xl bg-background p-4 text-sm text-textSecondary">
             No hay ejercicios que coincidan con tu búsqueda.
           </p>
@@ -105,12 +141,24 @@ export function ExerciseExplorer() {
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Dumbbell size={18} />
                 </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-textPrimary">{exercise.name}</p>
+                <button
+                  type="button"
+                  onClick={() => setProgressionExercise({ id: exercise.id, name: exercise.name })}
+                  className="min-w-0 flex-1 text-left"
+                  title="Ver progresión de peso"
+                >
+                  <p className="truncate text-sm font-semibold text-textPrimary hover:underline">{exercise.name}</p>
                   <p className="truncate text-xs text-textSecondary">
                     {exercise.muscle_groups?.name ?? 'Sin grupo'}
                   </p>
-                </div>
+                </button>
+                <TrendingUp size={16} className="shrink-0 text-textSecondary" />
+                <FavoriteStar
+                  exerciseName={exercise.name}
+                  active={favorites.isFavorite(exercise.id)}
+                  disabled={favorites.isPending(exercise.id)}
+                  onToggle={() => favorites.toggle(exercise.id)}
+                />
               </div>
             ))}
           </div>
@@ -151,6 +199,14 @@ export function ExerciseExplorer() {
           muscleGroups={groups}
           onClose={() => setShowProposeDialog(false)}
           onProposed={refreshProposals}
+        />
+      )}
+
+      {progressionExercise && (
+        <ExerciseProgressionDialog
+          exerciseId={progressionExercise.id}
+          exerciseName={progressionExercise.name}
+          onClose={() => setProgressionExercise(null)}
         />
       )}
     </div>

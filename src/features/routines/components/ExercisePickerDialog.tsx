@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react'
-import { Check, Plus, Search } from 'lucide-react'
+import { Check, Plus, Search, Star } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { useMuscleGroups } from '@/features/exercises/hooks/useMuscleGroups'
 import { useExercises, type ExerciseWithGroup } from '@/features/exercises/hooks/useExercises'
+import { useFavorites } from '@/features/exercises/hooks/useFavorites'
+import { FavoriteStar } from '@/features/exercises/components/FavoriteStar'
+import { filterPickerExercises } from '../pickerFilter'
 
 interface ExercisePickerDialogProps {
   onPick: (exercise: ExerciseWithGroup) => void
@@ -18,19 +21,24 @@ function tabClasses(isActive: boolean) {
 export function ExercisePickerDialog({ onPick, onClose }: ExercisePickerDialogProps) {
   const { groups } = useMuscleGroups()
   const { exercises, loading, error } = useExercises()
+  const favorites = useFavorites()
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [addedCount, setAddedCount] = useState<Record<string, number>>({})
 
+  // useExercises solo devuelve ejercicios activos: los favoritos desactivados quedan ocultos.
   const filtered = useMemo(
     () =>
-      exercises.filter(
-        (e) =>
-          (!selectedGroupId || e.muscle_group_id === selectedGroupId) &&
-          e.name.toLowerCase().includes(search.trim().toLowerCase()),
-      ),
-    [exercises, selectedGroupId, search],
+      filterPickerExercises(exercises, favorites.favoriteIds, {
+        groupId: selectedGroupId,
+        search,
+        favoritesOnly,
+      }),
+    [exercises, favorites.favoriteIds, selectedGroupId, search, favoritesOnly],
   )
+
+  const hasVisibleFavorites = exercises.some((e) => favorites.favoriteIds.has(e.id))
 
   function handlePick(exercise: ExerciseWithGroup) {
     onPick(exercise)
@@ -56,6 +64,14 @@ export function ExercisePickerDialog({ onPick, onClose }: ExercisePickerDialogPr
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly((v) => !v)}
+            aria-pressed={favoritesOnly}
+            className={`${tabClasses(favoritesOnly)} inline-flex items-center gap-1`}
+          >
+            <Star size={12} className={favoritesOnly ? 'fill-white' : ''} /> Favoritos
+          </button>
           <button type="button" onClick={() => setSelectedGroupId(null)} className={tabClasses(selectedGroupId === null)}>
             Todos
           </button>
@@ -73,7 +89,24 @@ export function ExercisePickerDialog({ onPick, onClose }: ExercisePickerDialogPr
 
         {loading && <p className="text-sm text-textSecondary">Cargando ejercicios...</p>}
         {error && <p className="text-sm text-critical">{error}</p>}
-        {!loading && !error && filtered.length === 0 && (
+        {favorites.error && (
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-critical/30 bg-critical/10 p-3 text-sm text-critical">
+            <span>{favorites.error}</span>
+            <button
+              type="button"
+              onClick={favorites.dismissError}
+              className="shrink-0 rounded-lg bg-surface px-3 py-1 text-xs font-semibold text-critical hover:bg-critical/10"
+            >
+              Cerrar
+            </button>
+          </div>
+        )}
+        {!loading && !error && filtered.length === 0 && favoritesOnly && !hasVisibleFavorites && (
+          <p className="rounded-xl bg-background p-4 text-sm text-textSecondary">
+            Aún no tienes favoritos. Marca una estrella en cualquier ejercicio para tenerlo aquí.
+          </p>
+        )}
+        {!loading && !error && filtered.length === 0 && !(favoritesOnly && !hasVisibleFavorites) && (
           <p className="rounded-xl bg-background p-4 text-sm text-textSecondary">
             No hay ejercicios que coincidan. Puedes solicitar uno nuevo desde la página de Rutinas.
           </p>
@@ -83,26 +116,36 @@ export function ExercisePickerDialog({ onPick, onClose }: ExercisePickerDialogPr
           {filtered.map((exercise) => {
             const count = addedCount[exercise.id] ?? 0
             return (
-              <button
+              <div
                 key={exercise.id}
-                type="button"
-                onClick={() => handlePick(exercise)}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background p-3 text-left transition-colors hover:border-primary"
+                className="flex items-center gap-1 rounded-xl border border-border bg-background pr-1 transition-colors hover:border-primary"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-textPrimary">{exercise.name}</p>
-                  <p className="truncate text-xs text-textSecondary">
-                    {exercise.muscle_groups?.name ?? 'Sin grupo'}
-                  </p>
-                </div>
-                {count > 0 ? (
-                  <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-success">
-                    <Check size={14} /> Añadido{count > 1 ? ` ×${count}` : ''}
+                <button
+                  type="button"
+                  onClick={() => handlePick(exercise)}
+                  className="flex min-w-0 flex-1 items-center justify-between gap-3 p-3 text-left"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-textPrimary">{exercise.name}</span>
+                    <span className="block truncate text-xs text-textSecondary">
+                      {exercise.muscle_groups?.name ?? 'Sin grupo'}
+                    </span>
                   </span>
-                ) : (
-                  <Plus size={16} className="shrink-0 text-primary" />
-                )}
-              </button>
+                  {count > 0 ? (
+                    <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-success">
+                      <Check size={14} /> Añadido{count > 1 ? ` ×${count}` : ''}
+                    </span>
+                  ) : (
+                    <Plus size={16} className="shrink-0 text-primary" />
+                  )}
+                </button>
+                <FavoriteStar
+                  exerciseName={exercise.name}
+                  active={favorites.isFavorite(exercise.id)}
+                  disabled={favorites.isPending(exercise.id)}
+                  onToggle={() => favorites.toggle(exercise.id)}
+                />
+              </div>
             )
           })}
         </div>

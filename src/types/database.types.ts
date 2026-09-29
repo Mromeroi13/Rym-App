@@ -1,4 +1,4 @@
-// Tipos generados a mano a partir de la migración SQL ejecutada en Supabase.
+// Tipos generados a mano a partir de las migraciones SQL ejecutadas en Supabase (001, 002 y 003 — v1.1).
 // Si más adelante corres `supabase gen types` o lo descargas del dashboard,
 // puedes reemplazar este archivo por el generado automáticamente.
 
@@ -255,6 +255,7 @@ export interface Database {
           elapsed_seconds: number
           started_at: string
           completed_at: string | null
+          scheduled_date: string | null
         }
         Insert: {
           id?: string
@@ -265,6 +266,7 @@ export interface Database {
           elapsed_seconds?: number
           started_at?: string
           completed_at?: string | null
+          scheduled_date?: string | null
         }
         Update: {
           id?: string
@@ -275,6 +277,7 @@ export interface Database {
           elapsed_seconds?: number
           started_at?: string
           completed_at?: string | null
+          scheduled_date?: string | null
         }
         Relationships: []
       }
@@ -364,6 +367,32 @@ export interface Database {
           updated_at?: string
         }
         Relationships: []
+      }
+      favorite_exercises: {
+        Row: {
+          user_id: string
+          exercise_id: string
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          exercise_id: string
+          created_at?: string
+        }
+        Update: {
+          user_id?: string
+          exercise_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'favorite_exercises_exercise_id_fkey'
+            columns: ['exercise_id']
+            isOneToOne: false
+            referencedRelation: 'exercises'
+            referencedColumns: ['id']
+          }
+        ]
       }
     }
     Views: {

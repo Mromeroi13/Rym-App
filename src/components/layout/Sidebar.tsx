@@ -4,6 +4,7 @@ import {
   CalendarDays,
   Dumbbell,
   UtensilsCrossed,
+  TrendingUp,
   User,
   Users,
   ListChecks,
@@ -25,6 +26,7 @@ const navItems = [
   { to: '/calendario', label: 'Calendario', icon: CalendarDays },
   { to: '/rutinas', label: 'Rutinas', icon: Dumbbell },
   { to: '/comidas', label: 'Comidas', icon: UtensilsCrossed },
+  { to: '/progreso', label: 'Progreso', icon: TrendingUp },
   { to: '/perfil', label: 'Perfil', icon: User },
 ]
 

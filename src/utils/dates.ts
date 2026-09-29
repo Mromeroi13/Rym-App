@@ -41,3 +41,14 @@ export function buildMonthGrid(year: number, month: number): Date[] {
   const weeks = Math.ceil((offset + daysInMonth) / 7)
   return Array.from({ length: weeks * 7 }, (_, i) => new Date(year, month, 1 - offset + i))
 }
+
+// Instante ISO del inicio (00:00 hora LOCAL) de una fecha 'YYYY-MM-DD'.
+// Sirve para acotar por `started_at` (timestamptz) usando días locales, no UTC.
+export function dayStartISO(key: string): string {
+  return parseDateKey(key).toISOString()
+}
+
+export function isDateKey(value: string | null | undefined): value is string {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  return toDateKey(parseDateKey(value)) === value
+}

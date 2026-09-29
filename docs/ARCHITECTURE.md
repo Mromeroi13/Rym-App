@@ -1,4 +1,4 @@
-# RyM App — Architecture v1.0
+# RyM App — Architecture v1.1
 
 ## 1. Recommended stack
 
@@ -7,6 +7,10 @@
 - TypeScript
 - Vite
 - Tailwind CSS
+- Recharts (line and bar charts)
+
+### Testing
+- Vitest for unit tests of pure logic, especially metrics
 
 ### Backend
 - Supabase
@@ -34,6 +38,8 @@ Prefer feature boundaries such as:
 - workouts
 - calendar
 - meals
+- home
+- progress
 - admin
 
 Shared UI belongs in reusable components.
@@ -41,6 +47,10 @@ Shared UI belongs in reusable components.
 ### Database-first contracts
 
 Types and validation should reflect the database model.
+
+### One definition per metric
+
+Volume, set counts, weight progression, weekly sets and calendar status are defined once in METRICS.md and implemented once, as pure functions in `features/progress/metrics.ts`. Home, Calendar, Progress and the workout summary import them. Components fetch data through typed API modules and pass it to these functions; they do not recompute metrics inline.
 
 ### Server-enforced security
 
@@ -63,6 +73,8 @@ src/
     workouts/
     calendar/
     meals/
+    home/
+    progress/
     admin/
   hooks/
   lib/
@@ -86,6 +98,9 @@ What the user actually performed.
 
 These concepts must not be collapsed into one record.
 
+### Derived metric
+A value computed from completed workouts: volume, sets per muscle group, weight progression, calendar status. Derived metrics are computed on read, never stored.
+
 ## 5. State handling
 
 The UI should explicitly model:
@@ -106,7 +121,14 @@ Workout execution additionally needs:
 - exit confirmation
 - unrecoverable/error state
 
-## 6. AI development workflow
+## 6. Derived metrics data loading
+
+- Fetch bounded ranges: the visible month for Calendar and Home, the selected week (and the previous one) for weekly sets, and one exercise for its chart.
+- Calculations run in the client on the fetched rows. If volume of data grows, move them to database views with security invoker or RPC functions without changing METRICS.md.
+- Every chart or metric block models loading, empty and error states.
+- The chart library is loaded lazily on the routes and dialogs that use it, to keep workout execution light on mobile.
+
+## 7. AI development workflow
 
 Requirement change:
 

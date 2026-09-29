@@ -1,4 +1,4 @@
-# RyM App — Database Specification v1.0
+# RyM App — Database Specification v1.1
 
 This document describes the logical data model. Exact PostgreSQL types, indexes, constraints, triggers, and RLS policies are implementation details to finalize during migrations.
 
@@ -60,6 +60,16 @@ Proposal status:
 
 An accepted proposal must result in an official exercise.
 
+### favorite_exercises
+Exercises a user marked as favorite. Personal to each user.
+
+Suggested fields:
+- user_id (references profiles)
+- exercise_id (references exercises)
+- created_at
+
+The pair (user_id, exercise_id) is the primary key, so an exercise can be a favorite only once per user. Rows are deleted with the user or with the exercise.
+
 ## 3. Routines
 
 ### routines
@@ -107,7 +117,7 @@ Suggested fields:
 - scheduled_date
 - created_at
 
-Multiple routines per date should be supported at the data-model level unless a later product decision explicitly prohibits it.
+A user has at most one assignment per date (unique user_id + scheduled_date). This is the v1 calendar rule (PRODUCT.md, decision D1).
 
 ## 5. Workouts
 
@@ -123,12 +133,15 @@ Suggested fields:
 - status
 - timer_enabled
 - elapsed_seconds
+- scheduled_date (nullable date)
 
 Suggested status:
 - active
 - paused
 - completed
 - abandoned
+
+`scheduled_date` is the calendar date this workout fulfills. It is set only when the workout is started from an existing assignment and stays null for free starts. It is not a foreign key: deleting or changing the assignment later must not alter the history. Existing workouts keep it null; the calendar then falls back to the session date (METRICS.md section 7).
 
 ### workout_exercises
 Exercise snapshot within a workout.
@@ -188,6 +201,9 @@ There are exactly five allowed meal types per day.
 - User-owned entities must reference their owner.
 - Foreign keys should prevent invalid orphan relationships.
 - Deletion strategy must preserve completed workout history.
+- A user can have at most one assignment per date.
+- A favorite is unique per (user, exercise).
+- `scheduled_date` is optional and never required for a workout to be valid.
 
 ## 8. Historical integrity
 
@@ -197,3 +213,27 @@ A completed workout must remain historically meaningful even if:
 - an exercise becomes inactive.
 
 Therefore workout execution should retain the planned and actual values required to represent what happened.
+
+## 9. Derived data (v1.1)
+
+The following are computed from existing tables and are **not stored**:
+- workout volume and set counts;
+- exercise weight progression;
+- sets per muscle group per week;
+- calendar day status.
+
+Stored aggregates would drift if data changes, so definitions live in METRICS.md and are evaluated on read. Muscle group is resolved through the exercise's current `muscle_group_id`.
+
+Suggested indexes for these reads:
+- workout_sessions (user_id, status, started_at)
+- workout_sessions (user_id, scheduled_date)
+- workout_exercises (exercise_id)
+
+## 10. v1.1 migration impact
+
+- Add `workout_sessions.scheduled_date` (nullable). No backfill required.
+- Create `favorite_exercises` with RLS limited to the owner.
+- Add the indexes above.
+- Update `rym_app_schema.sql` and `src/types/database.types.ts`.
+
+Implemented in `rym_app_migration_003_v1_1_progress.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes the changes for new databases.

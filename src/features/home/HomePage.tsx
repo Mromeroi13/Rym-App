@@ -12,6 +12,8 @@ import type { WorkoutListItem } from '@/features/workouts/workoutTypes'
 import { useMeals } from '@/features/meals/hooks/useMeals'
 import { MEAL_SLOT_COUNT, countLogged } from '@/features/meals/mealSlots'
 import { formatLongDate, todayKey } from '@/utils/dates'
+import { useMonthlyProgress } from '@/features/progress/hooks/useMonthlyProgress'
+import { MonthlyProgressCard } from './components/MonthlyProgressCard'
 
 const MAX_VISIBLE_EXERCISES = 5
 const RECENT_WORKOUTS = 3
@@ -23,6 +25,7 @@ export function HomePage() {
   const assignments = useAssignments(today, today)
   const { routines, loading: routinesLoading, error: routinesError } = useRoutines()
   const meals = useMeals(today, today)
+  const monthlyProgress = useMonthlyProgress()
 
   const [recent, setRecent] = useState<WorkoutListItem[] | null>(null)
   const [recentError, setRecentError] = useState(false)
@@ -174,6 +177,14 @@ export function HomePage() {
               </>
             )}
           </Link>
+
+          {/* Progreso mensual */}
+          <MonthlyProgressCard
+            data={monthlyProgress.data}
+            loading={monthlyProgress.loading}
+            error={monthlyProgress.error}
+            onRetry={monthlyProgress.refresh}
+          />
 
           {/* Últimos entrenamientos */}
           <div className="rounded-xl border border-border bg-surface p-5">

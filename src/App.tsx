@@ -7,6 +7,7 @@ import { CalendarPage } from '@/features/calendar/CalendarPage'
 import { RoutinesPage } from '@/features/routines/RoutinesPage'
 import { RoutineEditorPage } from '@/features/routines/RoutineEditorPage'
 import { MealsPage } from '@/features/meals/MealsPage'
+import { ProgressPage } from '@/features/progress/ProgressPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
 import { WorkoutPage } from '@/features/workouts/WorkoutPage'
 import { WorkoutPreparePage } from '@/features/workouts/WorkoutPreparePage'
@@ -46,6 +47,7 @@ function App() {
         <Route path="/rutinas/nueva" element={<RoutineEditorPage />} />
         <Route path="/rutinas/:routineId/editar" element={<RoutineEditorPage />} />
         <Route path="/comidas" element={<MealsPage />} />
+        <Route path="/progreso" element={<ProgressPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
         {isAdmin && (
           <>
