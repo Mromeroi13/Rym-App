@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ChevronLeft, ChevronRight, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
 import type { WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
 import { useStopwatch } from '../hooks/useStopwatch'
 import { formatDuration } from '../timer'
@@ -14,6 +14,7 @@ import { clearSetCompletion, saveSetResult, updateWorkoutSession } from '../work
 import { NumberStepper } from './NumberStepper'
 import { ExitWorkoutDialog, FinishWorkoutDialog } from './WorkoutDialogs'
 import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
+import { ExerciseGifModal } from '@/features/exercises/components/ExerciseGifModal'
 
 interface WorkoutRunnerProps {
   workout: WorkoutWithDetails
@@ -52,6 +53,8 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const [dialogError, setDialogError] = useState<string | null>(null)
   // Diálogo de progresión: independiente de exit/finish y del cronómetro (WK-06, PROG-04).
   const [showProgression, setShowProgression] = useState(false)
+  // Modal de demostración: igual que arriba, puramente visual — no toca series, temporizador ni progreso (WK-06, WK-10).
+  const [showGif, setShowGif] = useState(false)
 
   const currentExercise = exercises[exIndex]
   const currentSets = currentExercise?.workout_sets.map((s) => sets[s.id]) ?? []
@@ -120,6 +123,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
     setSelectedSetId(pickInitialSet(index, sets))
     setInputError(null)
     setActionError(null)
+    setShowGif(false)
   }
 
   function updateInput(field: keyof SetInput, value: string) {
@@ -347,14 +351,24 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
               <h2 className="font-heading text-xl font-bold text-textPrimary">
                 {currentExercise.exercise_name_snapshot}
               </h2>
-              <button
-                type="button"
-                onClick={() => setShowProgression(true)}
-                title="Ver progresión de peso"
-                className="shrink-0 rounded-lg p-2 text-textSecondary hover:bg-background"
-              >
-                <TrendingUp size={18} />
-              </button>
+              <div className="flex shrink-0 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setShowGif(true)}
+                  title="Ver cómo se realiza"
+                  className="rounded-lg p-2 text-textSecondary hover:bg-background"
+                >
+                  <Film size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowProgression(true)}
+                  title="Ver progresión de peso"
+                  className="rounded-lg p-2 text-textSecondary hover:bg-background"
+                >
+                  <TrendingUp size={18} />
+                </button>
+              </div>
             </div>
 
             <div className="mt-4 flex flex-col gap-2">
@@ -554,6 +568,14 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
           exerciseId={currentExercise.exercise_id}
           exerciseName={currentExercise.exercise_name_snapshot}
           onClose={() => setShowProgression(false)}
+        />
+      )}
+
+      {showGif && currentExercise && (
+        <ExerciseGifModal
+          exerciseName={currentExercise.exercise_name_snapshot}
+          gifUrl={currentExercise.exercises?.gif_url ?? null}
+          onClose={() => setShowGif(false)}
         />
       )}
     </div>

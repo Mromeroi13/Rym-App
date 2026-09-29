@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Timer, TimerOff } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { fetchRoutine } from '@/features/routines/routineApi'
@@ -17,6 +17,9 @@ export function WorkoutPreparePage() {
   const navigate = useNavigate()
   const { profile } = useAuth()
   const { openWorkout, loading: openLoading } = useOpenWorkout()
+  // Fecha a cumplir (WK-09): presente solo si se llegó desde una asignación (Calendario u Home).
+  const [searchParams] = useSearchParams()
+  const scheduledDate = searchParams.get('fecha')
 
   const [routine, setRoutine] = useState<RoutineWithDetails | null>(null)
   const [state, setState] = useState<LoadState>('loading')
@@ -46,7 +49,7 @@ export function WorkoutPreparePage() {
     setStartError(null)
     setStarting(true)
     try {
-      const sessionId = await startWorkout(profile.id, routine, timerEnabled)
+      const sessionId = await startWorkout(profile.id, routine, timerEnabled, scheduledDate)
       navigate(`/entrenamiento/${sessionId}`, { replace: true })
     } catch (err) {
       const code = (err as { code?: string } | null)?.code

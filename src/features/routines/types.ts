@@ -7,7 +7,7 @@ export interface RoutineExerciseDetail {
   id: string
   exercise_id: string
   position: number
-  exercises: { name: string; muscle_groups: { name: string } | null } | null
+  exercises: { name: string; gif_url: string | null; muscle_groups: { name: string } | null } | null
   routine_sets: RoutineSetRow[]
 }
 
@@ -27,6 +27,7 @@ export interface RoutineExerciseDraft {
   exerciseId: string
   exerciseName: string
   muscleGroupName: string | null
+  gifUrl: string | null
   sets: RoutineSetDraft[]
 }
 

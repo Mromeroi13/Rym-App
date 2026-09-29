@@ -47,6 +47,9 @@ An accepted proposal becomes an official exercise.
 ### EX-06 Administration
 An admin can create/edit/remove official exercises according to the final authorization rules.
 
+### EX-07 Demonstration GIF
+An official exercise can optionally have a demonstration GIF. An admin picks it from the exercise form, choosing only among the files that physically exist in `public/exercise-gifs`; the choice is stored as a public path in `exercises.gif_url`. An exercise with no GIF assigned is valid and must not break any screen that displays it.
+
 ## Routines
 
 ### RT-01 Create
@@ -76,6 +79,9 @@ When adding exercises to a routine, the picker offers a "Favoritos" filter next 
 ### RT-09 Favorites states
 The picker supports an empty favorites state ("Aún no tienes favoritos") and a recoverable error if a favorite cannot be saved.
 
+### RT-10 View exercise demonstration
+While creating or editing a routine, each exercise already added offers a "ver cómo se realiza" action. It opens a modal that plays the exercise's `gif_url`. If the exercise has no GIF, the modal shows a "no hay demostración disponible" message instead of failing. Opening or closing this modal never changes the routine draft.
+
 ## Workouts
 
 ### WK-01 Start
@@ -104,6 +110,9 @@ Exiting an active workout protects against accidental data loss.
 
 ### WK-09 Scheduled date
 A workout started from a calendar assignment (from the calendar or from Home) stores the date it fulfills in `scheduled_date`. A workout started without an assignment stores no date.
+
+### WK-10 View exercise demonstration
+While a workout is in progress, the current-exercise screen offers a "ver cómo se realiza" action, reusing the same modal and the same `gif_url` as RT-10. Opening or closing it never resets or alters the workout's sets, reps, timer, or completion state; it is a read-only overlay on top of the in-progress session.
 
 ## Calendar
 

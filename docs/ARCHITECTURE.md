@@ -80,7 +80,13 @@ src/
   lib/
   types/
   utils/
+public/
+  exercise-gifs/
+    <zona>/<ejercicio>.gif
 ```
+
+### Static assets
+`public/exercise-gifs` holds the demonstration GIFs referenced by `exercises.gif_url` (DATABASE.md section 2). Files are served as-is by Vite from the app root (e.g. `/exercise-gifs/pecho/press-banca-barra.gif`); nothing under `public/` goes through the database. `src/features/exercises/exerciseGifAssets.ts` mirrors the real contents of that folder so the admin exercise form only ever offers files that actually exist.
 
 ## 4. Runtime concepts
 

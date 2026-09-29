@@ -1,4 +1,4 @@
-// Tipos generados a mano a partir de las migraciones SQL ejecutadas en Supabase (001, 002 y 003 — v1.1).
+// Tipos generados a mano a partir de las migraciones SQL ejecutadas en Supabase (001, 002, 003 — v1.1 — y 004 — v1.2).
 // Si más adelante corres `supabase gen types` o lo descargas del dashboard,
 // puedes reemplazar este archivo por el generado automáticamente.
 
@@ -64,6 +64,7 @@ export interface Database {
           muscle_group_id: string
           active: boolean
           source_proposal_id: string | null
+          gif_url: string | null
           created_at: string
           updated_at: string
         }
@@ -73,6 +74,7 @@ export interface Database {
           muscle_group_id: string
           active?: boolean
           source_proposal_id?: string | null
+          gif_url?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -82,6 +84,7 @@ export interface Database {
           muscle_group_id?: string
           active?: boolean
           source_proposal_id?: string | null
+          gif_url?: string | null
           created_at?: string
           updated_at?: string
         }

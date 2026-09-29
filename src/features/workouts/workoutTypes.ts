@@ -7,7 +7,7 @@ export interface WorkoutExerciseDetail {
   exercise_id: string
   exercise_name_snapshot: string
   position: number
-  exercises: { muscle_groups: { name: string } | null } | null
+  exercises: { gif_url: string | null; muscle_groups: { name: string } | null } | null
   workout_sets: WorkoutSetRow[]
 }
 

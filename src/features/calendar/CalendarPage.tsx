@@ -1,15 +1,33 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarPlus, ChevronLeft, ChevronRight, Play, Repeat, Trash2 } from 'lucide-react'
+import { CalendarPlus, ChevronLeft, ChevronRight, ClipboardList, Play, Repeat, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { buildMonthGrid, formatLongDate, todayKey, toDateKey } from '@/utils/dates'
 import { useRoutines } from '@/features/routines/hooks/useRoutines'
 import { AssignRoutineDialog } from '@/features/routines/components/AssignRoutineDialog'
 import { OpenWorkoutBanner } from '@/features/workouts/components/OpenWorkoutBanner'
-import { countSets, summarizeSets } from '@/features/routines/utils'
+import {
+  CALENDAR_STATUS_LABEL,
+  buildCalendarStatuses,
+  calendarDayDetail,
+  formatSetsProgress,
+  formatVolumeKg,
+  type CalendarDayStatus,
+} from '@/features/progress/metrics'
 import { useAssignments } from './hooks/useAssignments'
+import { useCalendarWorkouts } from './hooks/useCalendarWorkouts'
 
 const WEEKDAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+
+// Colores del marcador de estado (CAL-05). El estado también se muestra siempre como
+// texto (título del día, leyenda y detalle): el color nunca es la única señal.
+const STATUS_DOT_CLASS: Record<CalendarDayStatus, string> = {
+  scheduled: 'bg-primary',
+  completed: 'bg-success',
+  not_trained: 'bg-warning',
+}
+
+const LEGEND_ITEMS: CalendarDayStatus[] = ['scheduled', 'completed', 'not_trained']
 
 export function CalendarPage() {
   const now = new Date()
@@ -24,8 +42,22 @@ export function CalendarPage() {
   const rangeStart = toDateKey(grid[0])
   const rangeEnd = toDateKey(grid[grid.length - 1])
 
-  const { assignments, loading, error, refresh } = useAssignments(rangeStart, rangeEnd)
+  const { assignments, loading: assignmentsLoading, error: assignmentsError, refresh } = useAssignments(rangeStart, rangeEnd)
+  const {
+    workouts: calendarWorkouts,
+    loading: workoutsLoading,
+    error: workoutsError,
+    refresh: refreshWorkouts,
+  } = useCalendarWorkouts(rangeStart, rangeEnd)
   const { routines } = useRoutines()
+
+  const loading = assignmentsLoading || workoutsLoading
+  const error = assignmentsError ?? workoutsError
+
+  function retry() {
+    if (assignmentsError) refresh()
+    if (workoutsError) refreshWorkouts()
+  }
 
   const assignmentByDate = useMemo(() => {
     const map = new Map<string, (typeof assignments)[number]>()
@@ -36,10 +68,31 @@ export function CalendarPage() {
   const today = todayKey()
   const monthLabel = new Date(year, month, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
 
+  // Estado de cada fecha con marcador (METRICS.md §7). Nunca se almacena: se recalcula
+  // siempre a partir de las asignaciones y los entrenamientos completados visibles.
+  const statusByDate = useMemo(
+    () => buildCalendarStatuses(assignments, calendarWorkouts, today),
+    [assignments, calendarWorkouts, today],
+  )
+
   const selectedAssignment = assignmentByDate.get(selectedDate) ?? null
   const selectedRoutine = selectedAssignment
     ? routines.find((r) => r.id === selectedAssignment.routine_id) ?? null
     : null
+  const selectedStatus = statusByDate.get(selectedDate) ?? null
+
+  // Detalle de la fecha seleccionada (METRICS.md §8): un bloque por entrenamiento
+  // completado que la cumple, o un único bloque planificado.
+  const selectedDetail = useMemo(
+    () =>
+      calendarDayDetail({
+        dateKey: selectedDate,
+        assignedRoutine: selectedRoutine,
+        workouts: calendarWorkouts,
+        todayKey: today,
+      }),
+    [selectedDate, selectedRoutine, calendarWorkouts, today],
+  )
 
   function shiftMonth(delta: number) {
     const d = new Date(year, month + delta, 1)
@@ -84,7 +137,7 @@ export function CalendarPage() {
           <span>{error}</span>
           <button
             type="button"
-            onClick={() => refresh()}
+            onClick={retry}
             className="rounded-lg bg-surface px-3 py-1 text-xs font-semibold text-critical hover:bg-critical/10"
           >
             Reintentar
@@ -136,6 +189,7 @@ export function CalendarPage() {
               const key = toDateKey(date)
               const inMonth = date.getMonth() === month
               const assignment = assignmentByDate.get(key)
+              const status = statusByDate.get(key) ?? null
               const isSelected = key === selectedDate
               const isToday = key === today
               return (
@@ -143,6 +197,8 @@ export function CalendarPage() {
                   key={key}
                   type="button"
                   onClick={() => setSelectedDate(key)}
+                  title={status ? CALENDAR_STATUS_LABEL[status] : undefined}
+                  aria-label={`${date.getDate()} de ${monthLabel}${status ? `, ${CALENDAR_STATUS_LABEL[status]}` : ''}`}
                   className={`flex min-h-[3.5rem] flex-col items-center gap-1 rounded-xl border p-1.5 text-sm transition-colors sm:min-h-[4.5rem] ${
                     isSelected
                       ? 'border-primary bg-primary/5'
@@ -156,17 +212,27 @@ export function CalendarPage() {
                   >
                     {date.getDate()}
                   </span>
-                  {assignment && (
+                  {status && (
                     <>
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary sm:hidden" />
-                      <span className="hidden w-full truncate rounded bg-primary/10 px-1 py-0.5 text-[10px] font-medium text-primary sm:block">
-                        {assignment.routines?.name ?? 'Rutina'}
+                      <span className={`h-1.5 w-1.5 rounded-full sm:hidden ${STATUS_DOT_CLASS[status]}`} />
+                      <span className="hidden w-full items-center gap-1 truncate rounded bg-background px-1 py-0.5 text-[10px] font-medium sm:flex">
+                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT_CLASS[status]}`} />
+                        <span className="truncate">{assignment?.routines?.name ?? CALENDAR_STATUS_LABEL[status]}</span>
                       </span>
                     </>
                   )}
                 </button>
               )
             })}
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border pt-3">
+            {LEGEND_ITEMS.map((status) => (
+              <span key={status} className="inline-flex items-center gap-1.5 text-xs text-textSecondary">
+                <span className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASS[status]}`} />
+                {CALENDAR_STATUS_LABEL[status]}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -177,24 +243,48 @@ export function CalendarPage() {
           <h3 className="mt-1 font-heading text-base font-bold capitalize text-textPrimary">
             {formatLongDate(selectedDate)}
           </h3>
+          {selectedStatus && (
+            <span className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-textSecondary">
+              <span className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASS[selectedStatus]}`} />
+              {CALENDAR_STATUS_LABEL[selectedStatus]}
+            </span>
+          )}
 
           {actionError && <p className="mt-3 text-sm text-critical">{actionError}</p>}
 
-          {selectedAssignment ? (
+          {selectedDetail && selectedDetail.blocks.length > 0 ? (
             <div className="mt-4 flex flex-col gap-3">
-              <div className="rounded-xl bg-background p-3">
-                <p className="text-sm font-semibold text-textPrimary">
-                  {selectedAssignment.routines?.name ?? 'Rutina'}
-                </p>
-                {selectedRoutine && (
-                  <p className="mt-1 inline-flex items-center gap-1 text-xs text-textSecondary">
-                    <Repeat size={12} /> {selectedRoutine.routine_exercises.length} ejercicios ·{' '}
-                    {countSets(selectedRoutine)} series
-                  </p>
-                )}
-              </div>
+              {selectedDetail.blocks.map((block, index) =>
+                block.kind === 'completed' ? (
+                  <div key={block.workoutId} className="rounded-xl bg-background p-3">
+                    <p className="text-sm font-semibold text-textPrimary">{block.routineName}</p>
+                    <p className="mt-1 text-xs text-textSecondary">
+                      {block.exercises} ejercicios · {formatSetsProgress(block.setsPerformed, block.totalSets)}
+                    </p>
+                    <p className="mt-1 text-xs text-textSecondary">Volumen: {formatVolumeKg(block.volumeKg)}</p>
+                    <Link
+                      to={`/entrenamiento/${block.workoutId}`}
+                      className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                    >
+                      <ClipboardList size={14} /> Abrir resumen
+                    </Link>
+                  </div>
+                ) : (
+                  <div key={`planned-${index}`} className="rounded-xl bg-background p-3">
+                    <p className="text-sm font-semibold text-textPrimary">{block.routineName}</p>
+                    {selectedRoutine && (
+                      <p className="mt-1 inline-flex items-center gap-1 text-xs text-textSecondary">
+                        <Repeat size={12} /> {block.exercises} ejercicios · {block.totalSets} series
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-textSecondary">
+                      Volumen planificado: {formatVolumeKg(block.plannedVolumeKg)}
+                    </p>
+                  </div>
+                ),
+              )}
 
-              {selectedRoutine && selectedRoutine.routine_exercises.length > 0 && (
+              {selectedRoutine && selectedRoutine.routine_exercises.length > 0 && selectedStatus !== 'completed' && (
                 <ol className="flex flex-col gap-1.5">
                   {selectedRoutine.routine_exercises.map((re, index) => (
                     <li key={re.id} className="flex items-center justify-between gap-2 text-sm">
@@ -202,40 +292,42 @@ export function CalendarPage() {
                         <span className="text-xs text-textSecondary">{index + 1}</span>
                         <span className="truncate text-textPrimary">{re.exercises?.name ?? 'Ejercicio'}</span>
                       </span>
-                      <span className="shrink-0 text-xs text-textSecondary">{summarizeSets(re.routine_sets)}</span>
                     </li>
                   ))}
                 </ol>
               )}
 
-              {selectedRoutine && (
-                <Link
-                  to={`/entrenamiento/iniciar/${selectedRoutine.id}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
-                >
-                  <Play size={16} />
-                  Iniciar entrenamiento
-                </Link>
-              )}
+              {/* CAL-07: acciones según el estado. Completado solo ofrece abrir el resumen. */}
+              {selectedStatus !== 'completed' && selectedRoutine && (
+                <>
+                  <Link
+                    to={`/entrenamiento/iniciar/${selectedRoutine.id}?fecha=${selectedDate}`}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
+                  >
+                    <Play size={16} />
+                    Iniciar entrenamiento
+                  </Link>
 
-              <div className="mt-1 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setAssigning(true)}
-                  className="flex-1 rounded-xl bg-background px-3 py-2.5 text-sm font-semibold text-textPrimary hover:bg-border/60"
-                >
-                  Cambiar rutina
-                </button>
-                <button
-                  type="button"
-                  onClick={removeAssignment}
-                  disabled={removing}
-                  title="Quitar de esta fecha"
-                  className="rounded-xl bg-background p-2.5 text-textSecondary hover:bg-critical/10 hover:text-critical disabled:opacity-60"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
+                  <div className="mt-1 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setAssigning(true)}
+                      className="flex-1 rounded-xl bg-background px-3 py-2.5 text-sm font-semibold text-textPrimary hover:bg-border/60"
+                    >
+                      Cambiar rutina
+                    </button>
+                    <button
+                      type="button"
+                      onClick={removeAssignment}
+                      disabled={removing}
+                      title="Quitar de esta fecha"
+                      className="rounded-xl bg-background p-2.5 text-textSecondary hover:bg-critical/10 hover:text-critical disabled:opacity-60"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <div className="mt-4 flex flex-col gap-3">

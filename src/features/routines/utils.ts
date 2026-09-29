@@ -22,6 +22,7 @@ export function draftFromRoutine(routine: RoutineWithDetails): RoutineDraft {
         exerciseId: re.exercise_id,
         exerciseName: re.exercises?.name ?? 'Ejercicio',
         muscleGroupName: re.exercises?.muscle_groups?.name ?? null,
+        gifUrl: re.exercises?.gif_url ?? null,
         sets: re.routine_sets.map((s) => ({
           key: newKey(),
           plannedWeight: s.planned_weight_kg !== null ? String(s.planned_weight_kg) : '',

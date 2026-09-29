@@ -4,7 +4,7 @@ import type { RoutineWithDetails } from '@/features/routines/types'
 import type { OpenWorkout, WorkoutListItem, WorkoutWithDetails } from './workoutTypes'
 
 const WORKOUT_SELECT =
-  '*, routines(name), workout_exercises(id, exercise_id, exercise_name_snapshot, position, exercises(muscle_groups(name)), workout_sets(*))'
+  '*, routines(name), workout_exercises(id, exercise_id, exercise_name_snapshot, position, exercises(gif_url, muscle_groups(name)), workout_sets(*))'
 
 type SessionUpdate = Database['public']['Tables']['workout_sessions']['Update']
 
@@ -59,15 +59,25 @@ export async function fetchHistory(): Promise<WorkoutListItem[]> {
 /**
  * Crea la sesión de entrenamiento como una FOTO de la rutina: copia ejercicios, nombres
  * y valores planificados. Editar o borrar la rutina después no altera este entrenamiento.
+ * `scheduledDate` es la fecha que este entrenamiento cumple en el calendario (WK-09):
+ * se pasa solo cuando se inicia desde una asignación (Calendario u Home); un inicio
+ * libre no lleva fecha y cumple el día en que se inicia.
  */
 export async function startWorkout(
   userId: string,
   routine: RoutineWithDetails,
   timerEnabled: boolean,
+  scheduledDate: string | null = null,
 ): Promise<string> {
   const { data: session, error } = await supabase
     .from('workout_sessions')
-    .insert({ user_id: userId, source_routine_id: routine.id, timer_enabled: timerEnabled, status: 'active' })
+    .insert({
+      user_id: userId,
+      source_routine_id: routine.id,
+      timer_enabled: timerEnabled,
+      status: 'active',
+      scheduled_date: scheduledDate,
+    })
     .select('id')
     .single()
   if (error) throw error

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, Trash2, TrendingUp } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, Film, Plus, Trash2, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import type { ExerciseWithGroup } from '@/features/exercises/hooks/useExercises'
 import { fetchRoutine, saveRoutine } from './routineApi'
 import { ExercisePickerDialog } from './components/ExercisePickerDialog'
 import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
+import { ExerciseGifModal } from '@/features/exercises/components/ExerciseGifModal'
 import { validateDraft, hasErrors, type DraftErrors } from './validation'
 import { draftFromRoutine, emptyDraft, emptySet, newKey } from './utils'
 import type { RoutineDraft, RoutineExerciseDraft, RoutineSetDraft } from './types'
@@ -28,6 +29,8 @@ export function RoutineEditorPage() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [progressionExercise, setProgressionExercise] = useState<{ id: string; name: string } | null>(null)
+  // Independiente de todo lo demás: abrir/cerrar este modal no debe tocar el borrador de la rutina.
+  const [gifExercise, setGifExercise] = useState<{ name: string; gifUrl: string | null } | null>(null)
 
   useEffect(() => {
     if (!routineId) return
@@ -69,6 +72,7 @@ export function RoutineEditorPage() {
           exerciseId: exercise.id,
           exerciseName: exercise.name,
           muscleGroupName: exercise.muscle_groups?.name ?? null,
+          gifUrl: exercise.gif_url ?? null,
           sets: [emptySet()],
         },
       ],
@@ -230,6 +234,14 @@ export function RoutineEditorPage() {
               <div className="flex shrink-0 items-center gap-1">
                 <button
                   type="button"
+                  onClick={() => setGifExercise({ name: exercise.exerciseName, gifUrl: exercise.gifUrl })}
+                  title="Ver cómo se realiza"
+                  className="rounded-lg p-2 text-textSecondary hover:bg-background"
+                >
+                  <Film size={16} />
+                </button>
+                <button
+                  type="button"
                   onClick={() => setProgressionExercise({ id: exercise.exerciseId, name: exercise.exerciseName })}
                   title="Ver progresión de peso"
                   className="rounded-lg p-2 text-textSecondary hover:bg-background"
@@ -363,6 +375,14 @@ export function RoutineEditorPage() {
           exerciseId={progressionExercise.id}
           exerciseName={progressionExercise.name}
           onClose={() => setProgressionExercise(null)}
+        />
+      )}
+
+      {gifExercise && (
+        <ExerciseGifModal
+          exerciseName={gifExercise.name}
+          gifUrl={gifExercise.gifUrl}
+          onClose={() => setGifExercise(null)}
         />
       )}
     </div>

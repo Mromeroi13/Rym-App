@@ -142,7 +142,7 @@ export function HomePage() {
               )}
 
               <Link
-                to={`/entrenamiento/iniciar/${routine.id}`}
+                to={`/entrenamiento/iniciar/${routine.id}?fecha=${today}`}
                 className="mt-5 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary/90"
               >
                 <Play size={20} /> Iniciar entrenamiento

@@ -1,4 +1,4 @@
-# RyM App — Database Specification v1.1
+# RyM App — Database Specification v1.2
 
 This document describes the logical data model. Exact PostgreSQL types, indexes, constraints, triggers, and RLS policies are implementation details to finalize during migrations.
 
@@ -35,9 +35,12 @@ Suggested fields:
 - id
 - name
 - muscle_group_id
+- gif_url
 - created_at
 - updated_at
 - active
+
+`gif_url` is an optional public path (e.g. `/exercise-gifs/pecho/press-banca-barra.gif`) to a demonstration GIF served as a static file from `public/exercise-gifs`. Only the reference is stored; the GIF binary itself never lives in the database. An exercise with no demonstration keeps this field `null`, and the UI must handle that case without breaking (FEATURES.md EX-07).
 
 ### exercise_proposals
 User-submitted missing exercises.
@@ -237,3 +240,10 @@ Suggested indexes for these reads:
 - Update `rym_app_schema.sql` and `src/types/database.types.ts`.
 
 Implemented in `rym_app_migration_003_v1_1_progress.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes the changes for new databases.
+
+## 11. v1.2 migration impact
+
+- Add `exercises.gif_url` (nullable text). No backfill: existing exercises keep it `null` until an admin picks a demonstration from the exercise form.
+- Update `rym_app_schema.sql` and `src/types/database.types.ts`.
+
+Implemented in `rym_app_migration_004_exercise_gif.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes the column for new databases.

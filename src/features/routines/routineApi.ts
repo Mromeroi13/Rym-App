@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase'
 import type { RoutineDraft, RoutineWithDetails } from './types'
 
 const ROUTINE_SELECT =
-  '*, routine_exercises(id, exercise_id, position, exercises(name, muscle_groups(name)), routine_sets(id, routine_exercise_id, set_number, planned_weight_kg, planned_reps))'
+  '*, routine_exercises(id, exercise_id, position, exercises(name, gif_url, muscle_groups(name)), routine_sets(id, routine_exercise_id, set_number, planned_weight_kg, planned_reps))'
 
 function normalize(routine: RoutineWithDetails): RoutineWithDetails {
   return {

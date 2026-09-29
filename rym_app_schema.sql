@@ -1,7 +1,9 @@
 -- =========================================================
--- RyM App — Esquema base (v1.0 + cambios de la migración 003, v1.1)
+-- RyM App — Esquema base (v1.0 + migración 003, v1.1 + migración 004, v1.2)
 -- Para una base NUEVA: pegar y ejecutar completo en el SQL Editor de Supabase.
--- Para una base existente en v1.0: ejecutar solo rym_app_migration_003_v1_1_progress.sql
+-- Para una base existente en v1.0: ejecutar rym_app_migration_003_v1_1_progress.sql
+-- y después rym_app_migration_004_exercise_gif.sql
+-- Para una base existente en v1.1: ejecutar solo rym_app_migration_004_exercise_gif.sql
 -- =========================================================
 
 create extension if not exists pgcrypto;
@@ -48,9 +50,14 @@ create table exercises (
   muscle_group_id    uuid not null references muscle_groups(id) on delete restrict,
   active             boolean not null default true,
   source_proposal_id uuid,
+  gif_url            text,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );
+
+comment on column exercises.gif_url is
+  'Ruta pública relativa (p. ej. /exercise-gifs/pecho/press-banca-barra.gif) al GIF demostrativo del ejercicio. '
+  'El archivo se sirve como estático desde public/exercise-gifs; nunca se guarda el binario en la base de datos.';
 
 create table exercise_proposals (
   id                uuid primary key default gen_random_uuid(),
