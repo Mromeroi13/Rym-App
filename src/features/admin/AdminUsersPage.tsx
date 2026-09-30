@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Search, ShieldCheck, ShieldOff, UserCheck, UserX } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
+import { useToast } from '@/components/toast'
 import { useAdminUsers, type AdminUser } from './hooks/useAdminUsers'
 import { UserChangeDialog, type UserChange } from './components/UserChangeDialog'
 import { filterUsers, summarizeUsers, type UserFilter } from './userFilters'
@@ -23,11 +24,11 @@ function formatJoined(iso: string) {
 
 export function AdminUsersPage() {
   const { profile } = useAuth()
+  const { show } = useToast()
   const { users, loading, error, refresh } = useAdminUsers()
   const [filter, setFilter] = useState<UserFilter>('all')
   const [search, setSearch] = useState('')
   const [pending, setPending] = useState<{ user: AdminUser; change: UserChange } | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
 
   const filtered = useMemo(() => filterUsers(users, filter, search), [users, filter, search])
   const summary = useMemo(() => summarizeUsers(users), [users])
@@ -56,15 +57,6 @@ export function AdminUsersPage() {
           </div>
         ))}
       </div>
-
-      {message && (
-        <div className="flex items-center justify-between rounded-xl border border-success/30 bg-success/10 p-4 text-sm text-success">
-          <span>{message}</span>
-          <button type="button" onClick={() => setMessage(null)} className="text-success/70 hover:text-success" aria-label="Cerrar aviso">
-            ✕
-          </button>
-        </div>
-      )}
 
       <div className="rounded-xl border border-border bg-surface p-5 md:p-8">
         <div className="flex flex-col gap-3">
@@ -172,8 +164,8 @@ export function AdminUsersPage() {
           user={pending.user}
           change={pending.change}
           onClose={() => setPending(null)}
-          onChanged={() => {
-            setMessage('Cambio aplicado correctamente.')
+          onChanged={(msg) => {
+            show(msg ?? 'Cambio aplicado correctamente.', 'success')
             refresh()
           }}
         />

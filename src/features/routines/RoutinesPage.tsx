@@ -4,6 +4,7 @@ import { History, Plus } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { ExerciseExplorer } from '@/features/exercises/ExerciseExplorer'
 import { OpenWorkoutBanner } from '@/features/workouts/components/OpenWorkoutBanner'
+import { useToast } from '@/components/toast'
 import { useRoutines } from './hooks/useRoutines'
 import { deleteRoutine } from './routineApi'
 import { RoutineCard } from './components/RoutineCard'
@@ -12,11 +13,11 @@ import type { RoutineWithDetails } from './types'
 
 export function RoutinesPage() {
   const { routines, loading, error, refresh } = useRoutines()
+  const { show } = useToast()
   const [assigning, setAssigning] = useState<RoutineWithDetails | null>(null)
   const [deleting, setDeleting] = useState<RoutineWithDetails | null>(null)
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
 
   async function confirmDelete() {
     if (!deleting) return
@@ -24,8 +25,8 @@ export function RoutinesPage() {
     setDeleteError(null)
     try {
       await deleteRoutine(deleting.id)
+      show(`«${deleting.name}» eliminada.`, 'success')
       setDeleting(null)
-      setMessage('Rutina eliminada.')
       refresh()
     } catch {
       setDeleteError('No se pudo eliminar la rutina. Inténtalo de nuevo.')
@@ -61,15 +62,6 @@ export function RoutinesPage() {
       </div>
 
       <OpenWorkoutBanner />
-
-      {message && (
-        <div className="flex items-center justify-between rounded-xl border border-success/30 bg-success/10 p-4 text-sm text-success">
-          <span>{message}</span>
-          <button type="button" onClick={() => setMessage(null)} className="text-success/70 hover:text-success">
-            ✕
-          </button>
-        </div>
-      )}
 
       {loading && <p className="text-sm text-textSecondary">Cargando rutinas...</p>}
       {error && (
@@ -117,7 +109,10 @@ export function RoutinesPage() {
           routines={routines}
           fixedRoutineId={assigning.id}
           onClose={() => setAssigning(null)}
-          onAssigned={() => setMessage(`«${assigning.name}» asignada al calendario.`)}
+          onAssigned={() => {
+            show(`«${assigning.name}» asignada al calendario.`, 'success')
+            setAssigning(null)
+          }}
         />
       )}
 

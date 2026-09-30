@@ -7,7 +7,7 @@ import type { ProposalForReview } from '../hooks/useProposalsAdmin'
 interface RejectProposalDialogProps {
   proposal: ProposalForReview
   onClose: () => void
-  onReviewed: () => void
+  onReviewed: (msg?: string) => void
 }
 
 export function RejectProposalDialog({ proposal, onClose, onReviewed }: RejectProposalDialogProps) {
@@ -41,7 +41,7 @@ export function RejectProposalDialog({ proposal, onClose, onReviewed }: RejectPr
       return
     }
 
-    onReviewed()
+    onReviewed(`«${proposal.name}» rechazada.`)
     onClose()
   }
 

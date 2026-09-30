@@ -12,7 +12,8 @@ interface ExerciseFormDialogProps {
   muscleGroups: MuscleGroup[]
   exercise?: ExerciseWithGroup
   onClose: () => void
-  onSaved: () => void
+  /** Se llama con el nombre del ejercicio y si era edición (true) o creación (false). */
+  onSaved: (name: string, isEdit: boolean) => void
 }
 
 interface FieldErrors {
@@ -80,7 +81,7 @@ export function ExerciseFormDialog({
       return
     }
 
-    onSaved()
+    onSaved(name.trim(), isEditing)
     onClose()
   }
 

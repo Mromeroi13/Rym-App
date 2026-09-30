@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
+import { useToast } from '@/components/toast'
 import type { WorkoutExerciseDetail, WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
 import { useStopwatch } from '../hooks/useStopwatch'
 import { formatCountdown, formatDuration } from '../timer'
@@ -33,6 +34,7 @@ type Phase = { kind: 'exercise' } | { kind: 'rest'; fromIndex: number; seconds: 
 
 export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const navigate = useNavigate()
+  const { show } = useToast()
   const exercises = workout.workout_exercises
   const timerEnabled = workout.timer_enabled
 
@@ -303,6 +305,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
         elapsed_seconds: seconds,
         completed_at: new Date().toISOString(),
       })
+      show('Entrenamiento abandonado.', 'info')
       navigate('/rutinas')
     } catch {
       setDialogError('No se pudo abandonar el entrenamiento. Inténtalo de nuevo.')
@@ -320,6 +323,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
         elapsed_seconds: seconds,
         completed_at: new Date().toISOString(),
       })
+      show('¡Entrenamiento completado! 🎉', 'success')
       onFinished()
     } catch {
       setDialogError('No se pudo finalizar el entrenamiento. Inténtalo de nuevo.')

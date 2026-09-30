@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { ProposalStatusBadge } from '@/features/exercises/components/ProposalStatusBadge'
+import { useToast } from '@/components/toast'
 import type { ProposalStatus } from '@/types/database.types'
 import { useProposalsAdmin, type ProposalForReview } from './hooks/useProposalsAdmin'
 import { RejectProposalDialog } from './components/RejectProposalDialog'
@@ -24,6 +25,7 @@ function formatDate(iso: string) {
 
 export function AdminProposalsPage() {
   const { proposals, loading, error, refresh } = useProposalsAdmin()
+  const { show } = useToast()
   const [statusFilter, setStatusFilter] = useState<ProposalStatus>('pending')
   const [rejecting, setRejecting] = useState<ProposalForReview | null>(null)
   const [acceptingId, setAcceptingId] = useState<string | null>(null)
@@ -35,7 +37,6 @@ export function AdminProposalsPage() {
   )
   const pendingCount = useMemo(() => proposals.filter((p) => p.status === 'pending').length, [proposals])
 
-  // Publica el ejercicio y marca la solicitud como aceptada en una sola transacción (RPC).
   async function acceptProposal(proposal: ProposalForReview) {
     setActionError(null)
     setAcceptingId(proposal.id)
@@ -47,15 +48,16 @@ export function AdminProposalsPage() {
 
     if (rpcError) {
       const alreadyReviewed = rpcError.message.includes('ya fue revisada')
-      setActionError(
-        alreadyReviewed
-          ? 'Esta solicitud ya fue revisada por otro administrador.'
-          : 'No se pudo aceptar la solicitud. Inténtalo de nuevo.',
-      )
+      const msg = alreadyReviewed
+        ? 'Esta solicitud ya fue revisada por otro administrador.'
+        : 'No se pudo aceptar la solicitud. Inténtalo de nuevo.'
+      show(msg, 'error')
+      setActionError(msg)
       if (alreadyReviewed) refresh()
       return
     }
 
+    show(`«${proposal.name}» publicada en el catálogo.`, 'success')
     refresh()
   }
 
@@ -149,7 +151,10 @@ export function AdminProposalsPage() {
         <RejectProposalDialog
           proposal={rejecting}
           onClose={() => setRejecting(null)}
-          onReviewed={refresh}
+          onReviewed={(msg) => {
+            show(msg ?? 'Solicitud rechazada.', 'success')
+            refresh()
+          }}
         />
       )}
     </div>

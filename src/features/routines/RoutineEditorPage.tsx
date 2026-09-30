@@ -4,6 +4,7 @@ import { ArrowDown, ArrowLeft, ArrowUp, Film, Plus, Trash2, TrendingUp } from 'l
 import { useAuth } from '@/features/auth/AuthProvider'
 import type { ExerciseWithGroup } from '@/features/exercises/hooks/useExercises'
 import { fetchRoutine, saveRoutine } from './routineApi'
+import { useToast } from '@/components/toast'
 import { ExercisePickerDialog } from './components/ExercisePickerDialog'
 import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 import { ExerciseGifModal } from '@/features/exercises/components/ExerciseGifModal'
@@ -20,6 +21,7 @@ export function RoutineEditorPage() {
   const isEditing = !!routineId
   const navigate = useNavigate()
   const { profile } = useAuth()
+  const { show } = useToast()
 
   const [draft, setDraft] = useState<RoutineDraft>(emptyDraft)
   const [initialSnapshot, setInitialSnapshot] = useState(() => JSON.stringify(emptyDraft()))
@@ -136,6 +138,7 @@ export function RoutineEditorPage() {
     setSaving(true)
     try {
       await saveRoutine(profile.id, routineId ?? null, draft)
+      show(isEditing ? `«${draft.name}» actualizada correctamente.` : `«${draft.name}» creada correctamente.`, 'success')
       navigate('/rutinas')
     } catch {
       setSaveError('No se pudo guardar la rutina. Inténtalo de nuevo.')

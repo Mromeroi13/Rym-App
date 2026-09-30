@@ -3,6 +3,7 @@ import { Apple, Check, Cookie, Moon, Pencil, Plus, Sunrise, Trash2, UtensilsCros
 import type { LucideProps } from 'lucide-react'
 import type { MealType } from '@/types/database.types'
 import { Modal } from '@/components/Modal'
+import { useToast } from '@/components/toast'
 import { MAX_MEAL_DESCRIPTION, isLogged, validateMealDescription } from '../mealSlots'
 import type { MealRow } from '../mealApi'
 
@@ -19,16 +20,15 @@ interface MealSlotCardProps {
   type: MealType
   label: string
   meal: MealRow | null
-  // Devuelven un mensaje de error, o null si todo fue bien.
   onSave: (description: string) => Promise<string | null>
   onDelete: () => Promise<string | null>
-  // Callback estable del padre: avisa de si este tramo tiene texto sin guardar.
   onDirtyChange: (type: MealType, dirty: boolean) => void
 }
 
 export function MealSlotCard({ position, type, label, meal, onSave, onDelete, onDirtyChange }: MealSlotCardProps) {
   const Icon = ICONS[type]
   const logged = isLogged(meal)
+  const { show } = useToast()
 
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState('')
@@ -74,6 +74,8 @@ export function MealSlotCard({ position, type, label, meal, onSave, onDelete, on
       setSaveError(error)
       return
     }
+    const isNew = !logged
+    show(isNew ? `${label} registrada.` : `${label} actualizada.`, 'success')
     setEditing(false)
   }
 
@@ -86,6 +88,7 @@ export function MealSlotCard({ position, type, label, meal, onSave, onDelete, on
       setDeleteError(error)
       return
     }
+    show(`${label} eliminada.`, 'success')
     setConfirmingDelete(false)
   }
 

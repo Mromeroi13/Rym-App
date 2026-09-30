@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Pencil, User } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/components/toast'
 import { calculateBmi } from './bmi'
 
 interface FieldErrors {
@@ -12,6 +13,7 @@ interface FieldErrors {
 
 export function ProfilePage() {
   const { session, profile, refreshProfile } = useAuth()
+  const { show } = useToast()
 
   const [mode, setMode] = useState<'view' | 'edit'>('view')
   const [username, setUsername] = useState('')
@@ -20,7 +22,7 @@ export function ProfilePage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
 
   useEffect(() => {
     if (profile) {
@@ -41,7 +43,6 @@ export function ProfilePage() {
   function startEdit() {
     setFieldErrors({})
     setSaveError(null)
-    setSuccessMessage(null)
     setMode('edit')
   }
 
@@ -77,7 +78,6 @@ export function ProfilePage() {
 
   async function saveProfile() {
     setSaveError(null)
-    setSuccessMessage(null)
     if (!validate()) return
 
     setSaving(true)
@@ -102,7 +102,7 @@ export function ProfilePage() {
 
     await refreshProfile()
     setMode('view')
-    setSuccessMessage('Cambios guardados correctamente.')
+    show('Cambios guardados correctamente.', 'success')
   }
 
   function handleSubmit(e: FormEvent) {
@@ -124,18 +124,6 @@ export function ProfilePage() {
         </p>
       </div>
 
-      {successMessage && (
-        <div className="flex items-center justify-between rounded-xl border border-success/30 bg-success/10 p-4 text-sm text-success">
-          <span>{successMessage}</span>
-          <button
-            type="button"
-            onClick={() => setSuccessMessage(null)}
-            className="text-success/70 hover:text-success"
-          >
-            ✕
-          </button>
-        </div>
-      )}
       {saveError && (
         <div className="flex items-center justify-between rounded-xl border border-critical/30 bg-critical/10 p-4 text-sm text-critical">
           <span>{saveError}</span>

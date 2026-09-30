@@ -10,7 +10,7 @@ interface UserChangeDialogProps {
   user: AdminUser
   change: UserChange
   onClose: () => void
-  onChanged: () => void
+  onChanged: (msg?: string) => void
 }
 
 function describe(user: AdminUser, change: UserChange) {
@@ -74,7 +74,14 @@ export function UserChangeDialog({ user, change, onClose, onChanged }: UserChang
       setError('No tienes permiso para realizar este cambio.')
       return
     }
-    onChanged()
+    const name = user.username ?? user.email
+    let msg = 'Cambio aplicado correctamente.'
+    if (change.kind === 'role') {
+      msg = change.role === 'admin' ? `${name} ahora es administrador.` : `${name} ya no es administrador.`
+    } else {
+      msg = change.isActive ? `Cuenta de ${name} reactivada.` : `Cuenta de ${name} desactivada.`
+    }
+    onChanged(msg)
     onClose()
   }
 

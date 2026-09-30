@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CalendarPlus, ChevronLeft, ChevronRight, ClipboardList, Play, Repeat, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/components/toast'
 import { buildMonthGrid, formatLongDate, todayKey, toDateKey } from '@/utils/dates'
 import { useRoutines } from '@/features/routines/hooks/useRoutines'
 import { AssignRoutineDialog } from '@/features/routines/components/AssignRoutineDialog'
@@ -30,6 +31,7 @@ const STATUS_DOT_CLASS: Record<CalendarDayStatus, string> = {
 const LEGEND_ITEMS: CalendarDayStatus[] = ['scheduled', 'completed', 'not_trained']
 
 export function CalendarPage() {
+  const { show } = useToast()
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
@@ -120,6 +122,7 @@ export function CalendarPage() {
       setActionError('No se pudo quitar la rutina de esta fecha.')
       return
     }
+    show('Rutina quitada del calendario.', 'success')
     refresh()
   }
 
@@ -358,7 +361,11 @@ export function CalendarPage() {
           routines={routines}
           fixedDate={selectedDate}
           onClose={() => setAssigning(false)}
-          onAssigned={refresh}
+          onAssigned={() => {
+            show('Rutina asignada al calendario.', 'success')
+            setAssigning(false)
+            refresh()
+          }}
         />
       )}
     </div>

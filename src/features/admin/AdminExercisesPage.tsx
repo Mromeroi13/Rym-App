@@ -3,6 +3,7 @@ import { Pencil, Plus, Power, Search } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useMuscleGroups } from '@/features/exercises/hooks/useMuscleGroups'
 import { useExercises, type ExerciseWithGroup } from '@/features/exercises/hooks/useExercises'
+import { useToast } from '@/components/toast'
 import { ExerciseFormDialog } from './components/ExerciseFormDialog'
 
 function tabClasses(isActive: boolean) {
@@ -19,6 +20,7 @@ export function AdminExercisesPage() {
     error: exercisesError,
     refresh,
   } = useExercises({ includeInactive: true })
+  const { show } = useToast()
 
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -26,7 +28,6 @@ export function AdminExercisesPage() {
     { mode: 'create' } | { mode: 'edit'; exercise: ExerciseWithGroup } | null
   >(null)
   const [togglingId, setTogglingId] = useState<string | null>(null)
-  const [toggleError, setToggleError] = useState<string | null>(null)
 
   const filteredExercises = useMemo(() => {
     return exercises.filter((exercise) => {
@@ -39,7 +40,6 @@ export function AdminExercisesPage() {
   const loading = groupsLoading || exercisesLoading
 
   async function toggleActive(exercise: ExerciseWithGroup) {
-    setToggleError(null)
     setTogglingId(exercise.id)
     const { error } = await supabase
       .from('exercises')
@@ -48,9 +48,15 @@ export function AdminExercisesPage() {
     setTogglingId(null)
 
     if (error) {
-      setToggleError('No se pudo actualizar el estado del ejercicio.')
+      show('No se pudo actualizar el estado del ejercicio.', 'error')
       return
     }
+    show(
+      exercise.active
+        ? `«${exercise.name}» desactivado.`
+        : `«${exercise.name}» activado.`,
+      'success',
+    )
     refresh()
   }
 
@@ -106,8 +112,6 @@ export function AdminExercisesPage() {
             ))}
           </div>
         </div>
-
-        {toggleError && <p className="mt-4 text-sm text-critical">{toggleError}</p>}
 
         <div className="mt-5">
           {loading && <p className="text-sm text-textSecondary">Cargando ejercicios...</p>}
@@ -170,7 +174,11 @@ export function AdminExercisesPage() {
           muscleGroups={groups}
           exercise={dialogState.mode === 'edit' ? dialogState.exercise : undefined}
           onClose={() => setDialogState(null)}
-          onSaved={refresh}
+          onSaved={(name, isEdit) => {
+            show(isEdit ? `«${name}» actualizado.` : `«${name}» creado.`, 'success')
+            setDialogState(null)
+            refresh()
+          }}
         />
       )}
     </div>
