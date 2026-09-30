@@ -545,9 +545,9 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                       type="button"
                       onClick={handleCompleteSet}
                       disabled={editingDisabled}
-                      className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
+                      className="inline-flex h-16 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-5 text-lg font-bold text-white shadow-md transition-all active:scale-[0.97] hover:bg-primary/90 disabled:opacity-60 sm:h-14 sm:rounded-xl sm:text-base sm:font-semibold sm:shadow-sm"
                     >
-                      <Check size={20} />
+                      <Check size={40} />
                       {savingSetId === selectedSet.id
                         ? 'Guardando...'
                         : selectedIsDone
@@ -559,7 +559,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                         type="button"
                         onClick={handleUndoSet}
                         disabled={editingDisabled}
-                        className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60"
+                        className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60 sm:h-14"
                       >
                         <Undo2 size={18} /> Marcar pendiente
                       </button>

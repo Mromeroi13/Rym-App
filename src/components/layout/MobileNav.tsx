@@ -18,25 +18,19 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/features/auth/AuthProvider'
 
 const navItems = [
-  { to: '/inicio', label: 'Inicio', icon: LayoutDashboard },
+  { to: '/inicio',     label: 'Inicio',     icon: LayoutDashboard },
   { to: '/calendario', label: 'Calendario', icon: CalendarDays },
-  { to: '/rutinas', label: 'Rutinas', icon: Dumbbell },
-  { to: '/comidas', label: 'Comidas', icon: UtensilsCrossed },
-  { to: '/progreso', label: 'Progreso', icon: TrendingUp },
-  { to: '/perfil', label: 'Perfil', icon: User },
+  { to: '/rutinas',    label: 'Rutinas',    icon: Dumbbell },
+  { to: '/comidas',    label: 'Comidas',    icon: UtensilsCrossed },
+  { to: '/progreso',   label: 'Progreso',   icon: TrendingUp },
+  { to: '/perfil',     label: 'Perfil',     icon: User },
 ]
 
 const adminItems = [
-  { to: '/admin/usuarios', label: 'Usuarios', icon: Users },
-  { to: '/admin/ejercicios', label: 'Ejercicios', icon: ListChecks },
+  { to: '/admin/usuarios',    label: 'Usuarios',    icon: Users },
+  { to: '/admin/ejercicios',  label: 'Ejercicios',  icon: ListChecks },
   { to: '/admin/solicitudes', label: 'Solicitudes', icon: Inbox },
 ]
-
-function tabClasses(isActive: boolean) {
-  return `flex flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-1.5 text-[11px] font-medium transition-colors ${
-    isActive ? 'text-primary' : 'text-textSecondary'
-  }`
-}
 
 function drawerLinkClasses(isActive: boolean) {
   return `flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
@@ -79,9 +73,27 @@ export function MobileNav() {
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.5rem)' }}
       >
         {navItems.map(({ to, label, icon: Icon }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => tabClasses(isActive)}>
-            <Icon size={20} />
-            <span className="truncate">{label}</span>
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `relative flex flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-1.5 text-[11px] font-medium transition-colors ${
+                isActive ? 'text-primary' : 'text-textSecondary'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {/* Indicador pill bajo el icono */}
+                {isActive && (
+                  <span className="absolute top-0 h-0.5 w-6 rounded-full bg-primary animate-nav-dot" />
+                )}
+                <span className={isActive ? 'animate-nav-icon-pop' : ''}>
+                  <Icon size={20} />
+                </span>
+                <span className="truncate">{label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
@@ -95,7 +107,7 @@ export function MobileNav() {
             onClick={() => setDrawerOpen(false)}
             className="absolute inset-0 bg-black/40"
           />
-          <div className="absolute right-0 top-0 flex h-full w-72 max-w-[85%] flex-col justify-between bg-surface p-5 shadow-xl">
+          <div className="absolute right-0 top-0 flex h-full w-72 max-w-[85%] flex-col justify-between bg-surface p-5 shadow-xl animate-tab-in-right">
             <div className="flex flex-col gap-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

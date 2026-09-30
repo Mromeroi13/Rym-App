@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Dumbbell, Search, Send, Star, TrendingUp } from 'lucide-react'
+import { Dumbbell, Film, Search, Send, Star, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useMuscleGroups } from './hooks/useMuscleGroups'
 import { useExercises } from './hooks/useExercises'
@@ -8,6 +8,7 @@ import { useFavorites } from './hooks/useFavorites'
 import { ProposeExerciseDialog } from './components/ProposeExerciseDialog'
 import { ProposalStatusBadge } from './components/ProposalStatusBadge'
 import { FavoriteStar } from './components/FavoriteStar'
+import { ExerciseGifModal } from './components/ExerciseGifModal'
 import { filterPickerExercises } from '@/features/routines/pickerFilter'
 import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 
@@ -33,6 +34,7 @@ export function ExerciseExplorer() {
   const [search, setSearch] = useState('')
   const [showProposeDialog, setShowProposeDialog] = useState(false)
   const [progressionExercise, setProgressionExercise] = useState<{ id: string; name: string } | null>(null)
+  const [gifExercise, setGifExercise] = useState<{ name: string; gifUrl: string | null } | null>(null)
 
   const filteredExercises = useMemo(
     () =>
@@ -141,18 +143,28 @@ export function ExerciseExplorer() {
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Dumbbell size={18} />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setProgressionExercise({ id: exercise.id, name: exercise.name })}
-                  className="min-w-0 flex-1 text-left"
-                  title="Ver progresión de peso"
-                >
-                  <p className="truncate text-sm font-semibold text-textPrimary hover:underline">{exercise.name}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-textPrimary">{exercise.name}</p>
                   <p className="truncate text-xs text-textSecondary">
                     {exercise.muscle_groups?.name ?? 'Sin grupo'}
                   </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setProgressionExercise({ id: exercise.id, name: exercise.name })}
+                  title="Ver progresión de peso"
+                  className="shrink-0 rounded-lg p-1 text-textSecondary transition-colors hover:bg-primary/10 hover:text-primary"
+                >
+                  <TrendingUp size={16} />
                 </button>
-                <TrendingUp size={16} className="shrink-0 text-textSecondary" />
+                <button
+                  type="button"
+                  onClick={() => setGifExercise({ name: exercise.name, gifUrl: exercise.gif_url ?? null })}
+                  title="Ver demostración"
+                  className="shrink-0 rounded-lg p-1 text-textSecondary transition-colors hover:bg-primary/10 hover:text-primary"
+                >
+                  <Film size={16} />
+                </button>
                 <FavoriteStar
                   exerciseName={exercise.name}
                   active={favorites.isFavorite(exercise.id)}
@@ -199,6 +211,14 @@ export function ExerciseExplorer() {
           muscleGroups={groups}
           onClose={() => setShowProposeDialog(false)}
           onProposed={refreshProposals}
+        />
+      )}
+
+      {gifExercise && (
+        <ExerciseGifModal
+          exerciseName={gifExercise.name}
+          gifUrl={gifExercise.gifUrl}
+          onClose={() => setGifExercise(null)}
         />
       )}
 

@@ -104,20 +104,21 @@ export function WorkoutSummary({ workout }: { workout: WorkoutWithDetails }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Link
-          to="/entrenamientos"
-          className="inline-flex h-12 flex-1 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
-        >
-          Ver historial
-        </Link>
-        <Link
-          to="/rutinas"
-          className="inline-flex h-12 flex-1 items-center justify-center rounded-xl bg-surface px-5 text-sm font-semibold text-textPrimary border border-border hover:bg-background"
-        >
-          Volver a Rutinas
-        </Link>
-      </div>
+<div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
+  <Link
+    to="/entrenamientos"
+    className="inline-flex !h-[50px] !min-h-[50px] flex-1 items-center justify-center rounded-2xl bg-primary px-5 text-base font-bold text-white shadow-md transition-all active:scale-[0.97] hover:bg-primary/90"
+  >
+    Ver historial
+  </Link>
+
+  <Link
+    to="/rutinas"
+    className="inline-flex !h-[50px] !min-h-[50px] flex-1 items-center justify-center rounded-2xl border border-border bg-surface px-5 text-base font-bold text-textPrimary transition-all active:scale-[0.97] hover:bg-background"
+  >
+    Volver a Rutinas
+  </Link>
+</div>
     </div>
   )
 }
