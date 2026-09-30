@@ -130,7 +130,7 @@ export function HomePage() {
                         <span className="text-xs text-textSecondary">{index + 1}</span>
                         <span className="truncate text-textPrimary">{re.exercises?.name ?? 'Ejercicio'}</span>
                       </span>
-                      <span className="shrink-0 text-xs font-medium text-textSecondary">{summarizeSets(re.routine_sets)}</span>
+                      <span className="shrink-0 text-xs font-medium text-textSecondary">{summarizeSets(re.routine_sets, re.mode)}</span>
                     </li>
                   ))}
                   {routine.routine_exercises.length > MAX_VISIBLE_EXERCISES && (

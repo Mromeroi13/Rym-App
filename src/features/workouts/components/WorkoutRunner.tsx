@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
-import type { WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
+import type { WorkoutExerciseDetail, WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
 import { useStopwatch } from '../hooks/useStopwatch'
-import { formatDuration } from '../timer'
+import { formatCountdown, formatDuration } from '../timer'
 import {
   baseInput,
+  formatSetPlan,
   formatSetValues,
   parseSetInput,
   type SetInput,
 } from '../workoutUtils'
-import { clearSetCompletion, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { clearSetCompletion, completeTimedSet, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { playCountdownEndSound } from '../sound'
 import { NumberStepper } from './NumberStepper'
+import { TimedSetCountdown } from './TimedSetCountdown'
+import { RestScreen } from './RestScreen'
 import { ExitWorkoutDialog, FinishWorkoutDialog } from './WorkoutDialogs'
 import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 import { ExerciseGifModal } from '@/features/exercises/components/ExerciseGifModal'
@@ -22,6 +26,10 @@ interface WorkoutRunnerProps {
 }
 
 type Dialog = 'exit' | 'finish' | null
+// 'exercise': pantalla normal. 'rest': descanso tras terminar un ejercicio con
+// rest_seconds > 0 y con un ejercicio siguiente (WK-12); fromIndex es el ejercicio
+// que se acaba de terminar, así que el siguiente es fromIndex + 1.
+type Phase = { kind: 'exercise' } | { kind: 'rest'; fromIndex: number; seconds: number }
 
 export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const navigate = useNavigate()
@@ -55,6 +63,8 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const [showProgression, setShowProgression] = useState(false)
   // Modal de demostración: igual que arriba, puramente visual — no toca series, temporizador ni progreso (WK-06, WK-10).
   const [showGif, setShowGif] = useState(false)
+  // Fase de ejecución (ejercicio normal o descanso entre ejercicios, WK-12).
+  const [phase, setPhase] = useState<Phase>({ kind: 'exercise' })
 
   const currentExercise = exercises[exIndex]
   const currentSets = currentExercise?.workout_sets.map((s) => sets[s.id]) ?? []
@@ -124,6 +134,35 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
     setInputError(null)
     setActionError(null)
     setShowGif(false)
+    setPhase({ kind: 'exercise' })
+  }
+
+  // Se llama justo después de completar (manual o automáticamente) la última serie
+  // pendiente de un ejercicio. Si tiene descanso configurado y hay un ejercicio
+  // siguiente, entra en fase de descanso; si no, el flujo sigue igual que siempre
+  // (navegación manual), tal cual se comportaban las rutinas antes de WK-12.
+  function maybeStartRest(index: number, exercise: WorkoutExerciseDetail, updatedSets: Record<string, WorkoutSetRow>) {
+    const hasNext = index < exercises.length - 1
+    const restSeconds = exercise.rest_seconds ?? 0
+    const allDone =
+      exercise.workout_sets.length > 0 && exercise.workout_sets.every((s) => updatedSets[s.id]?.completed_at)
+    if (allDone && hasNext && restSeconds > 0) {
+      setPhase({ kind: 'rest', fromIndex: index, seconds: restSeconds })
+    }
+  }
+
+  // Fin natural del descanso: suena y avanza. goToExercise ya deja phase en 'exercise'.
+  function handleRestComplete() {
+    if (phase.kind !== 'rest') return
+    playCountdownEndSound()
+    goToExercise(phase.fromIndex + 1)
+  }
+
+  // "Saltar descanso": avanza sin sonido. Al llamar a setPhase (dentro de
+  // goToExercise) el botón desaparece de inmediato, así que no puede pulsarse dos veces.
+  function handleSkipRest() {
+    if (phase.kind !== 'rest') return
+    goToExercise(phase.fromIndex + 1)
   }
 
   function updateInput(field: keyof SetInput, value: string) {
@@ -162,11 +201,40 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
       const next =
         list.find((s) => s.set_number > selectedSet.set_number && !s.completed_at) ??
         list.find((s) => !s.completed_at)
-      if (next) setSelectedSetId(next.id)
+      if (next) {
+        setSelectedSetId(next.id)
+      } else {
+        maybeStartRest(exIndex, currentExercise, nextSets)
+      }
     } catch {
       setActionError('No se pudo guardar la serie. Comprueba tu conexión e inténtalo de nuevo.')
     }
     setSavingSetId(null)
+  }
+
+  // Equivalente a handleCompleteSet para ejercicios por tiempo: no hay peso/reps que
+  // registrar, la cuenta atrás en sí ya fue "la serie" (WK-11). Se llama automáticamente
+  // desde TimedSetCountdown al llegar a 0; el guard de completed_at la hace idempotente
+  // por si el efecto se disparase más de una vez.
+  async function handleCompleteTimedSet(set: WorkoutSetRow) {
+    if (set.completed_at || paused) return
+    setActionError(null)
+    try {
+      const completedAt = await completeTimedSet(set.id)
+      const updated: WorkoutSetRow = { ...set, completed_at: completedAt }
+      const nextSets = { ...sets, [set.id]: updated }
+      setSets(nextSets)
+      playCountdownEndSound()
+      const list = currentExercise.workout_sets.map((s) => nextSets[s.id])
+      const next = list.find((s) => s.set_number > set.set_number && !s.completed_at) ?? list.find((s) => !s.completed_at)
+      if (next) {
+        setSelectedSetId(next.id)
+      } else {
+        maybeStartRest(exIndex, currentExercise, nextSets)
+      }
+    } catch {
+      setActionError('No se pudo registrar la serie. Comprueba tu conexión e inténtalo de nuevo.')
+    }
   }
 
   async function handleUndoSet() {
@@ -271,6 +339,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const isSaving = savingSetId !== null
   const selectedIsDone = !!selectedSet?.completed_at
   const editingDisabled = paused || isSaving
+  const isTimeMode = currentExercise.mode === 'time'
 
   return (
     <div className="flex flex-col gap-4">
@@ -334,169 +403,232 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_16rem]">
         <div className="flex flex-col gap-4">
-          {/* Ejercicio actual y series */}
-          <div className="rounded-xl border border-border bg-surface p-4 md:p-6">
-            <div className="flex items-center justify-between text-xs text-textSecondary">
-              <span>
-                Ejercicio {exIndex + 1} de {exercises.length}
-                {currentExercise.exercises?.muscle_groups?.name && <> · {currentExercise.exercises.muscle_groups.name}</>}
-              </span>
-              <span>{percent}% completado</span>
-            </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-background">
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} />
-            </div>
+          {phase.kind === 'rest' ? (
+            <RestScreen
+              key={`rest-${phase.fromIndex}`}
+              seconds={phase.seconds}
+              paused={paused}
+              nextExerciseName={exercises[phase.fromIndex + 1]?.exercise_name_snapshot ?? ''}
+              onComplete={handleRestComplete}
+              onSkip={handleSkipRest}
+            />
+          ) : (
+            <>
+              {/* Ejercicio actual y series */}
+              <div className="rounded-xl border border-border bg-surface p-4 md:p-6">
+                <div className="flex items-center justify-between text-xs text-textSecondary">
+                  <span>
+                    Ejercicio {exIndex + 1} de {exercises.length}
+                    {currentExercise.exercises?.muscle_groups?.name && (
+                      <> · {currentExercise.exercises.muscle_groups.name}</>
+                    )}
+                    {isTimeMode && <> · Por tiempo</>}
+                  </span>
+                  <span>{percent}% completado</span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-background">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} />
+                </div>
 
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <h2 className="font-heading text-xl font-bold text-textPrimary">
-                {currentExercise.exercise_name_snapshot}
-              </h2>
-              <div className="flex shrink-0 items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setShowGif(true)}
-                  title="Ver cómo se realiza"
-                  className="rounded-lg p-2 text-textSecondary hover:bg-background"
-                >
-                  <Film size={18} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowProgression(true)}
-                  title="Ver progresión de peso"
-                  className="rounded-lg p-2 text-textSecondary hover:bg-background"
-                >
-                  <TrendingUp size={18} />
-                </button>
-              </div>
-            </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <h2 className="font-heading text-xl font-bold text-textPrimary">
+                    {currentExercise.exercise_name_snapshot}
+                  </h2>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowGif(true)}
+                      title="Ver cómo se realiza"
+                      className="rounded-lg p-2 text-textSecondary hover:bg-background"
+                    >
+                      <Film size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowProgression(true)}
+                      title="Ver progresión de peso"
+                      className="rounded-lg p-2 text-textSecondary hover:bg-background"
+                    >
+                      <TrendingUp size={18} />
+                    </button>
+                  </div>
+                </div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              {currentSets.map((set) => {
-                const isSelected = set.id === selectedSetId
-                const done = !!set.completed_at
-                return (
-                  <button
-                    key={set.id}
-                    type="button"
-                    onClick={() => selectSet(set.id)}
-                    className={`flex min-h-[3.5rem] items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors ${
-                      isSelected ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/50'
-                    }`}
-                  >
-                    <span className="flex items-center gap-3">
-                      <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                          done ? 'bg-success text-white' : 'bg-surface text-textSecondary'
+                <div className="mt-4 flex flex-col gap-2">
+                  {currentSets.map((set) => {
+                    const isSelected = set.id === selectedSetId
+                    const done = !!set.completed_at
+                    return (
+                      <button
+                        key={set.id}
+                        type="button"
+                        onClick={() => selectSet(set.id)}
+                        className={`flex min-h-[3.5rem] items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors ${
+                          isSelected ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/50'
                         }`}
                       >
-                        {done ? <Check size={16} /> : set.set_number}
-                      </span>
-                      <span>
-                        <span className="block text-sm font-semibold text-textPrimary">
-                          Serie {set.set_number}
-                          {done && <span className="ml-2 text-xs font-medium text-success">Completada</span>}
+                        <span className="flex items-center gap-3">
+                          <span
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                              done ? 'bg-success text-white' : 'bg-surface text-textSecondary'
+                            }`}
+                          >
+                            {done ? <Check size={16} /> : set.set_number}
+                          </span>
+                          <span>
+                            <span className="block text-sm font-semibold text-textPrimary">
+                              Serie {set.set_number}
+                              {done && <span className="ml-2 text-xs font-medium text-success">Completada</span>}
+                            </span>
+                            <span className="block text-xs text-textSecondary">
+                              Plan: {formatSetPlan(currentExercise.mode, set.planned_weight_kg, set.planned_reps, set.planned_duration_seconds)}
+                            </span>
+                          </span>
                         </span>
-                        <span className="block text-xs text-textSecondary">
-                          Plan: {formatSetValues(set.planned_weight_kg, set.planned_reps)}
-                        </span>
-                      </span>
+                        {done &&
+                          (isTimeMode ? (
+                            <span className="shrink-0 text-sm font-semibold text-success">Hecho</span>
+                          ) : (
+                            <span className="shrink-0 text-sm font-semibold text-textPrimary">
+                              {formatSetValues(set.actual_weight_kg, set.actual_reps)}
+                            </span>
+                          ))}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Registro de la serie seleccionada: repeticiones */}
+              {selectedSet && selectedInput && !isTimeMode && (
+                <div className="rounded-xl border border-border bg-surface p-4 md:p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-heading text-base font-bold text-textPrimary">
+                      Registro de la serie {selectedSet.set_number}
+                    </h3>
+                    <span className="text-xs text-textSecondary">
+                      Planificado: {formatSetValues(selectedSet.planned_weight_kg, selectedSet.planned_reps)}
                     </span>
-                    {done && (
-                      <span className="shrink-0 text-sm font-semibold text-textPrimary">
-                        {formatSetValues(set.actual_weight_kg, set.actual_reps)}
-                      </span>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <NumberStepper
+                      id="actual-weight"
+                      label="Peso real"
+                      unit="kg"
+                      value={selectedInput.weight}
+                      step={2.5}
+                      inputMode="decimal"
+                      disabled={editingDisabled}
+                      onChange={(v) => updateInput('weight', v)}
+                    />
+                    <NumberStepper
+                      id="actual-reps"
+                      label="Repeticiones reales"
+                      unit="reps"
+                      value={selectedInput.reps}
+                      step={1}
+                      inputMode="numeric"
+                      disabled={editingDisabled}
+                      onChange={(v) => updateInput('reps', v)}
+                    />
+                  </div>
+
+                  {inputError && <p className="mt-3 text-sm text-critical">{inputError}</p>}
+
+                  <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={handleCompleteSet}
+                      disabled={editingDisabled}
+                      className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
+                    >
+                      <Check size={20} />
+                      {savingSetId === selectedSet.id
+                        ? 'Guardando...'
+                        : selectedIsDone
+                          ? `Actualizar serie ${selectedSet.set_number}`
+                          : `Completar serie ${selectedSet.set_number}`}
+                    </button>
+                    {selectedIsDone && (
+                      <button
+                        type="button"
+                        onClick={handleUndoSet}
+                        disabled={editingDisabled}
+                        className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60"
+                      >
+                        <Undo2 size={18} /> Marcar pendiente
+                      </button>
                     )}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+                  </div>
+                </div>
+              )}
 
-          {/* Registro de la serie seleccionada */}
-          {selectedSet && selectedInput && (
-            <div className="rounded-xl border border-border bg-surface p-4 md:p-6">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-heading text-base font-bold text-textPrimary">
-                  Registro de la serie {selectedSet.set_number}
-                </h3>
-                <span className="text-xs text-textSecondary">
-                  Planificado: {formatSetValues(selectedSet.planned_weight_kg, selectedSet.planned_reps)}
-                </span>
-              </div>
+              {/* Registro de la serie seleccionada: por tiempo (cuenta atrás, WK-11) */}
+              {selectedSet && isTimeMode && !selectedSet.completed_at && (
+                <div className="rounded-xl border border-border bg-surface p-4 md:p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-heading text-base font-bold text-textPrimary">
+                      Serie {selectedSet.set_number} · por tiempo
+                    </h3>
+                    <span className="text-xs text-textSecondary">
+                      Objetivo: {formatCountdown(selectedSet.planned_duration_seconds ?? 0)}
+                    </span>
+                  </div>
+                  <div className="mt-4">
+                    <TimedSetCountdown
+                      key={selectedSet.id}
+                      seconds={selectedSet.planned_duration_seconds ?? 0}
+                      paused={paused}
+                      onComplete={() => handleCompleteTimedSet(selectedSet)}
+                    />
+                  </div>
+                  {actionError && <p className="mt-3 text-sm text-critical">{actionError}</p>}
+                </div>
+              )}
 
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <NumberStepper
-                  id="actual-weight"
-                  label="Peso real"
-                  unit="kg"
-                  value={selectedInput.weight}
-                  step={2.5}
-                  inputMode="decimal"
-                  disabled={editingDisabled}
-                  onChange={(v) => updateInput('weight', v)}
-                />
-                <NumberStepper
-                  id="actual-reps"
-                  label="Repeticiones reales"
-                  unit="reps"
-                  value={selectedInput.reps}
-                  step={1}
-                  inputMode="numeric"
-                  disabled={editingDisabled}
-                  onChange={(v) => updateInput('reps', v)}
-                />
-              </div>
-
-              {inputError && <p className="mt-3 text-sm text-critical">{inputError}</p>}
-
-              <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={handleCompleteSet}
-                  disabled={editingDisabled}
-                  className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
-                >
-                  <Check size={20} />
-                  {savingSetId === selectedSet.id
-                    ? 'Guardando...'
-                    : selectedIsDone
-                      ? `Actualizar serie ${selectedSet.set_number}`
-                      : `Completar serie ${selectedSet.set_number}`}
-                </button>
-                {selectedIsDone && (
+              {selectedSet && isTimeMode && selectedSet.completed_at && (
+                <div className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 md:p-6">
+                  <div>
+                    <p className="text-sm font-semibold text-textPrimary">
+                      Serie {selectedSet.set_number} completada
+                    </p>
+                    <p className="text-xs text-textSecondary">
+                      {formatCountdown(selectedSet.planned_duration_seconds ?? 0)}
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={handleUndoSet}
                     disabled={editingDisabled}
-                    className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60"
                   >
                     <Undo2 size={18} /> Marcar pendiente
                   </button>
-                )}
-              </div>
-            </div>
-          )}
+                </div>
+              )}
 
-          {/* Anterior / siguiente ejercicio */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => goToExercise(exIndex - 1)}
-              disabled={exIndex === 0}
-              className="flex h-14 items-center justify-center gap-2 rounded-xl bg-surface px-3 text-sm font-semibold text-textPrimary border border-border hover:bg-background disabled:opacity-40"
-            >
-              <ChevronLeft size={18} /> Anterior
-            </button>
-            <button
-              type="button"
-              onClick={() => goToExercise(exIndex + 1)}
-              disabled={exIndex === exercises.length - 1}
-              className="flex h-14 items-center justify-center gap-2 rounded-xl bg-surface px-3 text-sm font-semibold text-textPrimary border border-border hover:bg-background disabled:opacity-40"
-            >
-              Siguiente <ChevronRight size={18} />
-            </button>
-          </div>
+              {/* Anterior / siguiente ejercicio */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => goToExercise(exIndex - 1)}
+                  disabled={exIndex === 0}
+                  className="flex h-14 items-center justify-center gap-2 rounded-xl bg-surface px-3 text-sm font-semibold text-textPrimary border border-border hover:bg-background disabled:opacity-40"
+                >
+                  <ChevronLeft size={18} /> Anterior
+                </button>
+                <button
+                  type="button"
+                  onClick={() => goToExercise(exIndex + 1)}
+                  disabled={exIndex === exercises.length - 1}
+                  className="flex h-14 items-center justify-center gap-2 rounded-xl bg-surface px-3 text-sm font-semibold text-textPrimary border border-border hover:bg-background disabled:opacity-40"
+                >
+                  Siguiente <ChevronRight size={18} />
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Ruta del entrenamiento */}

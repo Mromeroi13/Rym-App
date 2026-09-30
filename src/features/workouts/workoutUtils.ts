@@ -45,10 +45,30 @@ export function formatSetValues(weight: number | null, reps: number | null): str
   return `${formatNumber(weight)} kg × ${reps}`
 }
 
+// Igual que formatSetValues, pero consciente del modo: en "time" muestra la
+// duración planificada en vez de las repeticiones (planned_reps es null ahí).
+export function formatSetPlan(
+  mode: 'reps' | 'time',
+  weightKg: number | null,
+  reps: number | null,
+  durationSeconds: number | null,
+): string {
+  if (mode === 'time') return durationSeconds !== null ? `${durationSeconds} s` : '—'
+  return formatSetValues(weightKg, reps)
+}
+
 // "60 a 70 kg × 8-12", "24 kg × 10", "Sin peso × 12"
 export function summarizePlanned(
-  sets: { planned_weight_kg: number | null; planned_reps: number | null }[],
+  sets: { planned_weight_kg: number | null; planned_reps: number | null; planned_duration_seconds?: number | null }[],
+  mode: 'reps' | 'time' = 'reps',
 ): string {
+  if (mode === 'time') {
+    const durations = sets.map((s) => s.planned_duration_seconds).filter((v): v is number => v != null)
+    if (durations.length === 0) return `${sets.length} series`
+    const min = Math.min(...durations)
+    const max = Math.max(...durations)
+    return `${sets.length} × ${min === max ? `${min} s` : `${min}-${max} s`}`
+  }
   const weights = sets.map((s) => s.planned_weight_kg).filter((v): v is number => v !== null)
   const reps = sets.map((s) => s.planned_reps).filter((v): v is number => v !== null)
   const weightText =

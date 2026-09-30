@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase'
 import type { RoutineDraft, RoutineWithDetails } from './types'
 
 const ROUTINE_SELECT =
-  '*, routine_exercises(id, exercise_id, position, exercises(name, gif_url, muscle_groups(name)), routine_sets(id, routine_exercise_id, set_number, planned_weight_kg, planned_reps))'
+  '*, routine_exercises(id, exercise_id, position, mode, rest_seconds, exercises(name, gif_url, muscle_groups(name)), routine_sets(id, routine_exercise_id, set_number, planned_weight_kg, planned_reps, planned_duration_seconds))'
 
 function normalize(routine: RoutineWithDetails): RoutineWithDetails {
   return {
@@ -91,6 +91,8 @@ export async function saveRoutine(
             routine_id: targetId,
             exercise_id: exercise.exerciseId,
             position: index,
+            mode: exercise.mode,
+            rest_seconds: Number(exercise.restSeconds) || 0,
           })),
         )
         .select('id, position')
@@ -107,7 +109,8 @@ export async function saveRoutine(
           routine_exercise_id: routineExerciseId,
           set_number: setIndex + 1,
           planned_weight_kg: toNullableNumber(set.plannedWeight),
-          planned_reps: toNullableNumber(set.plannedReps),
+          planned_reps: exercise.mode === 'time' ? null : toNullableNumber(set.plannedReps),
+          planned_duration_seconds: exercise.mode === 'time' ? toNullableNumber(set.plannedDuration) : null,
         }))
       })
 

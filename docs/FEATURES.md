@@ -82,6 +82,12 @@ The picker supports an empty favorites state ("Aún no tienes favoritos") and a 
 ### RT-10 View exercise demonstration
 While creating or editing a routine, each exercise already added offers a "ver cómo se realiza" action. It opens a modal that plays the exercise's `gif_url`. If the exercise has no GIF, the modal shows a "no hay demostración disponible" message instead of failing. Opening or closing this modal never changes the routine draft.
 
+### RT-11 Reps or time mode
+Each routine exercise has a `mode`: `reps` (default, identical to pre-v1.3 behavior) or `time`. In `reps` mode every set stores planned reps as before. In `time` mode every set stores a planned duration in seconds instead; the exercise's reps field is not used. Switching an exercise's mode in the editor does not lose the values already typed for the other mode.
+
+### RT-12 Rest between exercises
+Each routine exercise has an optional `rest_seconds` (0 by default, meaning no rest — the exact behavior of routines created before v1.3). It is the rest between that exercise and the next one in the routine; it never applies after the last exercise. Editable from the same per-exercise controls as the mode toggle.
+
 ## Workouts
 
 ### WK-01 Start
@@ -113,6 +119,12 @@ A workout started from a calendar assignment (from the calendar or from Home) st
 
 ### WK-10 View exercise demonstration
 While a workout is in progress, the current-exercise screen offers a "ver cómo se realiza" action, reusing the same modal and the same `gif_url` as RT-10. Opening or closing it never resets or alters the workout's sets, reps, timer, or completion state; it is a read-only overlay on top of the in-progress session.
+
+### WK-11 Time-mode exercise execution
+When the selected exercise's snapshot `mode` is `time`, the set panel shows a countdown from the set's `planned_duration_seconds` down to 0 instead of reps/weight inputs. Reaching 0 plays a short sound, marks the set completed automatically, and — mirroring the reps-mode flow — selects the next pending set of that exercise. A completed time-mode set can still be marked pending again from the same undo control used for reps-mode sets. Pausing the workout's global timer also freezes the exercise countdown; resuming continues it from where it was frozen, not from the start.
+
+### WK-12 Rest between exercises
+When every set of the current exercise becomes completed (manually or automatically) and its snapshot `rest_seconds` is greater than 0 and it is not the last exercise, the runner switches to a rest screen with its own countdown from `rest_seconds` to 0, replacing the exercise/set panel. Reaching 0 plays a short sound and automatically moves to the next exercise. A "Saltar descanso" button ends the rest immediately (no sound) and moves to the next exercise right away; pressing it twice, or any interaction after the phase has already advanced, has no further effect. Navigating away manually (previous/next buttons, the exercise list) cancels any pending rest. If `rest_seconds` is 0 — the value every routine had before v1.3 — nothing changes: the runner behaves exactly as it always did, requiring manual navigation to the next exercise.
 
 ## Calendar
 

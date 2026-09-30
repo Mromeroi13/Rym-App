@@ -1,4 +1,4 @@
-// Tipos generados a mano a partir de las migraciones SQL ejecutadas en Supabase (001, 002, 003 — v1.1 — y 004 — v1.2).
+// Tipos generados a mano a partir de las migraciones SQL ejecutadas en Supabase (001, 002, 003 — v1.1 —, 004 — v1.2 — y 005 — v1.3).
 // Si más adelante corres `supabase gen types` o lo descargas del dashboard,
 // puedes reemplazar este archivo por el generado automáticamente.
 
@@ -14,6 +14,7 @@ export type AppRole = 'user' | 'admin'
 export type ProposalStatus = 'pending' | 'accepted' | 'rejected'
 export type MealType = 'breakfast' | 'snack' | 'lunch' | 'afternoon_snack' | 'dinner'
 export type WorkoutStatus = 'active' | 'paused' | 'completed' | 'abandoned'
+export type ExerciseMode = 'reps' | 'time'
 
 export interface Database {
   public: {
@@ -182,6 +183,8 @@ export interface Database {
           routine_id: string
           exercise_id: string
           position: number
+          mode: ExerciseMode
+          rest_seconds: number
           created_at: string
         }
         Insert: {
@@ -189,6 +192,8 @@ export interface Database {
           routine_id: string
           exercise_id: string
           position?: number
+          mode?: ExerciseMode
+          rest_seconds?: number
           created_at?: string
         }
         Update: {
@@ -196,6 +201,8 @@ export interface Database {
           routine_id?: string
           exercise_id?: string
           position?: number
+          mode?: ExerciseMode
+          rest_seconds?: number
           created_at?: string
         }
         Relationships: []
@@ -207,6 +214,7 @@ export interface Database {
           set_number: number
           planned_weight_kg: number | null
           planned_reps: number | null
+          planned_duration_seconds: number | null
         }
         Insert: {
           id?: string
@@ -214,6 +222,7 @@ export interface Database {
           set_number: number
           planned_weight_kg?: number | null
           planned_reps?: number | null
+          planned_duration_seconds?: number | null
         }
         Update: {
           id?: string
@@ -221,6 +230,7 @@ export interface Database {
           set_number?: number
           planned_weight_kg?: number | null
           planned_reps?: number | null
+          planned_duration_seconds?: number | null
         }
         Relationships: []
       }
@@ -291,6 +301,8 @@ export interface Database {
           exercise_id: string
           exercise_name_snapshot: string
           position: number
+          mode: ExerciseMode
+          rest_seconds: number
         }
         Insert: {
           id?: string
@@ -298,6 +310,8 @@ export interface Database {
           exercise_id: string
           exercise_name_snapshot: string
           position?: number
+          mode?: ExerciseMode
+          rest_seconds?: number
         }
         Update: {
           id?: string
@@ -305,6 +319,8 @@ export interface Database {
           exercise_id?: string
           exercise_name_snapshot?: string
           position?: number
+          mode?: ExerciseMode
+          rest_seconds?: number
         }
         Relationships: []
       }
@@ -315,6 +331,7 @@ export interface Database {
           set_number: number
           planned_weight_kg: number | null
           planned_reps: number | null
+          planned_duration_seconds: number | null
           actual_weight_kg: number | null
           actual_reps: number | null
           completed_at: string | null
@@ -325,6 +342,7 @@ export interface Database {
           set_number: number
           planned_weight_kg?: number | null
           planned_reps?: number | null
+          planned_duration_seconds?: number | null
           actual_weight_kg?: number | null
           actual_reps?: number | null
           completed_at?: string | null
@@ -335,6 +353,7 @@ export interface Database {
           set_number?: number
           planned_weight_kg?: number | null
           planned_reps?: number | null
+          planned_duration_seconds?: number | null
           actual_weight_kg?: number | null
           actual_reps?: number | null
           completed_at?: string | null

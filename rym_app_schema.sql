@@ -1,9 +1,13 @@
 -- =========================================================
--- RyM App — Esquema base (v1.0 + migración 003, v1.1 + migración 004, v1.2)
+-- RyM App — Esquema base (v1.0 + migración 003, v1.1 + migración 004, v1.2
+-- + migración 005, v1.3)
 -- Para una base NUEVA: pegar y ejecutar completo en el SQL Editor de Supabase.
--- Para una base existente en v1.0: ejecutar rym_app_migration_003_v1_1_progress.sql
--- y después rym_app_migration_004_exercise_gif.sql
--- Para una base existente en v1.1: ejecutar solo rym_app_migration_004_exercise_gif.sql
+-- Para una base existente en v1.0: ejecutar rym_app_migration_003_v1_1_progress.sql,
+-- después rym_app_migration_004_exercise_gif.sql y después
+-- rym_app_migration_005_exercise_mode_rest.sql
+-- Para una base existente en v1.1: ejecutar rym_app_migration_004_exercise_gif.sql
+-- y después rym_app_migration_005_exercise_mode_rest.sql
+-- Para una base existente en v1.2: ejecutar solo rym_app_migration_005_exercise_mode_rest.sql
 -- =========================================================
 
 create extension if not exists pgcrypto;
@@ -92,21 +96,32 @@ create table routines (
 );
 
 create table routine_exercises (
-  id          uuid primary key default gen_random_uuid(),
-  routine_id  uuid not null references routines(id) on delete cascade,
-  exercise_id uuid not null references exercises(id) on delete restrict,
-  position    integer not null default 0,
-  created_at  timestamptz not null default now()
+  id           uuid primary key default gen_random_uuid(),
+  routine_id   uuid not null references routines(id) on delete cascade,
+  exercise_id  uuid not null references exercises(id) on delete restrict,
+  position     integer not null default 0,
+  mode         text not null default 'reps' check (mode in ('reps', 'time')),
+  rest_seconds integer not null default 0 check (rest_seconds >= 0),
+  created_at   timestamptz not null default now()
 );
 
+comment on column routine_exercises.mode is
+  'Cómo se completa cada serie de este ejercicio: "reps" (número de repeticiones, comportamiento previo a v1.3) o "time" (cuenta atrás en segundos).';
+comment on column routine_exercises.rest_seconds is
+  'Descanso en segundos entre este ejercicio y el siguiente de la rutina (0 = sin descanso, valor por defecto y comportamiento de las rutinas creadas antes de v1.3). No aplica tras el último ejercicio.';
+
 create table routine_sets (
-  id                    uuid primary key default gen_random_uuid(),
-  routine_exercise_id   uuid not null references routine_exercises(id) on delete cascade,
-  set_number            integer not null,
-  planned_weight_kg     numeric(6,2),
-  planned_reps          integer,
+  id                        uuid primary key default gen_random_uuid(),
+  routine_exercise_id       uuid not null references routine_exercises(id) on delete cascade,
+  set_number                integer not null,
+  planned_weight_kg         numeric(6,2),
+  planned_reps              integer,
+  planned_duration_seconds  integer check (planned_duration_seconds is null or planned_duration_seconds > 0),
   unique (routine_exercise_id, set_number)
 );
+
+comment on column routine_sets.planned_duration_seconds is
+  'Duración planificada en segundos, solo relevante cuando routine_exercises.mode = ''time''. Null en series por repeticiones.';
 
 create index routines_user_idx on routines (user_id);
 create index routine_exercises_routine_idx on routine_exercises (routine_id);
@@ -146,20 +161,31 @@ create table workout_exercises (
   workout_session_id      uuid not null references workout_sessions(id) on delete cascade,
   exercise_id             uuid not null references exercises(id) on delete restrict,
   exercise_name_snapshot  text not null,
-  position                integer not null default 0
+  position                integer not null default 0,
+  mode                    text not null default 'reps' check (mode in ('reps', 'time')),
+  rest_seconds            integer not null default 0 check (rest_seconds >= 0)
 );
 
+comment on column workout_exercises.mode is
+  'Copiado de routine_exercises.mode al iniciar el entrenamiento (foto de la rutina en ese momento).';
+comment on column workout_exercises.rest_seconds is
+  'Copiado de routine_exercises.rest_seconds al iniciar el entrenamiento.';
+
 create table workout_sets (
-  id                    uuid primary key default gen_random_uuid(),
-  workout_exercise_id   uuid not null references workout_exercises(id) on delete cascade,
-  set_number            integer not null,
-  planned_weight_kg     numeric(6,2),
-  planned_reps          integer,
-  actual_weight_kg      numeric(6,2),
-  actual_reps           integer,
-  completed_at          timestamptz,
+  id                        uuid primary key default gen_random_uuid(),
+  workout_exercise_id       uuid not null references workout_exercises(id) on delete cascade,
+  set_number                integer not null,
+  planned_weight_kg         numeric(6,2),
+  planned_reps              integer,
+  planned_duration_seconds  integer check (planned_duration_seconds is null or planned_duration_seconds > 0),
+  actual_weight_kg          numeric(6,2),
+  actual_reps               integer,
+  completed_at              timestamptz,
   unique (workout_exercise_id, set_number)
 );
+
+comment on column workout_sets.planned_duration_seconds is
+  'Copiado de routine_sets.planned_duration_seconds al iniciar el entrenamiento. Una serie por tiempo se marca completada (completed_at) al terminar la cuenta atrás; no registra actual_reps/actual_weight_kg.';
 
 create index workout_sessions_user_idx on workout_sessions (user_id);
 create index workout_sessions_user_status_started_idx on workout_sessions (user_id, status, started_at);

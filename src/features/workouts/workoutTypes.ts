@@ -1,4 +1,4 @@
-import type { Tables } from '@/types/database.types'
+import type { ExerciseMode, Tables } from '@/types/database.types'
 
 export type WorkoutSetRow = Tables<'workout_sets'>
 
@@ -7,6 +7,8 @@ export interface WorkoutExerciseDetail {
   exercise_id: string
   exercise_name_snapshot: string
   position: number
+  mode: ExerciseMode
+  rest_seconds: number
   exercises: { gif_url: string | null; muscle_groups: { name: string } | null } | null
   workout_sets: WorkoutSetRow[]
 }

@@ -1,4 +1,4 @@
-import type { Tables } from '@/types/database.types'
+import type { ExerciseMode, Tables } from '@/types/database.types'
 
 // ---- Lectura (forma que devuelve Supabase) ----
 export type RoutineSetRow = Tables<'routine_sets'>
@@ -7,6 +7,8 @@ export interface RoutineExerciseDetail {
   id: string
   exercise_id: string
   position: number
+  mode: ExerciseMode
+  rest_seconds: number
   exercises: { name: string; gif_url: string | null; muscle_groups: { name: string } | null } | null
   routine_sets: RoutineSetRow[]
 }
@@ -20,6 +22,7 @@ export interface RoutineSetDraft {
   key: string
   plannedWeight: string
   plannedReps: string
+  plannedDuration: string
 }
 
 export interface RoutineExerciseDraft {
@@ -28,6 +31,8 @@ export interface RoutineExerciseDraft {
   exerciseName: string
   muscleGroupName: string | null
   gifUrl: string | null
+  mode: ExerciseMode
+  restSeconds: string
   sets: RoutineSetDraft[]
 }
 

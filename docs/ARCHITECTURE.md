@@ -126,6 +126,10 @@ Workout execution additionally needs:
 - completed
 - exit confirmation
 - unrecoverable/error state
+- per-exercise time countdown (v1.3, WK-11)
+- rest between exercises (v1.3, WK-12), skippable, independent from the global timer's pause
+
+Time-based countdowns (WK-11 exercise timer, WK-12 rest) reuse the global timer's Date.now()-based approach (`useCountdown`, alongside `useStopwatch`) rather than a naive tick counter, so they don't drift if the tab is throttled in the background. Each is reset by mounting a fresh component instance (React `key`), not by internal state, and the short sound on completion (`sound.ts`) is a single Web Audio beep with no audio files to serve.
 
 ## 6. Derived metrics data loading
 

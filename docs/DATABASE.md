@@ -1,4 +1,4 @@
-# RyM App — Database Specification v1.2
+# RyM App — Database Specification v1.3
 
 This document describes the logical data model. Exact PostgreSQL types, indexes, constraints, triggers, and RLS policies are implementation details to finalize during migrations.
 
@@ -94,7 +94,11 @@ Suggested fields:
 - routine_id
 - exercise_id
 - position
+- mode ('reps' | 'time', default 'reps')
+- rest_seconds (default 0)
 - created_at
+
+`mode` decides how every set of this exercise is completed: `reps` (a rep count, the only mode before v1.3) or `time` (a countdown in seconds). `rest_seconds` is the rest between this exercise and the next one in the routine (0 = no rest, the default and the exact behavior of routines created before v1.3); it never applies after the last exercise.
 
 ### routine_sets
 Planned sets.
@@ -105,8 +109,9 @@ Suggested fields:
 - set_number
 - planned_weight_kg
 - planned_reps
+- planned_duration_seconds
 
-Every set is independent.
+Every set is independent. `planned_duration_seconds` is only meaningful when the parent `routine_exercises.mode` is `time`; a `reps` set leaves it `null`, and a `time` set leaves `planned_reps` `null`.
 
 ## 4. Calendar
 
@@ -155,6 +160,8 @@ Suggested fields:
 - exercise_id
 - position
 - exercise_name_snapshot (optional but recommended for historical stability)
+- mode ('reps' | 'time', copied from routine_exercises.mode at start time)
+- rest_seconds (copied from routine_exercises.rest_seconds at start time)
 
 ### workout_sets
 Actual performance.
@@ -165,11 +172,12 @@ Suggested fields:
 - set_number
 - planned_weight_kg
 - planned_reps
+- planned_duration_seconds
 - actual_weight_kg
 - actual_reps
 - completed_at
 
-The planned values are copied/snapshotted into the workout so later routine edits do not rewrite history.
+The planned values are copied/snapshotted into the workout so later routine edits do not rewrite history. A `time`-mode set only ever sets `completed_at` when its countdown ends (or is otherwise marked done); it never gets `actual_weight_kg`/`actual_reps`, since there is nothing the user types in for it (FEATURES.md WK-11).
 
 ## 6. Meals
 
@@ -247,3 +255,12 @@ Implemented in `rym_app_migration_003_v1_1_progress.sql` (idempotent, single tra
 - Update `rym_app_schema.sql` and `src/types/database.types.ts`.
 
 Implemented in `rym_app_migration_004_exercise_gif.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes the column for new databases.
+
+## 12. v1.3 migration impact
+
+- Add `routine_exercises.mode` (default `'reps'`) and `routine_exercises.rest_seconds` (default `0`). No backfill needed: the defaults reproduce exactly how every routine created before v1.3 already behaved (rep-based, no rest between exercises).
+- Add `routine_sets.planned_duration_seconds` (nullable). No backfill: existing sets keep it `null`.
+- Mirror both `workout_exercises.mode`/`rest_seconds` and `workout_sets.planned_duration_seconds` the same way, for the same reason (snapshots follow their routine counterparts).
+- Update `rym_app_schema.sql` and `src/types/database.types.ts` (new `ExerciseMode` type).
+
+Implemented in `rym_app_migration_005_exercise_mode_rest.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes these columns for new databases.

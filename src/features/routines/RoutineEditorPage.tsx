@@ -73,6 +73,8 @@ export function RoutineEditorPage() {
           exerciseName: exercise.name,
           muscleGroupName: exercise.muscle_groups?.name ?? null,
           gifUrl: exercise.gif_url ?? null,
+          mode: 'reps' as const,
+          restSeconds: '0',
           sets: [emptySet()],
         },
       ],
@@ -98,7 +100,12 @@ export function RoutineEditorPage() {
       const last = ex.sets[ex.sets.length - 1]
       // Comodidad: la nueva serie parte de los valores de la anterior (luego es independiente).
       const next: RoutineSetDraft = last
-        ? { key: newKey(), plannedWeight: last.plannedWeight, plannedReps: last.plannedReps }
+        ? {
+            key: newKey(),
+            plannedWeight: last.plannedWeight,
+            plannedReps: last.plannedReps,
+            plannedDuration: last.plannedDuration,
+          }
         : emptySet()
       return { ...ex, sets: [...ex.sets, next] }
     })
@@ -277,15 +284,55 @@ export function RoutineEditorPage() {
               </div>
             </div>
 
+            <div className="mt-4 flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-textSecondary">Modo:</span>
+                <div className="flex gap-1">
+                  {(['reps', 'time'] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => updateExercise(exercise.key, (ex) => ({ ...ex, mode: m }))}
+                      className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        exercise.mode === m
+                          ? 'bg-primary text-white shadow-sm'
+                          : 'bg-background text-textSecondary hover:text-textPrimary'
+                      }`}
+                    >
+                      {m === 'reps' ? 'Repeticiones' : 'Tiempo'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <label htmlFor={`rest-${exercise.key}`} className="text-xs font-semibold text-textSecondary">
+                  Descanso tras este ejercicio:
+                </label>
+                <select
+                  id={`rest-${exercise.key}`}
+                  value={exercise.restSeconds}
+                  onChange={(e) => updateExercise(exercise.key, (ex) => ({ ...ex, restSeconds: e.target.value }))}
+                  className="h-9 rounded-lg border border-border bg-surface px-2 text-xs text-textPrimary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  {['0', '10', '15', '20', '30', '45', '60', '90', '120'].map((v) => (
+                    <option key={v} value={v}>
+                      {v === '0' ? 'Sin descanso' : `${v} s`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div className="mt-4 flex flex-col gap-2">
               <div className="grid grid-cols-[2rem_1fr_1fr_2.5rem] items-center gap-2 px-1 text-[10px] font-bold uppercase tracking-wider text-textSecondary">
                 <span>Serie</span>
                 <span>Peso (kg)</span>
-                <span>Reps</span>
+                <span>{exercise.mode === 'time' ? 'Duración (s)' : 'Reps'}</span>
                 <span />
               </div>
               {exercise.sets.map((set, setIndex) => {
                 const setErrors = errors.sets[set.key]
+                const rightError = exercise.mode === 'time' ? setErrors?.duration : setErrors?.reps
                 return (
                   <div key={set.key}>
                     <div className="grid grid-cols-[2rem_1fr_1fr_2.5rem] items-center gap-2">
@@ -301,17 +348,31 @@ export function RoutineEditorPage() {
                         aria-label={`Peso serie ${setIndex + 1}`}
                         className={inputClasses(!!setErrors?.weight)}
                       />
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        step="1"
-                        min="1"
-                        value={set.plannedReps}
-                        onChange={(e) => updateSet(exercise.key, set.key, { plannedReps: e.target.value })}
-                        placeholder="—"
-                        aria-label={`Repeticiones serie ${setIndex + 1}`}
-                        className={inputClasses(!!setErrors?.reps)}
-                      />
+                      {exercise.mode === 'time' ? (
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          step="1"
+                          min="1"
+                          value={set.plannedDuration}
+                          onChange={(e) => updateSet(exercise.key, set.key, { plannedDuration: e.target.value })}
+                          placeholder="30"
+                          aria-label={`Duración serie ${setIndex + 1}`}
+                          className={inputClasses(!!setErrors?.duration)}
+                        />
+                      ) : (
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          step="1"
+                          min="1"
+                          value={set.plannedReps}
+                          onChange={(e) => updateSet(exercise.key, set.key, { plannedReps: e.target.value })}
+                          placeholder="—"
+                          aria-label={`Repeticiones serie ${setIndex + 1}`}
+                          className={inputClasses(!!setErrors?.reps)}
+                        />
+                      )}
                       <button
                         type="button"
                         onClick={() => removeSet(exercise.key, set.key)}
@@ -321,9 +382,9 @@ export function RoutineEditorPage() {
                         <Trash2 size={14} />
                       </button>
                     </div>
-                    {(setErrors?.weight || setErrors?.reps) && (
+                    {(setErrors?.weight || rightError) && (
                       <p className="mt-1 pl-10 text-xs text-critical">
-                        {[setErrors.weight, setErrors.reps].filter(Boolean).join(' · ')}
+                        {[setErrors?.weight, rightError].filter(Boolean).join(' · ')}
                       </p>
                     )}
                   </div>

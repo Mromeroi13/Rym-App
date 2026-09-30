@@ -6,7 +6,7 @@ export interface DraftErrors {
   // errores por ejercicio (clave = key del ejercicio)
   exerciseSets: Record<string, string>
   // errores por serie (clave = key de la serie)
-  sets: Record<string, { weight?: string; reps?: string }>
+  sets: Record<string, { weight?: string; reps?: string; duration?: string }>
 }
 
 export function validateDraft(draft: RoutineDraft): DraftErrors {
@@ -27,19 +27,29 @@ export function validateDraft(draft: RoutineDraft): DraftErrors {
       errors.exerciseSets[exercise.key] = 'Añade al menos una serie'
     }
     for (const set of exercise.sets) {
-      const setErrors: { weight?: string; reps?: string } = {}
+      const setErrors: { weight?: string; reps?: string; duration?: string } = {}
       const weight = set.plannedWeight.trim()
-      const reps = set.plannedReps.trim()
 
       if (weight !== '') {
         const w = Number(weight)
         if (Number.isNaN(w) || w < 0 || w > 1000) setErrors.weight = 'Peso no válido'
       }
-      if (reps !== '') {
-        const r = Number(reps)
-        if (!Number.isInteger(r) || r < 1 || r > 999) setErrors.reps = 'Reps no válidas'
+
+      if (exercise.mode === 'time') {
+        const duration = set.plannedDuration.trim()
+        const d = Number(duration)
+        if (duration === '' || !Number.isInteger(d) || d < 1 || d > 3600) {
+          setErrors.duration = 'Duración no válida (1-3600 s)'
+        }
+      } else {
+        const reps = set.plannedReps.trim()
+        if (reps !== '') {
+          const r = Number(reps)
+          if (!Number.isInteger(r) || r < 1 || r > 999) setErrors.reps = 'Reps no válidas'
+        }
       }
-      if (setErrors.weight || setErrors.reps) errors.sets[set.key] = setErrors
+
+      if (setErrors.weight || setErrors.reps || setErrors.duration) errors.sets[set.key] = setErrors
     }
   }
 

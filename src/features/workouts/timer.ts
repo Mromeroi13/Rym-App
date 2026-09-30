@@ -12,3 +12,19 @@ export function formatDuration(totalSeconds: number): string {
   const s = safe % 60
   return [h, m, s].map((n) => String(n).padStart(2, '0')).join(':')
 }
+
+// --- Cuenta atrás (ejercicio por tiempo y descanso entre ejercicios) ---
+
+// Igual que computeElapsed, pero restando en lugar de sumando: nunca baja de 0.
+export function computeRemaining(baseSeconds: number, startedAtMs: number, nowMs: number): number {
+  const elapsed = Math.max(0, Math.floor((nowMs - startedAtMs) / 1000))
+  return Math.max(0, baseSeconds - elapsed)
+}
+
+// "00:30", "01:05" — mm:ss, sin horas (las cuentas atrás de esta app nunca llegan a durar una hora).
+export function formatCountdown(totalSeconds: number): string {
+  const safe = Math.max(0, Math.ceil(totalSeconds))
+  const m = Math.floor(safe / 60)
+  const s = safe % 60
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}

@@ -114,7 +114,7 @@ export function WorkoutPreparePage() {
                   </span>
                   <span className="shrink-0 text-right">
                     <span className="block text-sm font-semibold text-textPrimary">{re.routine_sets.length} series</span>
-                    <span className="block text-xs text-textSecondary">{summarizePlanned(re.routine_sets)}</span>
+                    <span className="block text-xs text-textSecondary">{summarizePlanned(re.routine_sets, re.mode)}</span>
                   </span>
                 </li>
               ))}

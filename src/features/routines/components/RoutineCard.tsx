@@ -48,7 +48,7 @@ export function RoutineCard({ routine, onAssign, onDelete }: RoutineCardProps) {
                   <span className="truncate text-textPrimary">{re.exercises?.name ?? 'Ejercicio'}</span>
                 </span>
                 <span className="shrink-0 text-xs font-medium text-textSecondary">
-                  {summarizeSets(re.routine_sets)}
+                  {summarizeSets(re.routine_sets, re.mode)}
                 </span>
               </li>
             ))}

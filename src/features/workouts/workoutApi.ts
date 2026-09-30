@@ -4,7 +4,7 @@ import type { RoutineWithDetails } from '@/features/routines/types'
 import type { OpenWorkout, WorkoutListItem, WorkoutWithDetails } from './workoutTypes'
 
 const WORKOUT_SELECT =
-  '*, routines(name), workout_exercises(id, exercise_id, exercise_name_snapshot, position, exercises(gif_url, muscle_groups(name)), workout_sets(*))'
+  '*, routines(name), workout_exercises(id, exercise_id, exercise_name_snapshot, position, mode, rest_seconds, exercises(gif_url, muscle_groups(name)), workout_sets(*))'
 
 type SessionUpdate = Database['public']['Tables']['workout_sessions']['Update']
 
@@ -91,6 +91,8 @@ export async function startWorkout(
           exercise_id: re.exercise_id,
           exercise_name_snapshot: re.exercises?.name ?? 'Ejercicio',
           position: index,
+          mode: re.mode,
+          rest_seconds: re.rest_seconds,
         })),
       )
       .select('id, position')
@@ -105,6 +107,7 @@ export async function startWorkout(
         set_number: set.set_number,
         planned_weight_kg: set.planned_weight_kg,
         planned_reps: set.planned_reps,
+        planned_duration_seconds: set.planned_duration_seconds,
       }))
     })
     if (setRows.length > 0) {
@@ -126,6 +129,15 @@ export async function saveSetResult(setId: string, weight: number | null, reps: 
     .from('workout_sets')
     .update({ actual_weight_kg: weight, actual_reps: reps, completed_at: completedAt })
     .eq('id', setId)
+  if (error) throw error
+  return completedAt
+}
+
+// Marca como completada una serie de un ejercicio por tiempo: la cuenta atrás ya
+// fue el "registro", así que aquí no hay peso/reps reales que guardar (WK-11).
+export async function completeTimedSet(setId: string): Promise<string> {
+  const completedAt = new Date().toISOString()
+  const { error } = await supabase.from('workout_sets').update({ completed_at: completedAt }).eq('id', setId)
   if (error) throw error
   return completedAt
 }
