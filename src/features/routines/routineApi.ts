@@ -143,3 +143,70 @@ export async function deleteRoutine(id: string): Promise<void> {
   const { error } = await supabase.from('routines').delete().eq('id', id)
   if (error) throw error
 }
+
+/**
+ * Clona una rutina existente (ejercicios y series incluidos) con el sufijo " (copia)".
+ * Devuelve el id de la nueva rutina.
+ */
+export async function duplicateRoutine(userId: string, sourceId: string): Promise<string> {
+  const source = await fetchRoutine(sourceId)
+  if (!source) throw new Error('Rutina no encontrada')
+
+  // 1. Crear la rutina nueva
+  const { data: newRoutine, error: routineError } = await supabase
+    .from('routines')
+    .insert({
+      user_id: userId,
+      name: `${source.name} (copia)`,
+      description: source.description ?? null,
+    })
+    .select('id')
+    .single()
+  if (routineError) throw routineError
+  const newRoutineId = newRoutine.id
+
+  try {
+    if (source.routine_exercises.length > 0) {
+      // 2. Insertar los routine_exercises
+      const { data: newExercises, error: exError } = await supabase
+        .from('routine_exercises')
+        .insert(
+          source.routine_exercises.map((re) => ({
+            routine_id: newRoutineId,
+            exercise_id: re.exercise_id,
+            position: re.position,
+            mode: re.mode,
+            rest_seconds: re.rest_seconds,
+          })),
+        )
+        .select('id, position')
+      if (exError) throw exError
+
+      const idByPosition = new Map((newExercises ?? []).map((row) => [row.position, row.id]))
+
+      // 3. Insertar las routine_sets de cada ejercicio
+      const setRows = source.routine_exercises.flatMap((re) => {
+        const newExId = idByPosition.get(re.position)
+        if (!newExId) throw new Error('No se pudo enlazar ejercicio al duplicar')
+        return re.routine_sets.map((s) => ({
+          routine_exercise_id: newExId,
+          set_number: s.set_number,
+          planned_weight_kg: s.planned_weight_kg ?? null,
+          planned_reps: s.planned_reps ?? null,
+          planned_duration_seconds: s.planned_duration_seconds ?? null,
+        }))
+      })
+
+      if (setRows.length > 0) {
+        const { error: setsError } = await supabase.from('routine_sets').insert(setRows)
+        if (setsError) throw setsError
+      }
+    }
+  } catch (err) {
+    // Reversión best-effort
+    await supabase.from('routines').delete().eq('id', newRoutineId)
+    throw err
+  }
+
+  return newRoutineId
+}

@@ -1,13 +1,17 @@
 -- =========================================================
 -- RyM App — Esquema base (v1.0 + migración 003, v1.1 + migración 004, v1.2
--- + migración 005, v1.3)
+-- + migración 005, v1.3 + migración 006, v1.4)
 -- Para una base NUEVA: pegar y ejecutar completo en el SQL Editor de Supabase.
 -- Para una base existente en v1.0: ejecutar rym_app_migration_003_v1_1_progress.sql,
--- después rym_app_migration_004_exercise_gif.sql y después
--- rym_app_migration_005_exercise_mode_rest.sql
--- Para una base existente en v1.1: ejecutar rym_app_migration_004_exercise_gif.sql
--- y después rym_app_migration_005_exercise_mode_rest.sql
--- Para una base existente en v1.2: ejecutar solo rym_app_migration_005_exercise_mode_rest.sql
+-- después rym_app_migration_004_exercise_gif.sql,
+-- después rym_app_migration_005_exercise_mode_rest.sql y
+-- después rym_app_migration_006_body_weight_logs.sql
+-- Para una base existente en v1.1: ejecutar rym_app_migration_004_exercise_gif.sql,
+-- después rym_app_migration_005_exercise_mode_rest.sql y
+-- después rym_app_migration_006_body_weight_logs.sql
+-- Para una base existente en v1.2: ejecutar rym_app_migration_005_exercise_mode_rest.sql
+-- y después rym_app_migration_006_body_weight_logs.sql
+-- Para una base existente en v1.3: ejecutar solo rym_app_migration_006_body_weight_logs.sql
 -- =========================================================
 
 create extension if not exists pgcrypto;
@@ -223,6 +227,24 @@ create table favorite_exercises (
 create index favorite_exercises_exercise_idx on favorite_exercises (exercise_id);
 
 -- =========================================================
+-- PESO CORPORAL HISTÓRICO (v1.4)
+-- =========================================================
+create table body_weight_logs (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references profiles(id) on delete cascade,
+  logged_date date not null,
+  weight_kg   numeric(5,2) not null check (weight_kg > 0 and weight_kg <= 400),
+  note        text,
+  created_at  timestamptz not null default now(),
+  constraint body_weight_logs_user_date_unique unique (user_id, logged_date)
+);
+
+comment on table body_weight_logs is
+  'Un registro de peso corporal por usuario y día. Usado para el gráfico histórico en Perfil y Progreso.';
+
+create index body_weight_logs_user_date_idx on body_weight_logs (user_id, logged_date desc);
+
+-- =========================================================
 -- FUNCIONES DE APOYO PARA RLS
 -- =========================================================
 create or replace function is_admin()
@@ -305,6 +327,7 @@ alter table workout_exercises enable row level security;
 alter table workout_sets enable row level security;
 alter table meals enable row level security;
 alter table favorite_exercises enable row level security;
+alter table body_weight_logs enable row level security;
 
 -- profiles: el propio usuario, o admin (para gestionar rol/estado)
 create policy profiles_select on profiles
@@ -427,6 +450,19 @@ create policy favorite_exercises_all on favorite_exercises
   for all
   using (user_id = auth.uid() and is_current_user_active())
   with check (user_id = auth.uid() and is_current_user_active());
+
+-- body_weight_logs: propietario únicamente
+create policy body_weight_logs_select on body_weight_logs
+  for select using (user_id = auth.uid());
+
+create policy body_weight_logs_insert on body_weight_logs
+  for insert with check (user_id = auth.uid());
+
+create policy body_weight_logs_update on body_weight_logs
+  for update using (user_id = auth.uid());
+
+create policy body_weight_logs_delete on body_weight_logs
+  for delete using (user_id = auth.uid());
 
 -- =========================================================
 -- SEED: muscle_groups

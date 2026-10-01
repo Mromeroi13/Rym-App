@@ -19,6 +19,41 @@ export type ExerciseMode = 'reps' | 'time'
 export interface Database {
   public: {
     Tables: {
+      body_weight_logs: {
+        Row: {
+          id: string
+          user_id: string
+          logged_date: string
+          weight_kg: number
+          note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          logged_date: string
+          weight_kg: number
+          note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          logged_date?: string
+          weight_kg?: number
+          note?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'body_weight_logs_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       profiles: {
         Row: {
           id: string

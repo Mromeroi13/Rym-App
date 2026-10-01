@@ -4,20 +4,36 @@ import { History, Plus } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { ExerciseExplorer } from '@/features/exercises/ExerciseExplorer'
 import { OpenWorkoutBanner } from '@/features/workouts/components/OpenWorkoutBanner'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { useToast } from '@/components/toast'
 import { useRoutines } from './hooks/useRoutines'
-import { deleteRoutine } from './routineApi'
+import { deleteRoutine, duplicateRoutine } from './routineApi'
 import { RoutineCard } from './components/RoutineCard'
 import { AssignRoutineDialog } from './components/AssignRoutineDialog'
 import type { RoutineWithDetails } from './types'
 
 export function RoutinesPage() {
   const { routines, loading, error, refresh } = useRoutines()
+  const { profile } = useAuth()
   const { show } = useToast()
   const [assigning, setAssigning] = useState<RoutineWithDetails | null>(null)
   const [deleting, setDeleting] = useState<RoutineWithDetails | null>(null)
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null)
+
+  async function handleDuplicate(routine: RoutineWithDetails) {
+    if (!profile) return
+    setDuplicatingId(routine.id)
+    try {
+      await duplicateRoutine(profile.id, routine.id)
+      show(`«${routine.name}» duplicada correctamente.`, 'success')
+      refresh()
+    } catch {
+      show('No se pudo duplicar la rutina. Inténtalo de nuevo.', 'error')
+    }
+    setDuplicatingId(null)
+  }
 
   async function confirmDelete() {
     if (!deleting) return
@@ -97,7 +113,7 @@ export function RoutinesPage() {
       {!loading && !error && routines.length > 0 && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {routines.map((routine) => (
-            <RoutineCard key={routine.id} routine={routine} onAssign={setAssigning} onDelete={setDeleting} />
+            <RoutineCard key={routine.id} routine={routine} onAssign={setAssigning} onDuplicate={handleDuplicate} onDelete={setDeleting} duplicating={duplicatingId === routine.id} />
           ))}
         </div>
       )}

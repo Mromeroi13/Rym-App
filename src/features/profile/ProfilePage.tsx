@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/toast'
 import { calculateBmi } from './bmi'
+import { BodyWeightSection } from './components/BodyWeightSection'
 
 interface FieldErrors {
   username?: string
@@ -289,6 +290,11 @@ export function ProfilePage() {
             </div>
           </div>
         </form>
+      </div>
+
+      {/* Historial de peso corporal */}
+      <div className="rounded-xl border border-border bg-surface p-6 md:p-8">
+        <BodyWeightSection />
       </div>
     </div>
   )

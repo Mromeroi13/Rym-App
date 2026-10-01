@@ -1,17 +1,19 @@
 import { Link } from 'react-router-dom'
-import { CalendarPlus, Pencil, Play, Repeat, Trash2 } from 'lucide-react'
+import { CalendarPlus, Copy, Pencil, Play, Repeat, Trash2 } from 'lucide-react'
 import type { RoutineWithDetails } from '../types'
 import { countSets, summarizeSets } from '../utils'
 
 interface RoutineCardProps {
   routine: RoutineWithDetails
   onAssign: (routine: RoutineWithDetails) => void
+  onDuplicate: (routine: RoutineWithDetails) => void
   onDelete: (routine: RoutineWithDetails) => void
+  duplicating?: boolean
 }
 
 const MAX_VISIBLE = 5
 
-export function RoutineCard({ routine, onAssign, onDelete }: RoutineCardProps) {
+export function RoutineCard({ routine, onAssign, onDuplicate, onDelete, duplicating = false }: RoutineCardProps) {
   const exercises = routine.routine_exercises
   const visible = exercises.slice(0, MAX_VISIBLE)
   const hidden = exercises.length - visible.length
@@ -81,6 +83,16 @@ export function RoutineCard({ routine, onAssign, onDelete }: RoutineCardProps) {
         >
           <Pencil size={16} />
         </Link>
+        <button
+          type="button"
+          onClick={() => onDuplicate(routine)}
+          disabled={duplicating}
+          title="Duplicar rutina"
+          aria-label="Duplicar rutina"
+          className="rounded-xl bg-background p-2.5 text-textSecondary hover:bg-border/60 hover:text-textPrimary disabled:opacity-50"
+        >
+          <Copy size={16} />
+        </button>
         <button
           type="button"
           onClick={() => onDelete(routine)}
