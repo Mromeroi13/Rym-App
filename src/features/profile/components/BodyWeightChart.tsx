@@ -110,9 +110,14 @@ export function BodyWeightChart({ logs, loading, error, onRetry }: BodyWeightCha
       {points.length >= 2 && (
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Inicio', value: formatKg(first.weight), neutral: true },
-            { label: 'Actual', value: formatKg(last.weight), neutral: true },
-            { label: 'Cambio', value: diff === null ? '—' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg`, neutral: false, diff },
+            { label: 'Inicio', value: formatKg(first.weight), neutral: true, diff: null },
+            { label: 'Actual', value: formatKg(last.weight), neutral: true, diff: null },
+            {
+              label: 'Cambio',
+              value: diff === null ? '—' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg`,
+              neutral: false,
+              diff,
+            },
           ].map(({ label, value, diff: d, neutral }) => (
             <div key={label} className="rounded-xl bg-background p-3 text-center">
               <p className="text-[10px] font-bold uppercase tracking-wider text-textSecondary">{label}</p>

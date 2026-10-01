@@ -249,3 +249,35 @@ Admins retain all normal-user functionality.
 - Consistent validation and error states.
 - User-owned records must be isolated through authorization rules.
 - Admin-only operations must be enforced server-side, not only by hiding UI.
+
+---
+
+# Features v1.4 — Additions
+
+## Profile
+
+### PROF-04 Body weight history
+A user can log their body weight (in kg) with an optional date and note. One record per day maximum (upsert on conflict). The history is displayed as a line chart with range filters (1 mes, 3 meses, 6 meses, Todo), three summary stats (Inicio / Actual / Cambio), a dashed average reference line, and an expandable table of all entries with per-row delta vs the previous entry. Entries can be deleted with confirmation. Available on both the Profile page and the Progress page.
+
+## Routines
+
+### RT-13 Duplicate routine
+A user can duplicate any of their routines. The copy is created with the name «original name» (copia), preserving all exercises (in the same order), their mode and rest_seconds, and all sets with their planned weight, reps, and duration. Calendar assignments are not copied. If the operation fails after the routine row is created, the partial copy is deleted (best-effort rollback). Success and error are communicated via toast.
+
+## Home
+
+### HOME-07 Training streak
+Home shows a StreakCard with the user's current training streak and best streak, computed as defined in METRICS.md section 9. The card shows a flame icon, seven dot indicators for the last seven days, and a "¡Hoy entrenado!" badge when the user has already trained today.
+
+## Cross-cutting
+
+### Notification toasts
+Every create, update, delete and assign action across the app emits a toast notification (success / error / info) via a global ToastProvider mounted at the root. Toasts auto-dismiss after 4 seconds and can be closed manually.
+
+### Page transition animations
+Navigating between the six main tabs slides the content in from the correct direction (right when going forward in tab order, left when going back). Sub-pages (editor, history, admin) fade up. The active tab icon in the mobile bottom nav performs a pop animation and a dot indicator animates in at the top of the icon.
+
+## Workouts — v1.4 additions
+
+### WK-13 Personal records (PRs)
+When a set is completed during a workout and its recorded weight is a new personal record for that exercise (as defined in METRICS.md section 10), a PRBanner appears above the "Completar serie" button celebrating the achievement. The banner shows the exercise name and new record weight, auto-dismisses after 4 seconds with a visible countdown bar, and can be tapped to close immediately. Only one banner is shown at a time. Time-mode sets and sets without weight are excluded from PR detection.

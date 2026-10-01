@@ -264,3 +264,14 @@ Implemented in `rym_app_migration_004_exercise_gif.sql` (idempotent, single tran
 - Update `rym_app_schema.sql` and `src/types/database.types.ts` (new `ExerciseMode` type).
 
 Implemented in `rym_app_migration_005_exercise_mode_rest.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes these columns for new databases.
+
+## 13. v1.4 migration impact
+
+- Add table `body_weight_logs` with columns `id`, `user_id` (FK → profiles), `logged_date` (date), `weight_kg` (numeric 5,2, check > 0 and ≤ 400), `note` (nullable text), `created_at`.
+- Unique constraint `(user_id, logged_date)` — one record per user per day.
+- RLS with four explicit policies (select / insert / update / delete), each scoped to `auth.uid() = user_id`.
+- Index on `(user_id, logged_date desc)` for chronological reads.
+- No backfill: existing users start with an empty history.
+- Update `rym_app_schema.sql` and `src/types/database.types.ts`.
+
+Implemented in `rym_app_migration_006_body_weight_logs.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes the table for new databases.

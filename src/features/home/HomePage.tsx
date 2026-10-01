@@ -14,6 +14,8 @@ import { MEAL_SLOT_COUNT, countLogged } from '@/features/meals/mealSlots'
 import { formatLongDate, todayKey } from '@/utils/dates'
 import { useMonthlyProgress } from '@/features/progress/hooks/useMonthlyProgress'
 import { MonthlyProgressCard } from './components/MonthlyProgressCard'
+import { StreakCard } from './components/StreakCard'
+import { useStreak } from './hooks/useStreak'
 
 const MAX_VISIBLE_EXERCISES = 5
 const RECENT_WORKOUTS = 3
@@ -26,6 +28,7 @@ export function HomePage() {
   const { routines, loading: routinesLoading, error: routinesError } = useRoutines()
   const meals = useMeals(today, today)
   const monthlyProgress = useMonthlyProgress()
+  const streakData = useStreak()
 
   const [recent, setRecent] = useState<WorkoutListItem[] | null>(null)
   const [recentError, setRecentError] = useState(false)
@@ -63,7 +66,7 @@ export function HomePage() {
 
       <OpenWorkoutBanner />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem] lg:items-start">
         {/* Rutina de hoy */}
         <div className="rounded-xl border border-border bg-surface p-5 md:p-6">
           <span className="text-[10px] font-bold uppercase tracking-wider text-textSecondary">Asignado para hoy</span>
@@ -184,6 +187,13 @@ export function HomePage() {
             loading={monthlyProgress.loading}
             error={monthlyProgress.error}
             onRetry={monthlyProgress.refresh}
+          />
+
+          {/* Racha de entrenamientos */}
+          <StreakCard
+            streak={streakData.streak}
+            loading={streakData.loading}
+            error={streakData.error}
           />
 
           {/* Últimos entrenamientos */}

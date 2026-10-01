@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { toDateKey } from '@/utils/dates'
 import type { Database } from '@/types/database.types'
 import type { RoutineWithDetails } from '@/features/routines/types'
 import type { OpenWorkout, WorkoutListItem, WorkoutWithDetails } from './workoutTypes'
@@ -54,6 +55,53 @@ export async function fetchHistory(): Promise<WorkoutListItem[]> {
     .limit(100)
   if (error) throw error
   return (data ?? []) as unknown as WorkoutListItem[]
+}
+
+/**
+ * Devuelve el mejor peso registrado históricamente para un ejercicio
+ * en sesiones YA completadas (excluye la sesión activa).
+ * Devuelve null si el usuario nunca ha entrenado ese ejercicio con peso.
+ */
+export async function fetchBestWeightForExercise(
+  exerciseId: string,
+  currentSessionId: string,
+): Promise<number | null> {
+  const { data, error } = await supabase
+    .from('workout_sets')
+    .select('actual_weight_kg, workout_exercises!inner(exercise_id, workout_session_id)')
+    .eq('workout_exercises.exercise_id', exerciseId)
+    .neq('workout_exercises.workout_session_id', currentSessionId)
+    .not('actual_weight_kg', 'is', null)
+    .order('actual_weight_kg', { ascending: false })
+    .limit(1)
+  if (error) throw error
+  const row = data?.[0] as { actual_weight_kg: number } | undefined
+  return row?.actual_weight_kg ?? null
+}
+ /*
+ al menos un entrenamiento. Usado para calcular la racha sin cargar todo el historial.
+ */
+
+/**
+ * Devuelve el conjunto de fechas ('YYYY-MM-DD') en las que el usuario completó
+ * al menos un entrenamiento. Usado para calcular la racha sin cargar todo el historial.
+ */
+export async function fetchCompletedDates(): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('started_at, scheduled_date')
+    .eq('status', 'completed')
+  if (error) throw error
+  const dates = new Set<string>()
+  for (const row of data ?? []) {
+    if (row.scheduled_date) {
+      dates.add(row.scheduled_date)
+    } else {
+      const d = new Date(row.started_at)
+      dates.add(toDateKey(d))
+    }
+  }
+  return dates
 }
 
 /**

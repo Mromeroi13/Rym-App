@@ -7,6 +7,7 @@ import { useBodyWeightLogs } from '@/features/profile/hooks/useBodyWeightLogs'
 import { BodyWeightChart } from '@/features/profile/components/BodyWeightChart'
 import { BodyWeightLogForm } from '@/features/profile/components/BodyWeightLogForm'
 import { ExerciseSelector } from './components/ExerciseSelector'
+import { ExerciseProgressionChart } from './components/ExerciseProgressionChart'
 import { WeeklyMuscleGroupsCard } from './components/WeeklyMuscleGroupsCard'
 
 export function ProgressPage() {

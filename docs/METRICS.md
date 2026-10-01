@@ -100,3 +100,37 @@ The detail shows, for the selected date:
 | Volume | Total volume (section 3) | Planned volume, labelled "Volumen planificado" |
 
 If several completed workouts fulfill the same date, each one is shown as its own block.
+
+## 9. Training streak
+
+The streak is computed from the set of calendar dates on which the user completed at least one workout (status = `completed`). Abandoned, active and paused workouts are excluded.
+
+**Date resolution rule** (same as section 7):
+A completed workout's date is its `scheduled_date` when present; otherwise the local calendar date of `started_at`.
+
+**Current streak** (`current`):
+Starting from today and stepping backwards one day at a time, count every consecutive day that has at least one completed workout. If the user has already trained today, the count starts from today; otherwise it starts from yesterday (so the streak is not reset merely because today's workout has not been done yet). A gap of even one day resets the count.
+
+**Best streak** (`best`):
+The longest sequence of consecutive days with at least one completed workout across the entire history.
+
+**Display (Home → StreakCard)**:
+- Numeric count of `current` days.
+- Flame icon — filled and colored when `current > 0`, outline when 0.
+- Seven dot indicators for the last seven days (filled = trained, empty = not trained).
+- If `current > 7` the overflow is shown as `+N` after the dots.
+- `best` shown below as secondary text.
+- A "¡Hoy entrenado!" badge when `trainedToday` is true.
+- On error the card is hidden (no crash, no blank space).
+
+## 10. Personal records (PRs)
+
+A personal record is detected in real time during a workout execution, immediately after a set is saved.
+
+**Condition:** a set is a PR when `actual_weight_kg > previous_best`, where `previous_best` is the highest `actual_weight_kg` ever recorded for that exercise across all prior completed sessions (excluding the current one). If the user has never recorded a weight for that exercise before, the first set with weight > 0 is also a PR.
+
+**Exclusions:** time-mode sets (no weight) and sets with `actual_weight_kg = null` or ≤ 0 are never PRs.
+
+**Cache:** the best weight per exercise is fetched once per exercise per session (on the first completed set for that exercise) and cached in memory for the rest of the session. After a PR is detected the cache is updated to the new value, so a second PR within the same session requires beating the first.
+
+**Display:** a `PRBanner` appears above the "Completar serie" button. It shows the exercise name, the new record weight, and auto-dismisses after 4 seconds. A progress bar visualises the remaining time. Tapping the banner dismisses it immediately. Only one PR banner is shown at a time; a new PR replaces any previous one still visible.

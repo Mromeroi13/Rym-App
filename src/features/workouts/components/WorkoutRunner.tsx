@@ -12,7 +12,9 @@ import {
   parseSetInput,
   type SetInput,
 } from '../workoutUtils'
-import { clearSetCompletion, completeTimedSet, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { clearSetCompletion, completeTimedSet, fetchBestWeightForExercise, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { isPR } from '../prUtils'
+import { PRBanner } from './PRBanner'
 import { playCountdownEndSound } from '../sound'
 import { NumberStepper } from './NumberStepper'
 import { TimedSetCountdown } from './TimedSetCountdown'
@@ -56,6 +58,9 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const watch = useStopwatch(workout.elapsed_seconds, timerEnabled && workout.status === 'active')
 
   const [savingSetId, setSavingSetId] = useState<string | null>(null)
+  // PR: caché de mejor peso histórico por exercise_id (null = sin historial previo)
+  const bestWeightCache = useRef<Map<string, number | null>>(new Map())
+  const [activePR, setActivePR] = useState<{ exerciseName: string; weightKg: number } | null>(null)
   const [inputError, setInputError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [dialog, setDialog] = useState<Dialog>(null)
@@ -198,6 +203,27 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
       }
       const nextSets = { ...sets, [selectedSet.id]: updated }
       setSets(nextSets)
+
+      // Detección de PR: solo si se registró peso
+      if (parsed.weight !== null && parsed.weight > 0) {
+        const exId = currentExercise.exercise_id
+        let prevBest = bestWeightCache.current.get(exId)
+        if (prevBest === undefined) {
+          // Primera vez que completamos una serie de este ejercicio en esta sesión
+          try {
+            prevBest = await fetchBestWeightForExercise(exId, workout.id)
+          } catch {
+            prevBest = null // si falla la query, no bloqueamos el flujo
+          }
+          bestWeightCache.current.set(exId, prevBest ?? null)
+        }
+        if (isPR(parsed.weight, prevBest ?? null)) {
+          // Actualizar caché con el nuevo récord
+          bestWeightCache.current.set(exId, parsed.weight)
+          setActivePR({ exerciseName: currentExercise.exercise_name_snapshot, weightKg: parsed.weight })
+        }
+      }
+
       // Pasar a la siguiente serie pendiente del ejercicio (si queda alguna).
       const list = currentExercise.workout_sets.map((s) => nextSets[s.id])
       const next =
@@ -540,6 +566,14 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
 
                   {inputError && <p className="mt-3 text-sm text-critical">{inputError}</p>}
 
+                  {activePR && (
+                    <PRBanner
+                      exerciseName={activePR.exerciseName}
+                      weightKg={activePR.weightKg}
+                      onDismiss={() => setActivePR(null)}
+                    />
+                  )}
+
                   <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                     <button
                       type="button"
@@ -547,7 +581,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                       disabled={editingDisabled}
                       className="inline-flex h-16 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-5 text-lg font-bold text-white shadow-md transition-all active:scale-[0.97] hover:bg-primary/90 disabled:opacity-60 sm:h-14 sm:rounded-xl sm:text-base sm:font-semibold sm:shadow-sm"
                     >
-                      <Check size={40} />
+                      <Check size={22} />
                       {savingSetId === selectedSet.id
                         ? 'Guardando...'
                         : selectedIsDone

@@ -12,3 +12,8 @@ h3,
 h4 {
   @apply font-heading;
 }
+
+@keyframes pr-progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
