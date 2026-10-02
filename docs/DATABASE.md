@@ -275,3 +275,11 @@ Implemented in `rym_app_migration_005_exercise_mode_rest.sql` (idempotent, singl
 - Update `rym_app_schema.sql` and `src/types/database.types.ts`.
 
 Implemented in `rym_app_migration_006_body_weight_logs.sql` (idempotent, single transaction). Existing databases run only that file; `rym_app_schema.sql` already includes the table for new databases.
+
+## 14. WK-14: replace exercise during session
+
+No new tables. Two UPDATE operations on existing tables:
+- `workout_exercises`: sets `exercise_id` and `exercise_name_snapshot` for the target row.
+- `workout_sets`: clears `completed_at`, `actual_weight_kg`, `actual_reps` for sets of that exercise that were already completed (`.not('completed_at', 'is', null)`). Planned values are not touched.
+
+Both operations are performed by `replaceWorkoutExercise(workoutExerciseId, newExerciseId, newExerciseName)` in `workoutApi.ts`. There is no transaction wrapper — if the second UPDATE fails after the first succeeds, the exercise name will be updated but completed sets will not be cleared. This edge case is acceptable: the user will see the new exercise name with previously-recorded data, which can be manually cleared by undoing each set.

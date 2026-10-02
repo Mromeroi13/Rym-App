@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
+import { ArrowLeftRight, Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
 import { useToast } from '@/components/toast'
 import type { WorkoutExerciseDetail, WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
 import { useStopwatch } from '../hooks/useStopwatch'
@@ -12,7 +12,8 @@ import {
   parseSetInput,
   type SetInput,
 } from '../workoutUtils'
-import { clearSetCompletion, completeTimedSet, fetchBestWeightForExercise, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { clearSetCompletion, completeTimedSet, fetchBestWeightForExercise, replaceWorkoutExercise, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { ReplaceExerciseModal } from './ReplaceExerciseModal'
 import { isPR } from '../prUtils'
 import { PRBanner } from './PRBanner'
 import { playCountdownEndSound } from '../sound'
@@ -72,9 +73,15 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const [showGif, setShowGif] = useState(false)
   // Fase de ejecución (ejercicio normal o descanso entre ejercicios, WK-12).
   const [phase, setPhase] = useState<Phase>({ kind: 'exercise' })
+  const [showReplace, setShowReplace] = useState(false)
+  const [replacing, setReplacing] = useState(false)
+  // Lista mutable de ejercicios (refleja sustituciones en tiempo real sin recargar la sesión)
+  const [localExercises, setLocalExercises] = useState<WorkoutExerciseDetail[]>(exercises)
 
-  const currentExercise = exercises[exIndex]
+  const currentExercise = localExercises[exIndex]
   const currentSets = currentExercise?.workout_sets.map((s) => sets[s.id]) ?? []
+  // Alias para que el resto del código que aún usa `exercises` siga funcionando
+  const allExercises = localExercises
   const selectedSet = selectedSetId ? sets[selectedSetId] : undefined
   const selectedInput = selectedSetId ? inputs[selectedSetId] : undefined
 
@@ -357,6 +364,54 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
     }
   }
 
+  async function handleReplace(newExerciseId: string, newExerciseName: string) {
+    if (!currentExercise) return
+    setReplacing(true)
+    try {
+      await replaceWorkoutExercise(currentExercise.id, newExerciseId, newExerciseName)
+      // Actualizar el estado local: cambiar exercise_id, nombre y limpiar completed_at de las series
+      setLocalExercises((prev) =>
+        prev.map((ex, i) =>
+          i !== exIndex
+            ? ex
+            : {
+                ...ex,
+                exercise_id: newExerciseId,
+                exercise_name_snapshot: newExerciseName,
+                exercises: null, // gif desconocido hasta reload; se oculta el botón de gif si es null
+              },
+        ),
+      )
+      setSets((prev) => {
+        const next = { ...prev }
+        currentExercise.workout_sets.forEach((s) => {
+          if (next[s.id]?.completed_at) {
+            next[s.id] = { ...next[s.id], completed_at: null, actual_weight_kg: null, actual_reps: null }
+          }
+        })
+        return next
+      })
+      // Resetear inputs de las series de este ejercicio
+      setInputs((prev) => {
+        const next = { ...prev }
+        currentExercise.workout_sets.forEach((s) => {
+          next[s.id] = baseInput(s)
+        })
+        return next
+      })
+      // Limpiar caché de PR para el ejercicio sustituido
+      bestWeightCache.current.delete(currentExercise.exercise_id)
+      // Seleccionar la primera serie del ejercicio nuevo
+      const firstSet = currentExercise.workout_sets[0]
+      if (firstSet) setSelectedSetId(firstSet.id)
+      show(`Ejercicio cambiado a «${newExerciseName}».`, 'success')
+      setShowReplace(false)
+    } catch {
+      show('No se pudo cambiar el ejercicio. Inténtalo de nuevo.', 'error')
+    }
+    setReplacing(false)
+  }
+
   if (!currentExercise) {
     return (
       <div className="rounded-xl border border-border bg-surface p-6 text-sm text-textSecondary">
@@ -480,6 +535,14 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                       className="rounded-lg p-2 text-textSecondary hover:bg-background"
                     >
                       <TrendingUp size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowReplace(true)}
+                      title="Cambiar ejercicio"
+                      className="rounded-lg p-2 text-textSecondary hover:bg-primary/10 hover:text-primary"
+                    >
+                      <ArrowLeftRight size={18} />
                     </button>
                   </div>
                 </div>
@@ -746,6 +809,16 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
           exerciseName={currentExercise.exercise_name_snapshot}
           gifUrl={currentExercise.exercises?.gif_url ?? null}
           onClose={() => setShowGif(false)}
+        />
+      )}
+
+      {showReplace && currentExercise && (
+        <ReplaceExerciseModal
+          currentExerciseName={currentExercise.exercise_name_snapshot}
+          currentExerciseIds={localExercises.map((e) => e.exercise_id)}
+          onClose={() => setShowReplace(false)}
+          onReplace={handleReplace}
+          replacing={replacing}
         />
       )}
     </div>

@@ -78,8 +78,8 @@ export async function fetchBestWeightForExercise(
   const row = data?.[0] as { actual_weight_kg: number } | undefined
   return row?.actual_weight_kg ?? null
 }
- /*
- al menos un entrenamiento. Usado para calcular la racha sin cargar todo el historial.
+ /**
+  * al menos un entrenamiento. Usado para calcular la racha sin cargar todo el historial.
  */
 
 /**
@@ -198,4 +198,32 @@ export async function clearSetCompletion(setId: string): Promise<void> {
 export async function updateWorkoutSession(id: string, patch: SessionUpdate): Promise<void> {
   const { error } = await supabase.from('workout_sessions').update(patch).eq('id', id)
   if (error) throw error
+}
+
+/**
+ * Sustituye el ejercicio de un workout_exercise por otro del catálogo.
+ * Solo actualiza exercise_id y exercise_name_snapshot; las series planificadas
+ * (peso, reps, duración) se conservan tal cual, y las series ya completadas
+ * se limpian (completed_at = null, actual_weight_kg = null, actual_reps = null)
+ * para que el usuario las vuelva a registrar con el ejercicio nuevo.
+ */
+export async function replaceWorkoutExercise(
+  workoutExerciseId: string,
+  newExerciseId: string,
+  newExerciseName: string,
+): Promise<void> {
+  // 1. Actualizar el workout_exercise
+  const { error: exError } = await supabase
+    .from('workout_exercises')
+    .update({ exercise_id: newExerciseId, exercise_name_snapshot: newExerciseName })
+    .eq('id', workoutExerciseId)
+  if (exError) throw exError
+
+  // 2. Limpiar las series ya completadas de ese ejercicio
+  const { error: setsError } = await supabase
+    .from('workout_sets')
+    .update({ completed_at: null, actual_weight_kg: null, actual_reps: null })
+    .eq('workout_exercise_id', workoutExerciseId)
+    .not('completed_at', 'is', null)
+  if (setsError) throw setsError
 }

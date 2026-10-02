@@ -281,3 +281,28 @@ Navigating between the six main tabs slides the content in from the correct dire
 
 ### WK-13 Personal records (PRs)
 When a set is completed during a workout and its recorded weight is a new personal record for that exercise (as defined in METRICS.md section 10), a PRBanner appears above the "Completar serie" button celebrating the achievement. The banner shows the exercise name and new record weight, auto-dismisses after 4 seconds with a visible countdown bar, and can be tapped to close immediately. Only one banner is shown at a time. Time-mode sets and sets without weight are excluded from PR detection.
+
+## Workouts — WK-14 Replace exercise during session
+
+A user can substitute any exercise in a workout session for any other exercise from the catalogue, at any time during the session (before, during or after completing sets of that exercise).
+
+**Entry point:** a swap icon button (⇄) next to the GIF and progression buttons in the exercise header. Tapping it opens the `ReplaceExerciseModal`.
+
+**ReplaceExerciseModal:**
+- Shows all active catalogue exercises (same source as the explorer).
+- Full-text search by name (client-side, instant).
+- Single-selection list; the selected exercise is highlighted and labelled "Seleccionado".
+- Confirms with a "Usar «name»" primary button, disabled until a selection is made.
+- Warns the user that already-completed sets will be reset.
+
+**Replacement logic (client + server):**
+1. `workout_exercises.exercise_id` and `exercise_name_snapshot` are updated to the new exercise.
+2. All `workout_sets` belonging to that `workout_exercise` that have a `completed_at` are cleared (`completed_at = null`, `actual_weight_kg = null`, `actual_reps = null`). Planned values (weight, reps, duration) are preserved — the user only needs to redo the actual recording.
+3. The PR cache for the replaced exercise is invalidated so PR detection works correctly for the new exercise from the first set.
+4. The local exercise list is updated in-place (no page reload) and the first set of the new exercise is automatically selected.
+5. A success toast confirms the change; an error toast appears on failure with no state mutation.
+
+**Constraints:**
+- Only the current exercise can be substituted from the runner (no swapping arbitrary exercises mid-list).
+- The routine template is not modified — only the workout session snapshot is changed.
+- The history record will reflect the exercise actually performed, not the originally planned one.
