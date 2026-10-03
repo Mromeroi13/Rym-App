@@ -1,17 +1,22 @@
 -- =========================================================
 -- RyM App — Esquema base (v1.0 + migración 003, v1.1 + migración 004, v1.2
--- + migración 005, v1.3 + migración 006, v1.4)
+-- + migración 005, v1.3 + migración 006, v1.4 + migración 007, v1.5)
 -- Para una base NUEVA: pegar y ejecutar completo en el SQL Editor de Supabase.
 -- Para una base existente en v1.0: ejecutar rym_app_migration_003_v1_1_progress.sql,
 -- después rym_app_migration_004_exercise_gif.sql,
--- después rym_app_migration_005_exercise_mode_rest.sql y
--- después rym_app_migration_006_body_weight_logs.sql
+-- después rym_app_migration_005_exercise_mode_rest.sql,
+-- después rym_app_migration_006_body_weight_logs.sql y
+-- después rym_app_migration_007_set_rest_seconds.sql
 -- Para una base existente en v1.1: ejecutar rym_app_migration_004_exercise_gif.sql,
--- después rym_app_migration_005_exercise_mode_rest.sql y
--- después rym_app_migration_006_body_weight_logs.sql
--- Para una base existente en v1.2: ejecutar rym_app_migration_005_exercise_mode_rest.sql
--- y después rym_app_migration_006_body_weight_logs.sql
--- Para una base existente en v1.3: ejecutar solo rym_app_migration_006_body_weight_logs.sql
+-- después rym_app_migration_005_exercise_mode_rest.sql,
+-- después rym_app_migration_006_body_weight_logs.sql y
+-- después rym_app_migration_007_set_rest_seconds.sql
+-- Para una base existente en v1.2: ejecutar rym_app_migration_005_exercise_mode_rest.sql,
+-- después rym_app_migration_006_body_weight_logs.sql y
+-- después rym_app_migration_007_set_rest_seconds.sql
+-- Para una base existente en v1.3: ejecutar rym_app_migration_006_body_weight_logs.sql
+-- y después rym_app_migration_007_set_rest_seconds.sql
+-- Para una base existente en v1.4: ejecutar solo rym_app_migration_007_set_rest_seconds.sql
 -- =========================================================
 
 create extension if not exists pgcrypto;
@@ -121,11 +126,14 @@ create table routine_sets (
   planned_weight_kg         numeric(6,2),
   planned_reps              integer,
   planned_duration_seconds  integer check (planned_duration_seconds is null or planned_duration_seconds > 0),
+  set_rest_seconds          integer not null default 0,
   unique (routine_exercise_id, set_number)
 );
 
 comment on column routine_sets.planned_duration_seconds is
   'Duración planificada en segundos, solo relevante cuando routine_exercises.mode = ''time''. Null en series por repeticiones.';
+comment on column routine_sets.set_rest_seconds is
+  'Tiempo de descanso en segundos después de ESTA serie (antes de la siguiente). 0 = sin descanso por serie (comportamiento previo a v1.5). Añadido en migración 007.';
 
 create index routines_user_idx on routines (user_id);
 create index routine_exercises_routine_idx on routine_exercises (routine_id);
@@ -182,6 +190,7 @@ create table workout_sets (
   planned_weight_kg         numeric(6,2),
   planned_reps              integer,
   planned_duration_seconds  integer check (planned_duration_seconds is null or planned_duration_seconds > 0),
+  set_rest_seconds          integer not null default 0,
   actual_weight_kg          numeric(6,2),
   actual_reps               integer,
   completed_at              timestamptz,
@@ -190,6 +199,8 @@ create table workout_sets (
 
 comment on column workout_sets.planned_duration_seconds is
   'Copiado de routine_sets.planned_duration_seconds al iniciar el entrenamiento. Una serie por tiempo se marca completada (completed_at) al terminar la cuenta atrás; no registra actual_reps/actual_weight_kg.';
+comment on column workout_sets.set_rest_seconds is
+  'Snapshot de routine_sets.set_rest_seconds copiado al iniciar el entrenamiento. Añadido en migración 007.';
 
 create index workout_sessions_user_idx on workout_sessions (user_id);
 create index workout_sessions_user_status_started_idx on workout_sessions (user_id, status, started_at);

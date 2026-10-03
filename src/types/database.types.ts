@@ -19,41 +19,6 @@ export type ExerciseMode = 'reps' | 'time'
 export interface Database {
   public: {
     Tables: {
-      body_weight_logs: {
-        Row: {
-          id: string
-          user_id: string
-          logged_date: string
-          weight_kg: number
-          note: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          logged_date: string
-          weight_kg: number
-          note?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          logged_date?: string
-          weight_kg?: number
-          note?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'body_weight_logs_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          }
-        ]
-      }
       profiles: {
         Row: {
           id: string
@@ -250,6 +215,7 @@ export interface Database {
           planned_weight_kg: number | null
           planned_reps: number | null
           planned_duration_seconds: number | null
+          set_rest_seconds: number
         }
         Insert: {
           id?: string
@@ -258,6 +224,7 @@ export interface Database {
           planned_weight_kg?: number | null
           planned_reps?: number | null
           planned_duration_seconds?: number | null
+          set_rest_seconds?: number
         }
         Update: {
           id?: string
@@ -266,6 +233,7 @@ export interface Database {
           planned_weight_kg?: number | null
           planned_reps?: number | null
           planned_duration_seconds?: number | null
+          set_rest_seconds?: number
         }
         Relationships: []
       }
@@ -370,6 +338,7 @@ export interface Database {
           actual_weight_kg: number | null
           actual_reps: number | null
           completed_at: string | null
+          set_rest_seconds: number
         }
         Insert: {
           id?: string
@@ -381,6 +350,7 @@ export interface Database {
           actual_weight_kg?: number | null
           actual_reps?: number | null
           completed_at?: string | null
+          set_rest_seconds?: number
         }
         Update: {
           id?: string
@@ -392,6 +362,7 @@ export interface Database {
           actual_weight_kg?: number | null
           actual_reps?: number | null
           completed_at?: string | null
+          set_rest_seconds?: number
         }
         Relationships: []
       }

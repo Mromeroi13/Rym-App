@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase'
 import type { RoutineDraft, RoutineWithDetails } from './types'
 
 const ROUTINE_SELECT =
-  '*, routine_exercises(id, exercise_id, position, mode, rest_seconds, exercises(name, gif_url, muscle_groups(name)), routine_sets(id, routine_exercise_id, set_number, planned_weight_kg, planned_reps, planned_duration_seconds))'
+  '*, routine_exercises(id, exercise_id, position, mode, rest_seconds, exercises(name, gif_url, muscle_groups(name)), routine_sets(id, routine_exercise_id, set_number, planned_weight_kg, planned_reps, planned_duration_seconds, set_rest_seconds))'
 
 function normalize(routine: RoutineWithDetails): RoutineWithDetails {
   return {
@@ -111,6 +111,7 @@ export async function saveRoutine(
           planned_weight_kg: toNullableNumber(set.plannedWeight),
           planned_reps: exercise.mode === 'time' ? null : toNullableNumber(set.plannedReps),
           planned_duration_seconds: exercise.mode === 'time' ? toNullableNumber(set.plannedDuration) : null,
+          set_rest_seconds: Number(set.setRestSeconds) || 0,
         }))
       })
 
@@ -145,36 +146,30 @@ export async function deleteRoutine(id: string): Promise<void> {
 }
 
 /**
- * Clona una rutina existente (ejercicios y series incluidos) con el sufijo " (copia)".
+ * Crea una copia de la rutina `sourceId` con el sufijo "(copia)" en el nombre.
  * Devuelve el id de la nueva rutina.
  */
 export async function duplicateRoutine(userId: string, sourceId: string): Promise<string> {
   const source = await fetchRoutine(sourceId)
   if (!source) throw new Error('Rutina no encontrada')
 
-  // 1. Crear la rutina nueva
   const { data: newRoutine, error: routineError } = await supabase
     .from('routines')
-    .insert({
-      user_id: userId,
-      name: `${source.name} (copia)`,
-      description: source.description ?? null,
-    })
+    .insert({ user_id: userId, name: `${source.name} (copia)`, description: source.description })
     .select('id')
     .single()
   if (routineError) throw routineError
-  const newRoutineId = newRoutine.id
 
+  const newId = newRoutine.id
   try {
     if (source.routine_exercises.length > 0) {
-      // 2. Insertar los routine_exercises
-      const { data: newExercises, error: exError } = await supabase
+      const { data: inserted, error: exError } = await supabase
         .from('routine_exercises')
         .insert(
-          source.routine_exercises.map((re) => ({
-            routine_id: newRoutineId,
+          source.routine_exercises.map((re, index) => ({
+            routine_id: newId,
             exercise_id: re.exercise_id,
-            position: re.position,
+            position: index,
             mode: re.mode,
             rest_seconds: re.rest_seconds,
           })),
@@ -182,18 +177,17 @@ export async function duplicateRoutine(userId: string, sourceId: string): Promis
         .select('id, position')
       if (exError) throw exError
 
-      const idByPosition = new Map((newExercises ?? []).map((row) => [row.position, row.id]))
-
-      // 3. Insertar las routine_sets de cada ejercicio
-      const setRows = source.routine_exercises.flatMap((re) => {
-        const newExId = idByPosition.get(re.position)
-        if (!newExId) throw new Error('No se pudo enlazar ejercicio al duplicar')
-        return re.routine_sets.map((s) => ({
+      const idByPosition = new Map((inserted ?? []).map((row) => [row.position, row.id]))
+      const setRows = source.routine_exercises.flatMap((re, index) => {
+        const newExId = idByPosition.get(index)
+        if (!newExId) throw new Error('No se pudo enlazar ejercicio duplicado')
+        return re.routine_sets.map((set) => ({
           routine_exercise_id: newExId,
-          set_number: s.set_number,
-          planned_weight_kg: s.planned_weight_kg ?? null,
-          planned_reps: s.planned_reps ?? null,
-          planned_duration_seconds: s.planned_duration_seconds ?? null,
+          set_number: set.set_number,
+          planned_weight_kg: set.planned_weight_kg,
+          planned_reps: set.planned_reps,
+          planned_duration_seconds: set.planned_duration_seconds,
+          set_rest_seconds: set.set_rest_seconds ?? 0,
         }))
       })
 
@@ -203,10 +197,9 @@ export async function duplicateRoutine(userId: string, sourceId: string): Promis
       }
     }
   } catch (err) {
-    // Reversión best-effort
-    await supabase.from('routines').delete().eq('id', newRoutineId)
+    await supabase.from('routines').delete().eq('id', newId)
     throw err
   }
 
-  return newRoutineId
+  return newId
 }

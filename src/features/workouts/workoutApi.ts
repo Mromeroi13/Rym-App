@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase'
-import { toDateKey } from '@/utils/dates'
 import type { Database } from '@/types/database.types'
 import type { RoutineWithDetails } from '@/features/routines/types'
 import type { OpenWorkout, WorkoutListItem, WorkoutWithDetails } from './workoutTypes'
@@ -58,53 +57,6 @@ export async function fetchHistory(): Promise<WorkoutListItem[]> {
 }
 
 /**
- * Devuelve el mejor peso registrado históricamente para un ejercicio
- * en sesiones YA completadas (excluye la sesión activa).
- * Devuelve null si el usuario nunca ha entrenado ese ejercicio con peso.
- */
-export async function fetchBestWeightForExercise(
-  exerciseId: string,
-  currentSessionId: string,
-): Promise<number | null> {
-  const { data, error } = await supabase
-    .from('workout_sets')
-    .select('actual_weight_kg, workout_exercises!inner(exercise_id, workout_session_id)')
-    .eq('workout_exercises.exercise_id', exerciseId)
-    .neq('workout_exercises.workout_session_id', currentSessionId)
-    .not('actual_weight_kg', 'is', null)
-    .order('actual_weight_kg', { ascending: false })
-    .limit(1)
-  if (error) throw error
-  const row = data?.[0] as { actual_weight_kg: number } | undefined
-  return row?.actual_weight_kg ?? null
-}
- /**
-  * al menos un entrenamiento. Usado para calcular la racha sin cargar todo el historial.
- */
-
-/**
- * Devuelve el conjunto de fechas ('YYYY-MM-DD') en las que el usuario completó
- * al menos un entrenamiento. Usado para calcular la racha sin cargar todo el historial.
- */
-export async function fetchCompletedDates(): Promise<Set<string>> {
-  const { data, error } = await supabase
-    .from('workout_sessions')
-    .select('started_at, scheduled_date')
-    .eq('status', 'completed')
-  if (error) throw error
-  const dates = new Set<string>()
-  for (const row of data ?? []) {
-    if (row.scheduled_date) {
-      dates.add(row.scheduled_date)
-    } else {
-      const d = new Date(row.started_at)
-      dates.add(toDateKey(d))
-    }
-  }
-  return dates
-}
-
-/**
  * Crea la sesión de entrenamiento como una FOTO de la rutina: copia ejercicios, nombres
  * y valores planificados. Editar o borrar la rutina después no altera este entrenamiento.
  * `scheduledDate` es la fecha que este entrenamiento cumple en el calendario (WK-09):
@@ -156,6 +108,7 @@ export async function startWorkout(
         planned_weight_kg: set.planned_weight_kg,
         planned_reps: set.planned_reps,
         planned_duration_seconds: set.planned_duration_seconds,
+        set_rest_seconds: set.set_rest_seconds ?? 0,
       }))
     })
     if (setRows.length > 0) {
@@ -200,30 +153,25 @@ export async function updateWorkoutSession(id: string, patch: SessionUpdate): Pr
   if (error) throw error
 }
 
-/**
- * Sustituye el ejercicio de un workout_exercise por otro del catálogo.
- * Solo actualiza exercise_id y exercise_name_snapshot; las series planificadas
- * (peso, reps, duración) se conservan tal cual, y las series ya completadas
- * se limpian (completed_at = null, actual_weight_kg = null, actual_reps = null)
- * para que el usuario las vuelva a registrar con el ejercicio nuevo.
- */
-export async function replaceWorkoutExercise(
-  workoutExerciseId: string,
-  newExerciseId: string,
-  newExerciseName: string,
-): Promise<void> {
-  // 1. Actualizar el workout_exercise
-  const { error: exError } = await supabase
-    .from('workout_exercises')
-    .update({ exercise_id: newExerciseId, exercise_name_snapshot: newExerciseName })
-    .eq('id', workoutExerciseId)
-  if (exError) throw exError
+/** Devuelve la fecha local (YYYY-MM-DD) de un timestamp ISO */
+export function toDateKey(isoString: string): string {
+  return new Date(isoString).toLocaleDateString('sv-SE') // 'sv-SE' da formato YYYY-MM-DD
+}
 
-  // 2. Limpiar las series ya completadas de ese ejercicio
-  const { error: setsError } = await supabase
-    .from('workout_sets')
-    .update({ completed_at: null, actual_weight_kg: null, actual_reps: null })
-    .eq('workout_exercise_id', workoutExerciseId)
-    .not('completed_at', 'is', null)
-  if (setsError) throw setsError
+/**
+ * Obtiene el conjunto de fechas en las que el usuario ha completado algún entrenamiento.
+ * Usa scheduled_date si existe (fiabilidad de zona horaria), si no la fecha local de started_at.
+ */
+export async function fetchCompletedDates(): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('scheduled_date, started_at')
+    .eq('status', 'completed')
+  if (error) throw error
+  const dates = new Set<string>()
+  for (const row of data ?? []) {
+    const key = row.scheduled_date ?? toDateKey(row.started_at)
+    dates.add(key)
+  }
+  return dates
 }

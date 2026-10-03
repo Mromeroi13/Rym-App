@@ -5,7 +5,7 @@ export function newKey(): string {
 }
 
 export function emptySet(): RoutineSetDraft {
-  return { key: newKey(), plannedWeight: '', plannedReps: '', plannedDuration: '' }
+  return { key: newKey(), plannedWeight: '', plannedReps: '', plannedDuration: '', setRestSeconds: '0' }
 }
 
 export function emptyDraft(): RoutineDraft {
@@ -30,6 +30,7 @@ export function draftFromRoutine(routine: RoutineWithDetails): RoutineDraft {
           plannedWeight: s.planned_weight_kg !== null ? String(s.planned_weight_kg) : '',
           plannedReps: s.planned_reps !== null ? String(s.planned_reps) : '',
           plannedDuration: s.planned_duration_seconds !== null ? String(s.planned_duration_seconds) : '',
+          setRestSeconds: String(s.set_rest_seconds ?? 0),
         })),
       }),
     ),

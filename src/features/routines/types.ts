@@ -23,6 +23,7 @@ export interface RoutineSetDraft {
   plannedWeight: string
   plannedReps: string
   plannedDuration: string
+  setRestSeconds: string
 }
 
 export interface RoutineExerciseDraft {
