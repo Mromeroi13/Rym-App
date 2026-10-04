@@ -145,7 +145,7 @@ export function RoutineEditorPage() {
 
   // ── Touch handlers ──
 
-  function handleTouchStart(e: React.TouchEvent, key: string, index: number) {
+  function handleTouchStart(key: string, index: number) {
     // Solo activar si el toque empieza en el handle
     touchTargetKey.current = null
     setDragState({ draggingKey: key, overKey: key, startIndex: index })
@@ -180,7 +180,7 @@ export function RoutineEditorPage() {
     updateExercise(exerciseKey, (ex) => {
       const last = ex.sets[ex.sets.length - 1]
       const next: RoutineSetDraft = last
-        ? { key: newKey(), plannedWeight: last.plannedWeight, plannedReps: last.plannedReps, plannedDuration: last.plannedDuration }
+        ? { key: newKey(), plannedWeight: last.plannedWeight, plannedReps: last.plannedReps, plannedDuration: last.plannedDuration, setRestSeconds: last.setRestSeconds }
         : emptySet()
       return { ...ex, sets: [...ex.sets, next] }
     })
@@ -350,7 +350,7 @@ export function RoutineEditorPage() {
                     type="button"
                     aria-label="Arrastrar para reordenar"
                     title="Arrastrar para reordenar"
-                    onTouchStart={(e) => handleTouchStart(e, exercise.key, index)}
+                    onTouchStart={() => handleTouchStart(exercise.key, index)}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                     className="flex shrink-0 touch-none select-none items-center rounded-md p-1.5 text-textSecondary/50 hover:text-textSecondary active:text-textPrimary"
