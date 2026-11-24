@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database.types'
 import type { RoutineWithDetails } from '@/features/routines/types'
-import type { OpenWorkout, WorkoutListItem, WorkoutWithDetails } from './workoutTypes'
+import type { OpenWorkout, WorkoutListItem, WorkoutSetRow, WorkoutWithDetails } from './workoutTypes'
 
 const WORKOUT_SELECT =
   '*, routines(name), workout_exercises(id, exercise_id, exercise_name_snapshot, position, mode, rest_seconds, exercises(gif_url, muscle_groups(name)), workout_sets(*))'
@@ -174,4 +174,57 @@ export async function fetchCompletedDates(): Promise<Set<string>> {
     dates.add(key)
   }
   return dates
+}
+
+/**
+ * Sustituye un ejercicio en curso (workout_exercise) por otro diferente, sobre la marcha.
+ * - Elimina todas las series del ejercicio original (workout_sets).
+ * - Actualiza workout_exercise con el nuevo exercise_id, nombre y GIF.
+ * - Inserta series nuevas copiando el plan del ejercicio original (mismo nº de series,
+ *   mismo peso/reps/duración planificados) pero sin resultados ni completed_at.
+ *
+ * Esta operación es SOLO para la sesión activa: no toca la rutina fuente.
+ */
+export async function replaceWorkoutExercise(
+  workoutExerciseId: string,
+  newExerciseId: string,
+  newExerciseName: string,
+  existingSets: WorkoutSetRow[],
+): Promise<WorkoutSetRow[]> {
+  // 1. Borrar las series actuales
+  const setIds = existingSets.map((s) => s.id)
+  if (setIds.length > 0) {
+    const { error: delError } = await supabase.from('workout_sets').delete().in('id', setIds)
+    if (delError) throw delError
+  }
+
+  // 2. Actualizar el workout_exercise con el nuevo ejercicio
+  const { error: upError } = await supabase
+    .from('workout_exercises')
+    .update({
+      exercise_id: newExerciseId,
+      exercise_name_snapshot: newExerciseName,
+    })
+    .eq('id', workoutExerciseId)
+  if (upError) throw upError
+
+  // 3. Insertar nuevas series con el mismo plan (sin resultados)
+  const newSetRows = existingSets.map((s) => ({
+    workout_exercise_id: workoutExerciseId,
+    set_number: s.set_number,
+    planned_weight_kg: s.planned_weight_kg,
+    planned_reps: s.planned_reps,
+    planned_duration_seconds: s.planned_duration_seconds,
+    set_rest_seconds: s.set_rest_seconds ?? 0,
+  }))
+
+  if (newSetRows.length === 0) return []
+
+  const { data: inserted, error: insError } = await supabase
+    .from('workout_sets')
+    .insert(newSetRows)
+    .select('*')
+  if (insError) throw insError
+
+  return ((inserted ?? []) as WorkoutSetRow[]).sort((a, b) => a.set_number - b.set_number)
 }

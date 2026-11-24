@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/features/auth/AuthProvider'
+import { usePendingProposalsCount } from '@/features/admin/hooks/usePendingProposalsCount'
 
 const navItems = [
   { to: '/inicio',     label: 'Inicio',     icon: LayoutDashboard },
@@ -44,6 +45,7 @@ export function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { profile } = useAuth()
   const isAdmin = profile?.role === 'admin'
+  const pendingProposalsCount = usePendingProposalsCount(isAdmin)
 
   return (
     <>
@@ -146,8 +148,17 @@ export function MobileNav() {
                         onClick={() => setDrawerOpen(false)}
                         className={({ isActive }) => drawerLinkClasses(isActive)}
                       >
-                        <Icon size={20} className="shrink-0" />
-                        <span className="truncate">{label}</span>
+                        <span className="relative shrink-0">
+                          <Icon size={20} />
+                        </span>
+                        <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                          <span className="truncate">{label}</span>
+                          {to === '/admin/solicitudes' && pendingProposalsCount > 0 && (
+                            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-critical px-1.5 text-[10px] font-bold leading-none text-white">
+                              {pendingProposalsCount > 99 ? '99+' : pendingProposalsCount}
+                            </span>
+                          )}
+                        </span>
                       </NavLink>
                     ))}
                   </div>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
+import { ArrowLeftRight, Check, ChevronLeft, ChevronRight, Film, Flag, Pause, Play, Timer, TrendingUp, Undo2, X } from 'lucide-react'
 import type { WorkoutExerciseDetail, WorkoutSetRow, WorkoutWithDetails } from '../workoutTypes'
 import { useStopwatch } from '../hooks/useStopwatch'
 import { formatCountdown, formatDuration } from '../timer'
@@ -11,7 +11,7 @@ import {
   parseSetInput,
   type SetInput,
 } from '../workoutUtils'
-import { clearSetCompletion, completeTimedSet, saveSetResult, updateWorkoutSession } from '../workoutApi'
+import { clearSetCompletion, completeTimedSet, replaceWorkoutExercise, saveSetResult, updateWorkoutSession } from '../workoutApi'
 import { playCountdownEndSound } from '../sound'
 import { NumberStepper } from './NumberStepper'
 import { TimedSetCountdown } from './TimedSetCountdown'
@@ -19,6 +19,7 @@ import { RestScreen } from './RestScreen'
 import { ExitWorkoutDialog, FinishWorkoutDialog } from './WorkoutDialogs'
 import { ExerciseProgressionDialog } from '@/features/progress/components/ExerciseProgressionDialog'
 import { ExerciseGifModal } from '@/features/exercises/components/ExerciseGifModal'
+import { ReplaceExerciseModal } from './ReplaceExerciseModal'
 
 interface WorkoutRunnerProps {
   workout: WorkoutWithDetails
@@ -66,10 +67,25 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   const [showProgression, setShowProgression] = useState(false)
   // Modal de demostración: igual que arriba, puramente visual — no toca series, temporizador ni progreso (WK-06, WK-10).
   const [showGif, setShowGif] = useState(false)
+  const [showReplace, setShowReplace] = useState(false)
+  const [replacing, setReplacing] = useState(false)
+  const [replaceError, setReplaceError] = useState<string | null>(null)
+  const [replaceTargetIndex, setReplaceTargetIndex] = useState<number | null>(null)
+  const [exerciseOverrides, setExerciseOverrides] = useState<
+    Record<string, { exercise_id: string; exercise_name_snapshot: string; workout_sets: WorkoutSetRow[] }>
+  >({})
   // Fase de ejecución (ejercicio normal o descanso entre ejercicios, WK-12).
   const [phase, setPhase] = useState<Phase>({ kind: 'exercise' })
 
-  const currentExercise = exercises[exIndex]
+  function getExerciseAt(index: number) {
+    const exercise = exercises[index]
+    if (!exercise) return undefined
+    const override = exerciseOverrides[exercise.id]
+    return override ? { ...exercise, ...override } : exercise
+  }
+
+  const currentExercise = getExerciseAt(exIndex)
+  const replaceTargetExercise = replaceTargetIndex === null ? undefined : getExerciseAt(replaceTargetIndex)
   const currentSets = currentExercise?.workout_sets.map((s) => sets[s.id]) ?? []
   const selectedSet = selectedSetId ? sets[selectedSetId] : undefined
   const selectedInput = selectedSetId ? inputs[selectedSetId] : undefined
@@ -124,7 +140,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
 
   // --- Navegación entre ejercicios (el temporizador NO se toca) ---
   function pickInitialSet(exerciseIndex: number, source: Record<string, WorkoutSetRow>): string | null {
-    const ex = exercises[exerciseIndex]
+    const ex = getExerciseAt(exerciseIndex)
     if (!ex) return null
     const list = ex.workout_sets.map((s) => source[s.id])
     return (list.find((s) => !s.completed_at) ?? list[0])?.id ?? null
@@ -246,15 +262,16 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   // registrar, la cuenta atrás en sí ya fue "la serie" (WK-11). Se llama automáticamente
   // desde TimedSetCountdown al llegar a 0; el guard de completed_at la hace idempotente
   // por si el efecto se disparase más de una vez.
-  async function handleCompleteTimedSet(set: WorkoutSetRow) {
-    if (set.completed_at || paused) return
+  async function handleCompleteTimedSet(set: WorkoutSetRow, playSound = true) {
+    if (set.completed_at || paused || savingSetId) return
     setActionError(null)
+    setSavingSetId(set.id)
     try {
       const completedAt = await completeTimedSet(set.id)
       const updated: WorkoutSetRow = { ...set, completed_at: completedAt }
       const nextSets = { ...sets, [set.id]: updated }
       setSets(nextSets)
-      playCountdownEndSound()
+      if (playSound) playCountdownEndSound()
       const list = currentExercise.workout_sets.map((s) => nextSets[s.id])
       const next = list.find((s) => s.set_number > set.set_number && !s.completed_at) ?? list.find((s) => !s.completed_at)
       if (next) {
@@ -266,6 +283,8 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
       }
     } catch {
       setActionError('No se pudo registrar la serie. Comprueba tu conexión e inténtalo de nuevo.')
+    } finally {
+      setSavingSetId(null)
     }
   }
 
@@ -359,6 +378,67 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
     }
   }
 
+  function openReplaceExercise(targetIndex: number) {
+    if (targetIndex < 0 || targetIndex >= exercises.length) return
+    setReplaceError(null)
+    setReplaceTargetIndex(targetIndex)
+    setShowReplace(true)
+  }
+
+  async function handleReplaceExercise(newExerciseId: string, newExerciseName: string) {
+    if (replaceTargetIndex === null) return
+    const targetIndex = replaceTargetIndex
+    const targetExercise = getExerciseAt(targetIndex)
+    if (!targetExercise) return
+
+    setReplaceError(null)
+    setReplacing(true)
+    try {
+      const originalSets = targetExercise.workout_sets
+        .map((set) => sets[set.id])
+        .filter((set): set is WorkoutSetRow => Boolean(set))
+      const newSets = await replaceWorkoutExercise(
+        targetExercise.id,
+        newExerciseId,
+        newExerciseName,
+        originalSets,
+      )
+
+      setSets((prev) => {
+        const next = { ...prev }
+        originalSets.forEach((set) => { delete next[set.id] })
+        newSets.forEach((set) => { next[set.id] = set })
+        return next
+      })
+      setInputs((prev) => {
+        const next = { ...prev }
+        originalSets.forEach((set) => { delete next[set.id] })
+        newSets.forEach((set) => { next[set.id] = baseInput(set) })
+        return next
+      })
+      setExerciseOverrides((prev) => ({
+        ...prev,
+        [targetExercise.id]: {
+          exercise_id: newExerciseId,
+          exercise_name_snapshot: newExerciseName,
+          workout_sets: newSets,
+        },
+      }))
+
+      if (targetIndex === exIndex) {
+        setSelectedSetId(newSets[0]?.id ?? null)
+        if (phase.kind === 'set-rest') setPhase({ kind: 'exercise' })
+      }
+      // Si el cambio se hace durante el descanso entre ejercicios, el contador sigue.
+      setShowReplace(false)
+      setReplaceTargetIndex(null)
+      window.dispatchEvent(new CustomEvent('rym:workout-exercise-replaced'))
+    } catch {
+      setReplaceError('No se pudo cambiar el ejercicio. Comprueba tu conexión e inténtalo de nuevo.')
+    }
+    setReplacing(false)
+  }
+
   if (!currentExercise) {
     return (
       <div className="rounded-xl border border-border bg-surface p-6 text-sm text-textSecondary">
@@ -429,6 +509,9 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
         </div>
       )}
 
+      {replaceError && (
+        <div className="rounded-xl border border-critical/30 bg-critical/10 p-4 text-sm text-critical">{replaceError}</div>
+      )}
       {actionError && (
         <div className="rounded-xl border border-critical/30 bg-critical/10 p-4 text-sm text-critical">{actionError}</div>
       )}
@@ -436,23 +519,41 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_16rem]">
         <div className="flex flex-col gap-4">
           {phase.kind === 'rest' ? (
-            <RestScreen
-              key={`rest-${phase.fromIndex}`}
-              seconds={phase.seconds}
-              paused={paused}
-              nextExerciseName={exercises[phase.fromIndex + 1]?.exercise_name_snapshot ?? ''}
-              onComplete={handleRestComplete}
-              onSkip={handleSkipRest}
-            />
+            <>
+              <button
+                type="button"
+                onClick={() => openReplaceExercise(phase.fromIndex + 1)}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10"
+              >
+                <ArrowLeftRight size={17} /> Cambiar siguiente ejercicio
+              </button>
+              <RestScreen
+                key={`rest-${phase.fromIndex}`}
+                seconds={phase.seconds}
+                paused={paused}
+                nextExerciseName={getExerciseAt(phase.fromIndex + 1)?.exercise_name_snapshot ?? ''}
+                onComplete={handleRestComplete}
+                onSkip={handleSkipRest}
+              />
+            </>
           ) : phase.kind === 'set-rest' ? (
-            <RestScreen
-              key={`set-rest-${phase.nextSetId}`}
-              seconds={phase.seconds}
-              paused={paused}
-              nextExerciseName={`Serie ${phase.nextSetNumber}`}
-              onComplete={handleSetRestComplete}
-              onSkip={handleSkipSetRest}
-            />
+            <>
+              <button
+                type="button"
+                onClick={() => openReplaceExercise(exIndex)}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10"
+              >
+                <ArrowLeftRight size={17} /> Cambiar ejercicio
+              </button>
+              <RestScreen
+                key={`set-rest-${phase.nextSetId}`}
+                seconds={phase.seconds}
+                paused={paused}
+                nextExerciseName={`Serie ${phase.nextSetNumber}`}
+                onComplete={handleSetRestComplete}
+                onSkip={handleSkipSetRest}
+              />
+            </>
           ) : (
             <>
               {/* Ejercicio actual y series */}
@@ -491,6 +592,15 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                       className="rounded-lg p-2 text-textSecondary hover:bg-background"
                     >
                       <TrendingUp size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openReplaceExercise(exIndex)}
+                      title="Cambiar ejercicio en esta sesión"
+                      className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10"
+                    >
+                      <ArrowLeftRight size={16} />
+                      <span>Cambiar ejercicio</span>
                     </button>
                   </div>
                 </div>
@@ -582,7 +692,8 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                       type="button"
                       onClick={handleCompleteSet}
                       disabled={editingDisabled}
-                      className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
+                      style={{ height: 64, minHeight: 64 }}
                     >
                       <Check size={20} />
                       {savingSetId === selectedSet.id
@@ -596,7 +707,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                         type="button"
                         onClick={handleUndoSet}
                         disabled={editingDisabled}
-                        className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60"
+                        className="inline-flex h-20 sm:h-16 items-center justify-center gap-2 rounded-xl bg-background px-5 text-sm font-semibold text-textSecondary hover:bg-border/60 disabled:opacity-60"
                       >
                         <Undo2 size={18} /> Marcar pendiente
                       </button>
@@ -624,6 +735,15 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                       onComplete={() => handleCompleteTimedSet(selectedSet)}
                     />
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCompleteTimedSet(selectedSet, false)}
+                    disabled={editingDisabled || selectedSet.completed_at !== null}
+                    className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-5 text-sm font-semibold text-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ChevronRight size={18} />
+                    {savingSetId === selectedSet.id ? 'Saltando...' : 'Saltar tiempo'}
+                  </button>
                   {actionError && <p className="mt-3 text-sm text-critical">{actionError}</p>}
                 </div>
               )}
@@ -677,8 +797,9 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
           <p className="text-[10px] font-bold uppercase tracking-wider text-textSecondary">Ruta del entrenamiento</p>
           <ol className="mt-3 flex flex-col gap-1.5">
             {exercises.map((ex, index) => {
-              const done = ex.workout_sets.filter((s) => sets[s.id]?.completed_at).length
-              const complete = ex.workout_sets.length > 0 && done === ex.workout_sets.length
+              const routeSets = exerciseOverrides[ex.id]?.workout_sets ?? ex.workout_sets
+              const done = routeSets.filter((s) => sets[s.id]?.completed_at).length
+              const complete = routeSets.length > 0 && done === routeSets.length
               return (
                 <li key={ex.id}>
                   <button
@@ -690,10 +811,10 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
                   >
                     <span className="flex min-w-0 items-center gap-2">
                       <span className="text-xs text-textSecondary">{index + 1}</span>
-                      <span className="truncate">{ex.exercise_name_snapshot}</span>
+                      <span className="truncate">{exerciseOverrides[ex.id]?.exercise_name_snapshot ?? ex.exercise_name_snapshot}</span>
                     </span>
                     <span className={`shrink-0 text-xs ${complete ? 'text-success' : 'text-textSecondary'}`}>
-                      {complete ? <Check size={14} /> : `${done}/${ex.workout_sets.length}`}
+                      {complete ? <Check size={14} /> : `${done}/${routeSets.length}`}
                     </span>
                   </button>
                 </li>
@@ -749,6 +870,17 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
           exerciseName={currentExercise.exercise_name_snapshot}
           gifUrl={currentExercise.exercises?.gif_url ?? null}
           onClose={() => setShowGif(false)}
+        />
+      )}
+
+      {showReplace && replaceTargetExercise && (
+        <ReplaceExerciseModal
+          currentExerciseName={replaceTargetExercise.exercise_name_snapshot}
+          currentExerciseIds={exercises.map((exercise) => exerciseOverrides[exercise.id]?.exercise_id ?? exercise.exercise_id)}
+          replacing={replacing}
+          error={replaceError}
+          onClose={() => { setShowReplace(false); setReplaceTargetIndex(null) }}
+          onReplace={handleReplaceExercise}
         />
       )}
     </div>

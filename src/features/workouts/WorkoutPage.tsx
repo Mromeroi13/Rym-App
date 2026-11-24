@@ -29,6 +29,22 @@ export function WorkoutPage() {
     load()
   }, [load])
 
+  // Recarga silenciosa cuando el WorkoutRunner reemplaza un ejercicio sobre la marcha.
+  // No usa setState('loading') para no interrumpir la sesión con un spinner.
+  useEffect(() => {
+    async function silentReload() {
+      if (!sessionId) return
+      try {
+        const data = await fetchWorkout(sessionId)
+        if (data) setWorkout(data)
+      } catch {
+        // Error silencioso: el runner ya tiene los datos actualizados en memoria
+      }
+    }
+    window.addEventListener('rym:workout-exercise-replaced', silentReload)
+    return () => window.removeEventListener('rym:workout-exercise-replaced', silentReload)
+  }, [sessionId])
+
   if (state === 'loading') {
     return (
       <WorkoutShell>

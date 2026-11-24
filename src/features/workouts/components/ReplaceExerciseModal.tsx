@@ -13,6 +13,7 @@ interface ReplaceExerciseModalProps {
   onClose: () => void
   onReplace: (newExerciseId: string, newExerciseName: string) => void
   replacing: boolean
+  error?: string | null
 }
 
 function tabClasses(isActive: boolean) {
@@ -29,6 +30,7 @@ export function ReplaceExerciseModal({
   onClose,
   onReplace,
   replacing,
+  error,
 }: ReplaceExerciseModalProps) {
   const { exercises, loading: exLoading } = useExercises()
   const { groups, loading: groupsLoading } = useMuscleGroups()
@@ -69,7 +71,7 @@ export function ReplaceExerciseModal({
   return (
     <Modal
       title="Cambiar ejercicio"
-      description={`Sustituyendo: ${currentExerciseName}. Las series ya completadas se reiniciarán.`}
+      description={`Sustituyendo: ${currentExerciseName}. Las series de este ejercicio se reiniciarán; el resto de la sesión se conservará.`}
       onClose={onClose}
     >
       {/* Pestañas de grupo muscular */}
@@ -118,6 +120,12 @@ export function ReplaceExerciseModal({
           </button>
         )}
       </div>
+
+      {error && (
+        <p role="alert" className="mb-3 rounded-lg border border-critical/30 bg-critical/10 p-3 text-sm text-critical">
+          {error}
+        </p>
+      )}
 
       {/* Lista */}
       <div className="max-h-60 overflow-y-auto rounded-xl border border-border">
@@ -177,11 +185,6 @@ export function ReplaceExerciseModal({
           </div>
         )}
       </div>
-
-      {/* Aviso de reset */}
-      <p className="mt-3 text-xs text-textSecondary">
-        ⚠️ Si ya completaste series de este ejercicio, se reiniciarán al cambiar.
-      </p>
 
       {gifExercise && (
         <ExerciseGifModal
