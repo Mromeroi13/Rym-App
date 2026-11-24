@@ -221,7 +221,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   }
 
   async function handleCompleteSet() {
-    if (!selectedSet || !selectedInput || paused) return
+    if (!currentExercise || !selectedSet || !selectedInput || paused) return
     setInputError(null)
     setActionError(null)
     const parsed = parseSetInput(selectedInput)
@@ -265,7 +265,7 @@ export function WorkoutRunner({ workout, onFinished }: WorkoutRunnerProps) {
   // desde TimedSetCountdown al llegar a 0; el guard de completed_at la hace idempotente
   // por si el efecto se disparase más de una vez.
   async function handleCompleteTimedSet(set: WorkoutSetRow) {
-    if (set.completed_at || paused) return
+    if (!currentExercise || set.completed_at || paused) return
     setActionError(null)
     try {
       const completedAt = await completeTimedSet(set.id)
